@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "sieves:block/box_north"
+    },
+    "facing=south": {
+      "model": "sieves:block/box_south"
+    },
+    "facing=west": {
+      "model": "sieves:block/box_west"
+    },
+    "facing=east": {
+      "model": "sieves:block/box_east"
+    },
+    "facing=up": {
+      "model": "sieves:block/box_up"
+    },
+    "facing=down": {
+      "model": "sieves:block/box_down"
+    }
+  }
+}

@@ -1,0 +1,158 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        // Make sure this version matches the one included in Kotlin for Forge
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+        // OPTIONAL Gradle plugin for Kotlin Serialization
+        classpath 'org.jetbrains.kotlin:kotlin-serialization:1.6.10'
+        classpath 'org.parchmentmc:librarian:1.+'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'kotlin'
+apply plugin: 'java'
+apply plugin: 'kotlinx-serialization'
+
+apply from: 'https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-3.1.0.gradle'
+
+version = '1.18.2-1.0.0'
+group = 'com.github.sieves'
+archivesBaseName = 'sieves'
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+ext {
+    imguiVersion = '1.86.4'
+}
+
+
+sourceSets {
+    main {
+        kotlin.srcDirs('src/main/kotlin')
+    }
+}
+
+minecraft {
+//    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'parchment', version: '1.18.2-2022.03.13-1.18.2'
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'SCAN,LOADING,CORE'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                sieves {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run/server')
+
+            property 'forge.logging.markers', 'SCAN,LOADING,CORE'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                sieves {
+                    source sourceSets.main
+                }
+
+            }
+        }
+
+    }
+}
+
+repositories {
+    maven { url 'https://maven.blamejared.com' }
+    mavenCentral()
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev/"
+    }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven { // TOP
+        name 'tterrag maven'
+        url "https://maven.k-4u.nl"
+    }
+    maven {
+        url "https://maven.blakesmods.com"
+    }
+}
+
+// Include assets and data from data generators
+//sourceSets.main.resources { srcDirs 'src/generated/resources/' }
+
+
+dependencies {
+    // Use the latest version of Minecraft Forge
+    minecraft 'net.minecraftforge:forge:1.18.2-40.1.0'
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("curse.maven:the-one-probe-245211:3671753")
+//    runtimeOnly(fg.deobf("vazkii.patchouli:Patchouli-xplat:1.18.2-67"))
+
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    runtimeOnly(fg.deobf("mekanism:Mekanism:1.18.2-10.2.0.459:all"))
+    runtimeOnly(fg.deobf("curse.maven:ato-405593:3751978"))
+    runtimeOnly(fg.deobf("curse.maven:the-one-probe-245211:3671753"))
+    runtimeOnly(fg.deobf("curse.maven:patchouli-306770:3729975"))
+    runtimeOnly(fg.deobf("curse.maven:spark-361579:3670050"))
+//    runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized:281849"))
+    runtimeOnly(fg.deobf("com.blakebr0.cucumber:Cucumber:1.18.2-5.1.0"))
+    runtimeOnly(fg.deobf("com.blakebr0.mysticalagriculture:MysticalAgriculture:1.18.2-5.1.0"))
+}
+
+
+task output(type: Copy) {
+    dependsOn "reobfJar"
+    from "build/reobfJar"
+    into 'builds'
+    rename { String fileName ->
+        fileName.replace("output", "sieves-${project.version}")
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "17"
+}
+
+jar {
+
+    manifest {
+        attributes([
+                'Specification-Title'     : "sieves",
+                'Specification-Vendor'    : "sievessareus",
+                'Specification-Version'   : "1", // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : "sievesmodsareus",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+        ])
+    }
+}
+
+
+jar.finalizedBy('reobfJar')

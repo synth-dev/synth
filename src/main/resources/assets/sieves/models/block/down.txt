@@ -1,0 +1,20 @@
+public VoxelShape makeShape(){
+	VoxelShape shape = VoxelShapes.empty();
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.34375, 0, 0.34375, 0.65625, 0.015625, 0.65625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.359375, 0.328125, 0.359375, 0.640625, 0.34375, 0.640625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.40625, 0.34375, 0.40625, 0.59375, 0.390625, 0.59375), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.640625, 0.015625, 0.546875, 0.65625, 0.328125, 0.640625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.625, 0.015625, 0.453125, 0.640625, 0.328125, 0.546875), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.640625, 0.015625, 0.359375, 0.65625, 0.328125, 0.453125), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.34375, 0.015625, 0.359375, 0.359375, 0.328125, 0.453125), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.359375, 0.015625, 0.453125, 0.375, 0.328125, 0.546875), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.34375, 0.015625, 0.546875, 0.359375, 0.328125, 0.640625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.546875, 0.015625, 0.34375, 0.640625, 0.328125, 0.359375), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.453125, 0.015625, 0.359375, 0.546875, 0.328125, 0.375), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.359375, 0.015625, 0.34375, 0.453125, 0.328125, 0.359375), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.359375, 0.015625, 0.640625, 0.453125, 0.328125, 0.65625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.453125, 0.015625, 0.625, 0.546875, 0.328125, 0.640625), IBooleanFunction.OR);
+	shape = VoxelShapes.join(shape, VoxelShapes.box(0.546875, 0.015625, 0.640625, 0.640625, 0.328125, 0.65625), IBooleanFunction.OR);
+
+	return shape;
+}

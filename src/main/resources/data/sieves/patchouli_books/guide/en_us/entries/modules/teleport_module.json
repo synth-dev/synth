@@ -1,0 +1,17 @@
+{
+  "name": "Teleport",
+  "icon": "sieves:teleport_module",
+  "category": "sieves:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:teleport_module",
+      "text": "Allows you to teleport directly to where ever you're looking.Teleport by setting a custom keybinding (default R). When shift is held and the keybind is pressed you will teleport to your respawn point. To link simply shift rick click on any $(l:io/battery)Power$(/l) Block."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:teleport_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first along with a dragon egg..."
+    }
+  ]
+}

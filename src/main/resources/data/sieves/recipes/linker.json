@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  G",
+    " X ",
+    "X  "
+  ],
+  "key": {
+    "X": {
+      "item": "sieves:flux_dust"
+    },
+    "G": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "item": "sieves:linker",
+    "count": 1
+  }
+}

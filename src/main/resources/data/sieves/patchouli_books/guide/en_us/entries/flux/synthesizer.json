@@ -1,0 +1,17 @@
+{
+  "name": "Synthesizer",
+  "icon": "sieves:synthesizer",
+  "category": "sieves:flux",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:synthesizer",
+      "text": "The synthesizer is a mystical block that allows you to summon a quantum being to do your flux dust bidding!"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:synthesizer",
+      "text": "Don't forget to pray to the quantum being!!"
+    }
+  ]
+}

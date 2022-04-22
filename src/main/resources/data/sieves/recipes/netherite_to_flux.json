@@ -1,0 +1,18 @@
+{
+  "type": "sieves:sieve",
+  "time": "8000",
+  "durability": "20",
+  "power": "500",
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    },
+    {
+      "item": "sieves:linker"
+    }
+  ],
+  "result": {
+    "item": "sieves:flux_dust",
+    "count": 2
+  }
+}

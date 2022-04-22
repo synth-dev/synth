@@ -1,0 +1,17 @@
+{
+  "name": "Module",
+  "icon": "sieves:base_module",
+  "category": "sieves:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:base_module",
+      "text": "Hones the power of the quantum ether through the quantum steve being to forge a reality breaking base module."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:base_module",
+      "text": "Requires getting $(l:flux/flux_block)Flux$(/l) first."
+    }
+  ]
+}

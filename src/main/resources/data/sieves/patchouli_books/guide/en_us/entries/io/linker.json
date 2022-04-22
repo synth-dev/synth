@@ -1,0 +1,17 @@
+{
+  "name": "Linker",
+  "icon": "sieves:linker",
+  "category": "sieves:io",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:linker",
+      "text": "The Linker is a tool used to tear a rip in the world and piece them together in the quantum realm... You may use it as the tool for the $(l:flux:synthesizer)Synthesizer$(/l) recipes, or to link the $(l:io/box)Items$(/l) and $(l:io/battery)Power$(/l) Blocks respectively..."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:linker",
+      "text": "Requires first getting $(l:flux/flux_dust)Flux Dust$(/l) and using it along with an eye of ender in the $(l:flux/synthesizer)Synthesizer$(/l)"
+    }
+  ]
+}

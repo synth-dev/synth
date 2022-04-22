@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "sieves:block/synthesizer"
+    },
+    "facing=south": {
+      "model": "sieves:block/synthesizer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "sieves:block/synthesizer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "sieves:block/synthesizer",
+      "y": 90
+    }
+  }
+}

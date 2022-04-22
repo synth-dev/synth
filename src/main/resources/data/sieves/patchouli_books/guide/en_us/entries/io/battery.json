@@ -1,0 +1,17 @@
+{
+  "name": "Power",
+  "icon": "sieves:battery",
+  "category": "sieves:io",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:battery",
+      "text": "The battery is an anomaly that uses the quantum realm to link together energy rifts... To use first shift right click on your Power block with a $(l:io/linker)Linker$(/l) and make sure it's configuration is set to output power for the clicked face. Then you will shift right click on any block/face that accepts FE."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:battery",
+      "text": "Requires first getting $(l:flux/flux_dust)Flux Dust$(/l)"
+    }
+  ]
+}

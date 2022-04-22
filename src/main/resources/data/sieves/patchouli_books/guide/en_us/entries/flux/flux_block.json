@@ -1,0 +1,17 @@
+{
+  "name": "Flux",
+  "icon": "sieves:flux_block",
+  "category": "sieves:flux",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "sieves:flux_dust",
+      "text": "Flux blocks are used in many different crafting recipes for the mod. Use JEI to see recipes. They are needed for some of the later crafting recipes. It takes great *power* to draw these out from the quantum void!"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "sieves:flux_block",
+      "text": "Use the $(l:flux/synthesizer)Synthesizer$(/l) along with a $(l:io/linker)Linker$(/l) and either diamond or netherite to produce large quantities. Use Eye of Ender and Coal to produce your first Flux Dust (this is gonna take awhile...)"
+    }
+  ]
+}

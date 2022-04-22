@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "XFX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "sieves:flux_dust"
+    },
+    "G": {
+      "item": "minecraft:copper_block"
+    },
+    "F": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "item": "sieves:battery",
+    "count": 1
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Modules",
+  "description": "Modules provide end-game content that can be applied to the player in a curious-esque way. There is going to be a separate mod developer library for the tabs as seen inside this mod soon(regular players ignore).",
+  "icon": "sieves:base_module"
+}
