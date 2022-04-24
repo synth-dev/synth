@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "synth:block/core"
+    },
+    "facing=south": {
+      "model": "synth:block/core"
+    },
+    "facing=west": {
+      "model": "synth:block/core"
+
+    },
+    "facing=east": {
+      "model": "synth:block/core"
+    },
+    "facing=up": {
+      "model": "synth:block/core"
+    },
+    "facing=down": {
+      "model": "synth:block/core"
+    }
+  }
+}

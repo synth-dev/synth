@@ -1,11 +1,10 @@
 package com.github.sieves.content.modules
 
-import com.github.sieves.content.api.ApiTab
-import com.github.sieves.content.api.ApiTabItem
-import com.github.sieves.content.api.tab.NativeTabs
-import com.github.sieves.content.api.tab.Tab
-import com.github.sieves.content.api.tab.TabSpec
-import com.github.sieves.content.battery.BatteryTile
+import com.github.sieves.api.ApiTab
+import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.tab.Tab
+import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.io.battery.BatteryTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.util.*
 import com.mojang.math.Vector3f
@@ -24,8 +23,8 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.HashMap
 
-class PowerModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
-//class PowerModule : ApiTabItem(Registry.Tabs.PlayerPower.key, BatteryTile::class.java) {
+//class PowerModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
+class PowerModule : ApiTabItem(Registry.Tabs.PlayerPower.key, BatteryTile::class.java) {
     /**
      * Adds some extra configurations
      */
@@ -44,7 +43,7 @@ class PowerModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
          */
         val TagSpec = TabSpec()
             .withItem { ItemStack(Registry.Items.PowerModule) }
-            .withTooltip { TranslatableComponent("tab.sieves.player_power") }
+            .withTooltip { TranslatableComponent("tab.synth.player_power") }
             .withHover()
             .withSpin()
             .withTarget("net.minecraft.client.gui.screens.inventory.InventoryScreen")

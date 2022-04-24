@@ -1,10 +1,10 @@
 package com.github.sieves.content.modules
 
-import com.github.sieves.content.api.ApiTab
-import com.github.sieves.content.api.ApiTabItem
-import com.github.sieves.content.api.tab.Tab
-import com.github.sieves.content.api.tab.TabSpec
-import com.github.sieves.content.battery.BatteryTile
+import com.github.sieves.api.ApiTab
+import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.tab.Tab
+import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.io.battery.BatteryTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.util.*
 import com.mojang.math.Vector3f
@@ -19,7 +19,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.energy.CapabilityEnergy
 import java.text.NumberFormat
@@ -48,13 +47,13 @@ class TeleportModule : ApiTabItem(Registry.Tabs.PlayerTeleport.key, BatteryTile:
 
             Registry.Net.SoundEvent.clientListener { soundPacket, _ ->
                 if (physicalClient)
-                    Minecraft.getInstance().player?.playSound(soundPacket.sound, 0.5f, 1.0f)
+                    Minecraft.getInstance().player?.playSound(soundPacket.sound, 0.2f, 1.0f)
                 true
             }
         }
 
         internal val TabSpec = TabSpec().withItem { ItemStack(Registry.Items.TeleportModule) }
-            .withTooltip { TranslatableComponent("tab.sieves.player_teleport") }.withHover().withSpin()
+            .withTooltip { TranslatableComponent("tab.synth.player_teleport") }.withHover().withSpin()
             .withTarget("net.minecraft.client.gui.screens.inventory.InventoryScreen")
             .withTarget("net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen")
             .withInit(::init)
@@ -148,12 +147,13 @@ class TeleportModule : ApiTabItem(Registry.Tabs.PlayerTeleport.key, BatteryTile:
                                 energy.extractEnergy(target, false)
                                 val loc = data.first
                                 if (player.isShiftKeyDown) {
+                                    if (player.respawnPosition != null)
+                                        player.teleportTo(
+                                            player.respawnPosition!!.x.toDouble(),
+                                            player.respawnPosition!!.y + 1.0,
+                                            player.respawnPosition!!.z.toDouble()
+                                        )
 
-                                    player.teleportTo(
-                                        player.respawnPosition!!.x.toDouble(),
-                                        player.respawnPosition!!.y + 1.0,
-                                        player.respawnPosition!!.z.toDouble()
-                                    )
                                 } else
                                     player.teleportTo(loc.x, loc.y, loc.z)
                                 Registry.Net.sendToClient(Registry.Net.SoundEvent {

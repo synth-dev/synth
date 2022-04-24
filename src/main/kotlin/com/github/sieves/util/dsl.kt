@@ -1,13 +1,14 @@
 package com.github.sieves.util
 
 import com.github.sieves.Sieves
-import com.github.sieves.content.api.ApiTab
-import com.github.sieves.content.api.ApiTabItem
-import com.github.sieves.content.api.tab.TabRegistry
-import com.github.sieves.content.api.tab.TabSpec
+import com.github.sieves.api.ApiTab
+import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.tab.TabRegistry
+import com.github.sieves.api.tab.TabSpec
 import com.github.sieves.registry.internal.IRegister
 import com.github.sieves.registry.internal.Registry
 import com.github.sieves.registry.internal.net.Packet
+import com.github.sieves.util.Log.debug
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
@@ -21,6 +22,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -38,6 +40,7 @@ import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.LogicalSide
 import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.fml.util.thread.SidedThreadGroups
+import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.items.wrapper.InvWrapper
 import net.minecraftforge.network.NetworkDirection
@@ -51,6 +54,7 @@ import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import kotlin.math.sqrt
+import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
 
 /**
@@ -88,6 +92,137 @@ fun Packet.getLevel(key: ResourceKey<Level>): Level {
     return ServerLifecycleHooks.getCurrentServer().getLevel(key)!!
 }
 
+
+/**
+ * Convert a generic map to nbt
+ */
+inline fun <reified K : Any, reified V : Any> Map<K, V>.toCompound(): CompoundTag {
+    val tag = CompoundTag()
+    tag.putInt("size", this.size)
+    val store = CompoundTag()
+    this.keys.forEachIndexed { i, key ->
+        store.tryPut("key_$i", key)
+        store.tryPut("value_$i", this[key]!!)
+    }
+    tag.put("store", store)
+    return tag
+}
+
+/**
+ * Deserialize the map
+ */
+inline fun <reified K : Any, reified V : Any> CompoundTag.toMap(): MutableMap<K, V> {
+    val map = HashMap<K, V>()
+    val size = this.getInt("size")
+    val store = this.getCompound("store")
+    for (i in 0 until size) {
+        val key = store.tryGet<K>("key_$i")
+        val value = store.tryGet<V>("value_$i")
+        if (key != null && value != null) map[key] = value
+    }
+    return map
+}
+
+operator fun CompoundTag.invoke(name: String): CompoundTag = this.getCompound(name)
+
+
+/**
+ * Convert a generic map to nbt
+ */
+inline fun <reified V : Any> List<V>.toCompound(): CompoundTag {
+    val tag = CompoundTag()
+    tag.putInt("size", this.size)
+    val store = CompoundTag()
+    this.forEachIndexed { i, key ->
+        store.tryPut("value_$i", key)
+    }
+    tag.put("store", store)
+    return tag
+}
+
+/**
+ * Deserialize the map
+ */
+inline fun <reified V : Any> CompoundTag.toList(): MutableList<V> {
+    val list = ArrayList<V>()
+    val size = this.getInt("size")
+    val store = this.getCompound("store")
+    for (i in 0 until size) {
+        val value = store.tryGet<V>("value_$i")
+        if (value != null) list.add(value)
+    }
+    return list
+}
+
+/**
+ * Attempts to serialize a lot of stufff
+ */
+fun <T : Any> CompoundTag.tryPut(name: String, value: T): Boolean {
+    when (value) {
+        is BlockPos -> this.putBlockPos(name, value)
+        is Int -> this.putInt(name, value)
+        is Float -> this.putFloat(name, value)
+        is Double -> this.putDouble(name, value)
+        is Boolean -> this.putBoolean(name, value)
+        is Byte -> this.putByte(name, value)
+        is String -> this.putString(name, value)
+        is ResourceLocation -> {
+            val subTag = CompoundTag()
+            subTag.putString("namespace", value.namespace)
+            subTag.putString("path", value.path)
+            this.put(name, subTag)
+        }
+        is Block -> return this.tryPut(name, value.registryName!!)
+        is UUID -> this.putUUID(name, value)
+        is IntArray -> this.putIntArray(name, value)
+        is ByteArray -> this.putByteArray(name, value)
+        is LongArray -> this.putLongArray(name, value)
+        is CompoundTag -> this.put(name, value)
+        else -> {
+            Log.warn { "Attempted to serialize unknown serialization type of ${value::class.qualifiedName} for name $name" }
+            return false
+        }
+    }
+//    debug { "Serialized ${value::class.simpleName} with name: $name and value: $value" }
+    return true
+}
+
+inline fun <reified T : Any> CompoundTag.tryGet(name: String): T? = tryGet(name, T::class)
+
+/**
+ * Attempts to get the value
+ */
+fun <T : Any> CompoundTag.tryGet(name: String, classType: KClass<T>): T? {
+    return when (classType) {
+        BlockPos::class -> classType.cast(this.getBlockPos(name))
+        Int::class -> classType.cast(this.getInt(name))
+        Float::class -> classType.cast(this.getFloat(name))
+        Double::class -> classType.cast(this.getDouble(name))
+        Boolean::class -> classType.cast(this.getBoolean(name))
+        Byte::class -> classType.cast(this.getByte(name))
+        String::class -> classType.cast(this.getString(name))
+        UUID::class -> classType.cast(this.getUUID(name))
+        IntArray::class -> classType.cast(this.getIntArray(name))
+        ByteArray::class -> classType.cast(this.getByteArray(name))
+        LongArray::class -> classType.cast(this.getLongArray(name))
+        CompoundTag::class -> classType.cast(this.getCompound(name))
+        Block::class -> {
+            var result: T? = null
+            this.tryGet(name, ResourceLocation::class)?.let {
+                val block = net.minecraft.core.Registry.BLOCK.get(it)
+                result = classType.cast(block)
+            }
+            result
+        }
+        ResourceLocation::class -> {
+            val subTag = this.getCompound(name)
+            return classType.cast(ResourceLocation(subTag.getString("namespace"), subTag.getString("path")))
+        }
+        else -> null
+    }
+}
+
+
 /**
  * Gets the player based on the uuid, ONLY WORKS ON SERVER
  */
@@ -114,7 +249,7 @@ val NetworkEvent.Context.dir: NetDir
     }
 
 fun AbstractContainerScreen<*>.isHovered(
-    pX: Int, pY: Int, pWidth: Int, pHeight: Int, mouseX: Double, mouseY: Double
+    pX: Int, pY: Int, pWidth: Int, pHeight: Int, mouseX: Double, mouseY: Double,
 ): Boolean {
     val pMouseX = mouseX - this.guiLeft
     val pMouseY = mouseY - this.guiTop
@@ -124,12 +259,11 @@ fun AbstractContainerScreen<*>.isHovered(
 private var lastClick = System.currentTimeMillis()
 
 fun AbstractContainerScreen<*>.isClicked(
-    x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double
+    x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double,
 ): Boolean {
     val now = System.currentTimeMillis()
-    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
-            Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_LEFT
-        ) == GLFW.GLFW_PRESS && now - lastClick > 250
+    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(Minecraft.getInstance().window.window,
+                                                                                  GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
         return true
@@ -138,12 +272,11 @@ fun AbstractContainerScreen<*>.isClicked(
 }
 
 fun AbstractContainerScreen<*>.isRightClicked(
-    x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double
+    x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double,
 ): Boolean {
     val now = System.currentTimeMillis()
-    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
-            Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_RIGHT
-        ) == GLFW.GLFW_PRESS && now - lastClick > 250
+    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(Minecraft.getInstance().window.window,
+                                                                                  GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
         return true
@@ -153,24 +286,24 @@ fun AbstractContainerScreen<*>.isRightClicked(
 
 fun AbstractContainerScreen<*>.drawText(
     stack: PoseStack,
-    x: Float, y: Float, text: String, color: Int
+    x: Float, y: Float, text: String, color: Int,
 ) = Minecraft.getInstance().font.draw(stack, text, x, y, color)
 
 fun AbstractContainerScreen<*>.drawText(
     stack: TabSpec.MenuData,
-    x: Float, y: Float, text: String, color: Int
+    x: Float, y: Float, text: String, color: Int,
 ) = Minecraft.getInstance().font.draw(stack.poseStack, text, x, y, color)
 
 
 fun AbstractContainerScreen<*>.drawTextShadow(
     stack: PoseStack,
-    x: Float, y: Float, text: String, color: Int
+    x: Float, y: Float, text: String, color: Int,
 ) = Minecraft.getInstance().font.drawShadow(stack, text, x, y, color)
 
 fun AbstractContainerScreen<*>.drawTextShadow(
     stack: TabSpec.MenuData,
-    x: Float, y: Float, text: String, color: Int
-) = Minecraft.getInstance().font.drawShadow(stack.poseStack, text, x,  y, color)
+    x: Float, y: Float, text: String, color: Int,
+) = Minecraft.getInstance().font.drawShadow(stack.poseStack, text, x, y, color)
 
 
 /**
@@ -184,13 +317,13 @@ internal val String.resLoc: ResourceLocation
  * This is used for easy block entity registration
  */
 inline fun <reified T : BlockEntity> Registry<BlockEntityType<*>>.tile(
-    block: Block, crossinline supplier: (Pair<BlockPos, BlockState>) -> T
+    block: Block, crossinline supplier: (Pair<BlockPos, BlockState>) -> T,
 ): BlockEntityType<T> {
     return BlockEntityType.Builder.of({ pos, state -> supplier(pos to state) }, block).build(null)
 }
 
 inline fun <reified T : IRegister> T.registerAll(
-    modID: String = Sieves.ModId, modBus: IEventBus = MOD_BUS, forgeBus: IEventBus = FORGE_BUS
+    modID: String = Sieves.ModId, modBus: IEventBus = MOD_BUS, forgeBus: IEventBus = FORGE_BUS,
 ) {
     for (child in this::class.nestedClasses) {
         if (child.isSubclassOf(IRegister::class)) {
@@ -256,6 +389,7 @@ fun CompoundTag.putBlockPos(name: String, blockPos: BlockPos) {
 
 fun CompoundTag.getBlockPos(name: String): BlockPos {
     val array = getIntArray(name)
+    if(array.size != 3) return BlockPos.ZERO
     return BlockPos(array[0], array[1], array[2])
 }
 
@@ -322,6 +456,11 @@ internal fun runOn(side: LogicalSide, block: () -> Unit): CompletableFuture<Void
         CompletableFuture.completedFuture(null)
     }
 }
+
+/**
+ * Wraps the operator around the slot handler
+ */
+internal operator fun IItemHandler.get(slot: Int): ItemStack = getStackInSlot(slot)
 
 /**
  * This run the given chunk of code on the client

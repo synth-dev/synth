@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "synth:block/synthesizer"
+    },
+    "facing=south": {
+      "model": "synth:block/synthesizer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "synth:block/synthesizer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "synth:block/synthesizer",
+      "y": 90
+    }
+  }
+}

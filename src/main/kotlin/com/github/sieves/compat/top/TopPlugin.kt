@@ -1,7 +1,7 @@
 package com.github.sieves.compat.top
 
-import com.github.sieves.content.api.ApiTile
-import com.github.sieves.content.synthesizer.SynthesizerTile
+import com.github.sieves.api.ApiTile
+import com.github.sieves.content.machines.synthesizer.SynthesizerTile
 import mcjty.theoneprobe.api.ITheOneProbe
 import mcjty.theoneprobe.api.NumberFormat
 import mcjty.theoneprobe.apiimpl.styles.TextStyle

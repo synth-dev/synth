@@ -1,0 +1,17 @@
+{
+  "type": "synth:sieve",
+  "time": "6000",
+  "durability": "10",
+  "power": "500",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond"
+    },
+    {
+      "item": "synth:linker"
+    }
+  ],
+  "result": {
+    "item": "synth:flux_dust"
+  }
+}

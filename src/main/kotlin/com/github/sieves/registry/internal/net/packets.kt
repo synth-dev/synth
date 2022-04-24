@@ -1,6 +1,6 @@
 package com.github.sieves.registry.internal.net
 
-import com.github.sieves.content.tile.internal.Configuration
+import com.github.sieves.api.ApiConfig
 import com.github.sieves.util.resLoc
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3
 import java.util.UUID
 
 class ConfigurePacket() : Packet() {
-    var config = Configuration {}
+    var config = ApiConfig {}
     var blockPos = BlockPos.ZERO
     var world: ResourceKey<Level> = Level.OVERWORLD
 
@@ -54,6 +54,32 @@ class TabUpdatePacket() : Packet() {
 }
 
 /**
+ * Delete our items from the renderer
+ */
+class DeleteItemPacket() : Packet() {
+    var blockPos = BlockPos.ZERO
+    var slot: Int = -1
+    var item = ItemStack.EMPTY
+    var result = ItemStack.EMPTY
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBlockPos(blockPos)
+        buffer.writeInt(slot)
+        buffer.writeItem(item)
+        buffer.writeItem(result)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        this.blockPos = buffer.readBlockPos()
+        this.slot = buffer.readInt()
+        this.item = buffer.readItem()
+        this.result = buffer.readItem()
+    }
+
+
+}
+
+/**
  * Tells the client to play a certain sound
  */
 class PlaySoundPacket() : Packet() {
@@ -82,8 +108,43 @@ class ToggleSightPacket() : Packet() {
     override fun read(buffer: FriendlyByteBuf) {
         enabled = buffer.readBoolean()
     }
+}
+
+/**
+ * Tells the client to play a certain sound
+ */
+class ToggleStepPacket() : Packet() {
+    var enabled: Boolean = false
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBoolean(enabled)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        enabled = buffer.readBoolean()
+    }
+}
+
+
+class MenuStatePacket() : Packet() {
+    var player: UUID = UUID.randomUUID()
+    var menu: ResourceLocation = "".resLoc
+    var opened: Boolean = false
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeUUID(player)
+        buffer.writeResourceLocation(menu)
+        buffer.writeBoolean(opened)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        this.player = buffer.readUUID()
+        this.menu = buffer.readResourceLocation()
+        this.opened = buffer.readBoolean()
+    }
 
 }
+
 
 class TeleportPacket() : Packet() {
     var playerUuid: UUID = UUID.randomUUID()
@@ -104,10 +165,15 @@ class TeleportPacket() : Packet() {
         toLocation = Vec3(x, y, z)
     }
 
+    override fun toString(): String {
+        return "TeleportPacket(playerUuid=$playerUuid, toLocation=$toLocation)"
+    }
+
+
 }
 
 class TabClickedPacket() : Packet() {
-    var uuid = UUID.randomUUID() //lol
+    var uuid: UUID = UUID.randomUUID() //lol
     var key: ResourceLocation = "missing".resLoc
 
 
@@ -121,10 +187,14 @@ class TabClickedPacket() : Packet() {
         key = buffer.readResourceLocation()
     }
 
+    override fun toString(): String {
+        return "TabClickedPacket(uuid=$uuid, key=$key)"
+    }
+
 }
 
 class TabBindPacket() : Packet() {
-    var uuid = UUID.randomUUID() //lol
+    var uuid: UUID = UUID.randomUUID() //lol
     var key: ResourceLocation = "missing".resLoc
 
     override fun write(buffer: FriendlyByteBuf) {
@@ -145,8 +215,8 @@ class TabBindPacket() : Packet() {
 
 
 class GrowBlockPacket() : Packet() {
-    var blockPos = BlockPos.ZERO
-    var ownerPos = BlockPos.ZERO
+    var blockPos: BlockPos = BlockPos.ZERO
+    var ownerPos: BlockPos = BlockPos.ZERO
 
     override fun write(buffer: FriendlyByteBuf) {
         buffer.writeBlockPos(blockPos)
@@ -157,10 +227,16 @@ class GrowBlockPacket() : Packet() {
         blockPos = buffer.readBlockPos()
         ownerPos = buffer.readBlockPos()
     }
+
+    override fun toString(): String {
+        return "GrowBlockPacket(blockPos=$blockPos, ownerPos=$ownerPos)"
+    }
+
+
 }
 
 class TakeUpgradePacket : Packet() {
-    var blockPos = BlockPos.ZERO
+    var blockPos: BlockPos = BlockPos.ZERO
     var slot: Int = 0
     var count: Int = 0
 
@@ -176,6 +252,11 @@ class TakeUpgradePacket : Packet() {
         slot = buffer.readInt()
         count = buffer.readInt()
     }
+
+    override fun toString(): String {
+        return "TakeUpgradePacket(blockPos=$blockPos, slot=$slot, count=$count)"
+    }
+
 }
 
 
@@ -202,6 +283,12 @@ class HarvestBlockPacket() : Packet() {
             harvested.add(buffer.readItem())
         }
     }
+
+    override fun toString(): String {
+        return "HarvestBlockPacket(blockPos=$blockPos, ownerPos=$ownerPos, harvested=$harvested)"
+    }
+
+
 }
 
 

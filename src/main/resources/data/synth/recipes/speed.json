@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "result": {
+    "item": "synth:speed",
+    "count": 1
+  }
+}

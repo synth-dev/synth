@@ -1,0 +1,18 @@
+{
+  "type": "synth:sieve",
+  "time": "1200",
+  "durability": "1",
+  "power": "2500",
+  "ingredients": [
+    {
+      "item": "minecraft:noise"
+    },
+    {
+      "item": "synth:flux_dust"
+    }
+  ],
+  "result": {
+    "item": "synth:flux_iron",
+    "count": 1
+  }
+}

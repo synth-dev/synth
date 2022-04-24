@@ -1,10 +1,10 @@
 package com.github.sieves.content.modules
 
-import com.github.sieves.content.api.ApiTab
-import com.github.sieves.content.api.ApiTabItem
-import com.github.sieves.content.api.tab.Tab
-import com.github.sieves.content.api.tab.TabSpec
-import com.github.sieves.content.battery.BatteryTile
+import com.github.sieves.api.ApiTab
+import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.tab.Tab
+import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.io.battery.BatteryTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.util.*
 import com.mojang.math.Vector3f
@@ -19,12 +19,12 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.phys.BlockHitResult
 import net.minecraftforge.energy.CapabilityEnergy
 import java.text.NumberFormat
 import java.util.UUID
 
-class SightModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
+//class SightModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
+class SightModule : ApiTabItem(Registry.Tabs.PlayerSight.key, BatteryTile::class.java) {
     /**
      * Adds some extra configurations
      */
@@ -48,7 +48,7 @@ class SightModule : ApiTabItem("test".resLoc, BatteryTile::class.java) {
         }
 
         internal val TabSpec = TabSpec().withItem { ItemStack(Registry.Items.SightModule) }
-            .withTooltip { TranslatableComponent("tab.sieves.player_sight") }.withHover().withSpin()
+            .withTooltip { TranslatableComponent("tab.synth.player_sight") }.withHover().withSpin()
             .withTarget("net.minecraft.client.gui.screens.inventory.InventoryScreen")
             .withTarget("net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen")
             .withInit(::init)

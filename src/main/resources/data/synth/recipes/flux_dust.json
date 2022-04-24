@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "synth:flux_block"
+    }
+  ],
+  "result": {
+    "item": "synth:flux_dust",
+    "count": 9
+  }
+}

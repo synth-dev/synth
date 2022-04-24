@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "synth:block/farmer"
+    }
+  }
+}

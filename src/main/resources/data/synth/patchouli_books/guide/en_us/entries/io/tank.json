@@ -1,0 +1,17 @@
+{
+  "name": "Fluids",
+  "icon": "synth:tank",
+  "category": "synth:io",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:tank",
+      "text": "Fluids is an anomaly that uses the quantum realm to link together two tanks... The Items Block is used by right with a $(l:io/linker)Linker$(/l) on the Items Block, then right clicking on any tank with the Linker."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:tank",
+      "text": "Requires first getting $(l:flux/flux_dust)Flux$(/l)"
+    }
+  ]
+}

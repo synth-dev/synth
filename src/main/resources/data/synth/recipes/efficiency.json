@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "synth:flux_dust"
+    },
+    {
+      "item": "minecraft:obsidian"
+    }
+  ],
+  "result": {
+    "item": "synth:efficiency",
+    "count": 1
+  }
+}

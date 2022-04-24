@@ -1,0 +1,17 @@
+{
+  "name": "Sight Module",
+  "icon": "synth:sight_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:sight_module",
+      "text": "Allows you to see in the dark (basically full-bright hack). To link simply shift rick click on any $(l:io/battery)Power$(/l) Block."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:sight_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

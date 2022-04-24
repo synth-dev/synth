@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "synth:block/battery_north"
+    },
+    "facing=south": {
+      "model": "synth:block/battery_south"
+    },
+    "facing=west": {
+      "model": "synth:block/battery_west"
+    },
+    "facing=east": {
+      "model": "synth:block/battery_east"
+    },
+    "facing=up": {
+      "model": "synth:block/battery_up"
+    },
+    "facing=down": {
+      "model": "synth:block/battery_down"
+    }
+  }
+}

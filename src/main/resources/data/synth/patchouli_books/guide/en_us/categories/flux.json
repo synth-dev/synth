@@ -1,0 +1,5 @@
+{
+  "name": "Flux",
+  "description": "Flux is the core of the synthesis mod. It comes directly from the quantum ether, use a $(l:flux/synthesizer)synthesizer$(/l) to summon it.",
+  "icon": "synth:flux_dust"
+}

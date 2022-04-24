@@ -7,7 +7,7 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 @Mod(Sieves.ModId)
 object Sieves {
-    const val ModId: String = "sieves"
+    const val ModId: String = "synth"
 
     init {
         Registry.register(ModId, MOD_BUS, FORGE_BUS)

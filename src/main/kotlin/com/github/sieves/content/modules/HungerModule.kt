@@ -1,10 +1,10 @@
 package com.github.sieves.content.modules
 
-import com.github.sieves.content.api.ApiTab
-import com.github.sieves.content.api.ApiTabItem
-import com.github.sieves.content.api.tab.Tab
-import com.github.sieves.content.api.tab.TabSpec
-import com.github.sieves.content.box.BoxTile
+import com.github.sieves.api.ApiTab
+import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.tab.Tab
+import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.io.fluids.FluidsTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.util.*
 import com.mojang.math.Vector3f
@@ -21,11 +21,10 @@ import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.items.CapabilityItemHandler
 import java.text.NumberFormat
 import java.util.*
-import javax.swing.Box
 import kotlin.collections.HashMap
 
-class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
-//class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, BoxTile::class.java) {
+//class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
+class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, FluidsTile::class.java) {
     /**
      * Adds some extra configurations
      */
@@ -41,7 +40,7 @@ class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
 
         internal val TagSpec = TabSpec()
             .withItem { ItemStack(Registry.Items.HungerModule) }
-            .withTooltip { TranslatableComponent("tab.sieves.player_hunger") }
+            .withTooltip { TranslatableComponent("tab.synth.player_hunger") }
             .withHover()
             .withSpin()
             .withTarget("net.minecraft.client.gui.screens.inventory.InventoryScreen")
@@ -76,7 +75,7 @@ class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
                 val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos) ?: return
                 cachedEntities[player.uuid] = be
                 val itemstack = ItemStack(player.level.getBlockState(pos).block)
-                if (be !is BoxTile) return
+                if (be !is FluidsTile) return
                 val target = (20000 / be.getConfig().efficiencyModifier).toInt()
                 container.drawTextShadow(
                     menuData,
@@ -106,7 +105,7 @@ class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
                 val face = it.getEnum<Direction>("linked_face")
                 val be = player.level.getBlockEntity(pos)
                 var valid = true
-                if (be is BoxTile) {
+                if (be is FluidsTile) {
                     val cap = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                     val energyCap = be.getCapability(CapabilityEnergy.ENERGY)
                     if (!cap.isPresent || !energyCap.isPresent) valid = false

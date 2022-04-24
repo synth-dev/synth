@@ -1,0 +1,18 @@
+{
+  "type": "synth:sieve",
+  "time": "50000",
+  "durability": "160",
+  "power": "500",
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_block"
+    },
+    {
+      "item": "synth:linker"
+    }
+  ],
+  "result": {
+    "item": "synth:flux_block",
+    "count": 2
+  }
+}

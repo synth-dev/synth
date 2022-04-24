@@ -1,0 +1,17 @@
+{
+  "name": "Flux Dust",
+  "icon": "synth:flux_dust",
+  "category": "synth:flux",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:flux_dust",
+      "text": "Flux dust is used in many different crafting recipes for the mod. To get started, you must first create a $(l:flux/synthesizer)Synthesizer$(/l), and give it some coal and an ender pearl. Flux dust comes from a mystical quantum ether where energy and items and flow freely..."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:flux_dust",
+      "text": "Use the $(l:flux/synthesizer)Synthesizer$(/l) along with a $(l:io/linker)Linker$(/l) and either diamond or netherite to produce large quantities. Use Eye of Ender and Coal to produce your first Flux Dust (this is gonna take awhile...)"
+    }
+  ]
+}

@@ -1,28 +1,29 @@
 # Make sure this is set to "kotlinforforge"
-modLoader="kotlinforforge"
+modLoader = "kotlinforforge"
 # Make sure this is set to the appropriate version range
-loaderVersion="[3,)" # Require at least 3.x
+loaderVersion = "[3,)" # Require at least 3.x
 # License is REQUIRED after 1.16
-license='LGPL'
+license = 'LGPL'
+logoFile = "synth_logo.png"
 
 [[mods]]
-modId="sieves"
-version="${file.jarVersion}"
-displayName="Sieves"
-credits="dooZyz"
-authors="dooZyz"
-description='''
-Automate shit
+modId = "synth"
+version = "${file.jarVersion}"
+displayName = "Synthesis"
+credits = "dooZyz"
+authors = "dooZyz"
+description = '''
+Synthesis is a mod to allow you to automate just about anything without the need of cables. The mod it's self is considered a bit more "end game" because of entry requirements into the mod.
 '''
-[[dependencies.sieves]]
-    modId="forge"
-    mandatory=true
-    versionRange="[40,)"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.sieves]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.18,)"
-    ordering="NONE"
-    side="BOTH"
+[[dependencies.synth]]
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.synth]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18,)"
+ordering = "NONE"
+side = "BOTH"

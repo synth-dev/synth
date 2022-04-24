@@ -1,0 +1,17 @@
+{
+  "name": "Charger",
+  "icon": "synth:power_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:power_module",
+      "text": "The Charger Module uses the powers of the ether to transfer power directly to your inventory. To use simply right click on any $(l:io/battery)Power$(/l) Block."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:power_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

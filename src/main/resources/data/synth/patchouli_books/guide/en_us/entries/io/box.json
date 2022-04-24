@@ -1,0 +1,17 @@
+{
+  "name": "Items",
+  "icon": "synth:box",
+  "category": "synth:io",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:box",
+      "text": "Items is an anomaly that uses the quantum realm to link together two inventory... The Items Block is used by right with a $(l:io/linker)Linker$(/l) on the Items Block, then right clicking on any inventory with the Linker."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:box",
+      "text": "Requires first getting $(l:flux/flux_dust)Flux$(/l)"
+    }
+  ]
+}

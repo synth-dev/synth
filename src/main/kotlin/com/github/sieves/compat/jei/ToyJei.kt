@@ -3,7 +3,7 @@ package com.github.sieves.compat.jei
 import com.github.sieves.Sieves
 import com.github.sieves.recipes.SieveRecipe
 import com.github.sieves.registry.Registry
-import com.github.sieves.registry.Registry.RecipeTypes.Sieve
+import com.github.sieves.registry.Registry.RecipeTypes.Synthesizer
 import com.github.sieves.util.resLoc
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
@@ -34,7 +34,7 @@ class ToyJei : IModPlugin {
     }
 
     override fun registerRecipes(registration: IRecipeRegistration) {
-        register("sieve", Sieve, registration)
+        register("sieve", Synthesizer, registration)
     }
 
     override fun registerRecipeCatalysts(registration: IRecipeCatalystRegistration) {

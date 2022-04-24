@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XGX",
+    "GFG",
+    "XGX"
+  ],
+  "key": {
+    "X": {
+      "tag": "minecraft:logs"
+    },
+    "G": {
+      "item": "minecraft:iron_bars"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    }
+  },
+  "result": {
+    "item": "synth:synthesizer",
+    "count": 1
+  }
+}

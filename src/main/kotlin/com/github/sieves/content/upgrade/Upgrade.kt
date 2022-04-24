@@ -1,7 +1,8 @@
 package com.github.sieves.content.upgrade
 
-import com.github.sieves.content.api.ApiItem
-import com.github.sieves.content.api.ApiTile
+import com.github.sieves.api.ApiItem
+import com.github.sieves.api.ApiTile
+import com.github.sieves.content.machines.trash.*
 import com.github.sieves.util.rayTrace
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
@@ -13,7 +14,7 @@ class Upgrade(private val slot: Int, maxStack: Int) : ApiItem(maxStack) {
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         val item = pPlayer.getItemInHand(pUsedHand).copy()
         val tile = pLevel.getBlockEntity(pPlayer.rayTrace(8.0).blockPos)
-        if (tile is ApiTile<*>) {
+        if (tile is ApiTile<*> && tile !is TrashTile) {
             val leftOver = tile.getConfig().upgrades.insertItem(slot, ItemStack(item.item), pLevel.isClientSide)
             if (leftOver == ItemStack.EMPTY) {
                 item.shrink(1)

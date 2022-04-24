@@ -1,0 +1,9 @@
+{
+  "name": "Synthesis and you",
+  "landing_text": "Synthesis is a little bit of everything. While it's still in very early development, it currently provides ways of transporting power/items without the need of cables. Synthesis also has various utilty blocks for automation... enjoy!",
+  "version": 1,
+  "creative_tab": "Sieves",
+  "nameplate_color": "ffffff",
+  "model": "synth:guide",
+  "show_progress": false
+}

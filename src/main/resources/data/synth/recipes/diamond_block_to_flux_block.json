@@ -1,0 +1,17 @@
+{
+  "type": "synth:sieve",
+  "time": "40000",
+  "durability": "80",
+  "power": "500",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond_block"
+    },
+    {
+      "item": "synth:linker"
+    }
+  ],
+  "result": {
+    "item": "synth:flux_block"
+  }
+}

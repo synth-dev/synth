@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  G",
+    " X ",
+    "X  "
+  ],
+  "key": {
+    "X": {
+      "item": "synth:flux_dust"
+    },
+    "G": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "item": "synth:linker",
+    "count": 1
+  }
+}

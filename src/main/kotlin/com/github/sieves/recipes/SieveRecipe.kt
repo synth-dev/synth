@@ -1,9 +1,8 @@
 package com.github.sieves.recipes
 
-import com.github.sieves.recipes.internal.ISieveRecipe
+import com.github.sieves.recipes.internal.ApiRecipe
 import com.github.sieves.registry.Registry
-import com.github.sieves.registry.Registry.RecipeTypes.Sieve
-import com.google.gson.JsonElement
+import com.github.sieves.registry.Registry.RecipeTypes.Synthesizer
 import com.google.gson.JsonObject
 import net.minecraft.core.NonNullList
 import net.minecraft.network.FriendlyByteBuf
@@ -11,7 +10,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.GsonHelper
 import net.minecraft.world.Container
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.item.crafting.RecipeType
@@ -26,7 +24,7 @@ class SieveRecipe(
     val result: ItemStack,
     val time: Int,
     val durability: Int,
-) : ISieveRecipe {
+) : ApiRecipe {
 
     override fun matches(inv: Container, pLevel: Level): Boolean {
         if (inv.containerSize < 2) return false
@@ -51,7 +49,7 @@ class SieveRecipe(
 
 
     override fun getType(): RecipeType<*> {
-        return Sieve
+        return Synthesizer
     }
 
     override fun getSerializer(): RecipeSerializer<*> {

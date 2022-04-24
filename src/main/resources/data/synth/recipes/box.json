@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "XFX",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "synth:flux_dust"
+    },
+    "G": {
+      "item": "minecraft:copper_block"
+    },
+    "F": {
+      "item": "minecraft:lapis_block"
+    }
+  },
+  "result": {
+    "item": "synth:box",
+    "count": 1
+  }
+}
