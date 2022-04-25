@@ -6,7 +6,7 @@
     {
       "type": "patchouli:spotlight",
       "item": "synth:hunger_module",
-      "text": "The hunger module uses the powers of the ether to transfer food directly to your stomach. To use simply shift right click on any $(l:io/box)Items$(l/) Block, and supply it's inventory with food (enchantment effects such as those that come from notch apples apply)..."
+      "text": "The hunger module uses the powers of the ether to transfer food directly to your stomach. To use simply shift right click on any $(l:io/box)Items$(/l) Block, and supply it's inventory with food (enchantment effects such as those that come from notch apples apply)..."
     },
     {
       "type": "patchouli:crafting",

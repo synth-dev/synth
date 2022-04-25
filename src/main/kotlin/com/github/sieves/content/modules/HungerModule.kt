@@ -4,6 +4,7 @@ import com.github.sieves.api.ApiTab
 import com.github.sieves.api.ApiTabItem
 import com.github.sieves.api.tab.Tab
 import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.io.box.*
 import com.github.sieves.content.io.fluids.FluidsTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.util.*
@@ -24,11 +25,11 @@ import java.util.*
 import kotlin.collections.HashMap
 
 //class HungerModule : ApiTabItem("test".resLoc, BoxTile::class.java) {
-class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, FluidsTile::class.java) {
+class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, BoxTile::class.java) {
     /**
      * Adds some extra configurations
      */
-    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction) {
+    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction, itemStack: ItemStack) {
         val tag = CompoundTag()
         tag.putBlockPos("linked_pos", blockPos)
         tag.putEnum("linked_face", direction)
@@ -75,7 +76,7 @@ class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, FluidsTile::clas
                 val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos) ?: return
                 cachedEntities[player.uuid] = be
                 val itemstack = ItemStack(player.level.getBlockState(pos).block)
-                if (be !is FluidsTile) return
+                if (be !is BoxTile) return
                 val target = (20000 / be.getConfig().efficiencyModifier).toInt()
                 container.drawTextShadow(
                     menuData,
@@ -86,7 +87,6 @@ class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, FluidsTile::clas
                 )
                 container.drawTextShadow(menuData, 12f, 65f, "Pos: ${pos.toShortString()}", 0xffffff)
                 container.drawTextShadow(menuData, 12f, 80f, "Block:", 0xffffff)
-//                menuData.poseStack.popPose()
                 (tab as Tab).renderItem(
                     menuData.x + 25f,
                     menuData.y + 42f, 1.5f,
@@ -105,7 +105,7 @@ class HungerModule : ApiTabItem(Registry.Tabs.PlayerHunger.key, FluidsTile::clas
                 val face = it.getEnum<Direction>("linked_face")
                 val be = player.level.getBlockEntity(pos)
                 var valid = true
-                if (be is FluidsTile) {
+                if (be is BoxTile) {
                     val cap = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
                     val energyCap = be.getCapability(CapabilityEnergy.ENERGY)
                     if (!cap.isPresent || !energyCap.isPresent) valid = false

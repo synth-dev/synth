@@ -36,6 +36,11 @@ open class ServerTab(
     override val isTicking: Boolean = spec.isClientTicking || spec.isServerTicking
 
     /**
+     * The current tick of the api tab
+     */
+    override var tick: Int = 0
+
+    /**
      * Called on the tick world last on the client
      */
     override fun tickClient(player: Player) {

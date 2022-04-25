@@ -36,6 +36,11 @@ interface ApiTab : INBTSerializable<CompoundTag> {
     val isTicking: Boolean get() = false
 
     /**
+     * The current tick of the api tab
+     */
+    var tick: Int
+
+    /**
      * Called on the tick world last on the client
      */
     fun tickClient(player: Player) = Unit
@@ -113,7 +118,6 @@ interface ApiTab : INBTSerializable<CompoundTag> {
      * Provide external access to the built propertiers
      */
     fun getSpec(): TabSpec
-
 
 
 }

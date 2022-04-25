@@ -46,7 +46,8 @@ data class TabSpec private constructor(
     val hasInitializer: Boolean,
     val hasClientClick: Boolean,
     val hasServerClick: Boolean,
-    val hasDrawMenu: Boolean
+    val hasDrawMenu: Boolean,
+    val interval: Int
 ) {
 
     data class MenuData(var x: Float, var y: Float, var width: Float, var height: Float) {
@@ -87,6 +88,8 @@ data class TabSpec private constructor(
         private var hasClientClick: Boolean = false
         private var hasServerClick: Boolean = false
         private var hasDrawMenu: Boolean = false
+        private var interval: Int = 1
+
         fun build(): TabSpec = TabSpec(
             targets.toTypedArray(),
             initializer,
@@ -114,8 +117,10 @@ data class TabSpec private constructor(
             hasInitializer,
             hasClientClick,
             hasServerClick,
-            hasDrawMenu
+            hasDrawMenu,
+            interval
         )
+
 
         fun withMenu(drawMenu: (menuData: MenuData, player: Player, tab: ApiTab, container: Any) -> Unit): Builder {
             runWhenOn(Dist.CLIENT) {
@@ -134,6 +139,14 @@ data class TabSpec private constructor(
         fun withInit(initializer: (tab: ApiTab) -> Unit): Builder {
             hasInitializer = true
             this.initializer = initializer
+            return this
+        }
+
+        /**
+         * The amount of time (in ticks) that this should tick at
+         */
+        fun withInterval(time: Int): Builder {
+            this.interval = time
             return this
         }
 

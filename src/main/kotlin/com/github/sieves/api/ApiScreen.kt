@@ -94,6 +94,7 @@ abstract class ApiScreen<T : ApiContainer<E, T>, E : ApiTile<E>>(
         imageHeight = 166
     }
 
+
     override fun renderBg(pPoseStack: PoseStack, pPartialTick: Float, pMouseX: Int, pMouseY: Int) {
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader)
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
@@ -173,8 +174,10 @@ abstract class ApiScreen<T : ApiContainer<E, T>, E : ApiTile<E>>(
 
 
     override fun render(pPoseStack: PoseStack, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
+        renderBackground(pPoseStack)
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick)
         renderToolTips(pPoseStack, pMouseX.toDouble(), pMouseY.toDouble())
+        renderTooltip(pPoseStack, pMouseX, pMouseY)
         postRender(pPoseStack, pMouseX.toDouble(), pMouseY.toDouble())
     }
 

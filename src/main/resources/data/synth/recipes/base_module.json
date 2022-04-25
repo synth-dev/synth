@@ -1,9 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " X ",
+    "RXR",
     "XFX",
-    " X "
+    "RXR"
   ],
   "key": {
     "X": {
@@ -11,6 +11,9 @@
     },
     "F": {
       "item": "synth:flux_block"
+    },
+    "R": {
+      "item": "synth:flux_dust"
     }
   },
   "result": {

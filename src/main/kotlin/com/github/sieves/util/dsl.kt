@@ -229,9 +229,10 @@ fun <T : Any> CompoundTag.tryGet(name: String, classType: KClass<T>): T? {
 val UUID.asPlayer: Optional<ServerPlayer>
     get() = Optional.ofNullable((ServerLifecycleHooks.getCurrentServer().playerList.getPlayer(this)))
 
-fun ApiTabItem.Companion.removeItem(player: Player, tab: ApiTab) {
+fun ApiTabItem.Companion.removeItem(player: Player, tab: ApiTab, tag: CompoundTag? = null) {
     val stack = tab.getSpec().itemstackSupplier(tab)
     TabRegistry.unbindTab(player.uuid, tab.key)
+    if (tag != null) stack.tag = tag
     val inserted = ItemHandlerHelper.insertItem(InvWrapper(player.inventory), stack, false)
     if (!inserted.isEmpty) {
         player.level.addFreshEntity(ItemEntity(player.level, player.x, player.y, player.z, inserted))
@@ -262,8 +263,10 @@ fun AbstractContainerScreen<*>.isClicked(
     x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double,
 ): Boolean {
     val now = System.currentTimeMillis()
-    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(Minecraft.getInstance().window.window,
-                                                                                  GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS && now - lastClick > 250
+    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
+            Minecraft.getInstance().window.window,
+            GLFW.GLFW_MOUSE_BUTTON_LEFT
+        ) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
         return true
@@ -275,8 +278,10 @@ fun AbstractContainerScreen<*>.isRightClicked(
     x: Int, y: Int, width: Int, height: Int, mouseX: Double, mouseY: Double,
 ): Boolean {
     val now = System.currentTimeMillis()
-    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(Minecraft.getInstance().window.window,
-                                                                                  GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS && now - lastClick > 250
+    if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
+            Minecraft.getInstance().window.window,
+            GLFW.GLFW_MOUSE_BUTTON_RIGHT
+        ) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
         return true
@@ -389,7 +394,7 @@ fun CompoundTag.putBlockPos(name: String, blockPos: BlockPos) {
 
 fun CompoundTag.getBlockPos(name: String): BlockPos {
     val array = getIntArray(name)
-    if(array.size != 3) return BlockPos.ZERO
+    if (array.size != 3) return BlockPos.ZERO
     return BlockPos(array[0], array[1], array[2])
 }
 

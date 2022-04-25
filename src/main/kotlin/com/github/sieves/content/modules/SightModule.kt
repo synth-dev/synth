@@ -28,7 +28,7 @@ class SightModule : ApiTabItem(Registry.Tabs.PlayerSight.key, BatteryTile::class
     /**
      * Adds some extra configurations
      */
-    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction) {
+    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction, itemStack: ItemStack) {
         val tag = CompoundTag()
         tag.putBlockPos("linked_pos", blockPos)
         tag.putEnum("linked_face", direction)

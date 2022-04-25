@@ -106,23 +106,6 @@ class BoxTile(pos: BlockPos, state: BlockState) :
     }
 
 
-    /**
-     * Called when saving nbt data
-     */
-    override fun onSave(tag: CompoundTag) {
-        tag.put("energy", energy.serializeNBT())
-        tag.put("items", items.serializeNBT())
-        tag.put("links", links.serializeNBT())
-    }
-
-    /**
-     * Called when loading the nbt data
-     */
-    override fun onLoad(tag: CompoundTag) {
-        energy.deserializeNBT(tag.get("energy"))
-        items.deserializeNBT(tag.getCompound("items"))
-        links.deserializeNBT(tag.getCompound("links"))
-    }
 
     /**
      * This is used to open up the container menu

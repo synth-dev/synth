@@ -21,6 +21,8 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.ScreenOpenEvent
 import net.minecraftforge.event.TickEvent
+import net.minecraftforge.event.entity.EntityLeaveWorldEvent
+import net.minecraftforge.event.server.ServerStoppingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.network.NetworkEvent.Context
@@ -55,10 +57,15 @@ object TabRegistry : ListenerRegistry() {
         forgeBus.addListener(::onServerTick)
         forgeBus.addListener(::onLevelSaved)
         forgeBus.addListener(::onLevelLoaded)
+        forgeBus.addListener(::onPlayerLeave)
         runWhenOn(Dist.CLIENT) {
             forgeBus.addListener(TabRegistry::renderOverlay)
             forgeBus.addListener(TabRegistry::onScreenOpen)
         }
+    }
+
+    private fun onPlayerLeave(event: ServerStoppingEvent) {
+        activeTabs.clear() //attempt to fix for
     }
 
     /**
@@ -255,20 +262,29 @@ object TabRegistry : ListenerRegistry() {
             val uuid = Minecraft.getInstance().player?.uuid ?: return
             if (!activeTabs.containsKey(uuid)) return
             for (group in activeTabs[Minecraft.getInstance().player?.uuid!!]!!.values) {
-                if (containerRegistry[screen::class.java.name]?.contains(group.key) == true) y += (group as Tab).preRender(
-                    event.poseStack, x.toFloat(), y.toFloat(), event.mouseX.toDouble(), event.mouseY.toDouble(), screen
-                )
-                y += 5
+                if ((y) < screen.ySize - 20) {
+                    if (containerRegistry[screen::class.java.name]?.contains(group.key) == true)
+                        y += (group as Tab).preRender(
+                            event.poseStack,
+                            x.toFloat(),
+                            y.toFloat(),
+                            event.mouseX.toDouble(),
+                            event.mouseY.toDouble(),
+                            screen
+                        )
+                    y += 3
+                }
             }
-            y = 5
+            y = 3
             for (group in activeTabs[Minecraft.getInstance().player?.uuid!!]!!.values) {
                 if (containerRegistry[screen::class.java.name]?.contains(group.key) == true) y += (group as Tab).postRender(
                     event.poseStack, x.toFloat(), y.toFloat(), event.mouseX.toDouble(), event.mouseY.toDouble(), screen
                 )
-                y += 5
+                y += 3
             }
         }
     }
+
 
     /**
      * Updates the tab on the client from the server
@@ -318,7 +334,11 @@ object TabRegistry : ListenerRegistry() {
         val player = Minecraft.getInstance().player ?: return
         val iterator = this.activeTabs[player.uuid] ?: return
         for (tab in iterator.values) {
-            if (tab.getSpec().isClientTicking) tab.tickClient(player)
+            tab.tick++
+            if (tab.getSpec().isClientTicking && tab.tick >= tab.getSpec().interval) {
+                tab.tickClient(player)
+                tab.tick = 0
+            }
         }
     }
 
@@ -338,8 +358,13 @@ object TabRegistry : ListenerRegistry() {
         for (group in this.activeTabs) {
             val player = group.key.asPlayer
             if (player.isEmpty) continue
-            for (tab in group.value.values) if (tab.getSpec().isServerTicking) tab.tickServer(player.get())
-
+            for (tab in group.value.values) {
+                tab.tick++
+                if (tab.getSpec().isServerTicking && tab.tick >= tab.getSpec().interval) {
+                    tab.tickServer(player.get())
+                    tab.tick = 0
+                }
+            }
         }
     }
 

@@ -31,10 +31,9 @@ abstract class ListenerRegistry : IRegister {
                         modBus.addListener(EventPriority.LOWEST, true, modType) {
                             member.call(this, it)
                         }
-                    } else
-                        forgeBus.addListener(EventPriority.LOWEST, true, modType) {
-                            member.call(this, it)
-                        }
+                    } else forgeBus.addListener(EventPriority.LOWEST, true, modType) {
+                        member.call(this, it)
+                    }
                     continue
                 }
             }

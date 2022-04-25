@@ -44,6 +44,8 @@ open class Tab(
             drawMenu = value
         }
 
+    //Used to keep track of the current output size
+    private var renderSize = 19f
 
     /**
      * This will clone the properties and resource location, but ignore the nbt data/properties
@@ -117,6 +119,19 @@ open class Tab(
             stack.popPose()
 
         }
+        if (drawMenu) {
+            if (renderSize < 72)
+                renderSize += Minecraft.getInstance().deltaFrameTime * 15
+            if (renderSize > 72)
+                renderSize = 72f
+        } else {
+            val target = if (spec.drawLarger) 27 else 19
+            if (renderSize > target) {
+                renderSize -= Minecraft.getInstance().deltaFrameTime * 15
+            }
+            if (renderSize < target)
+                renderSize = target.toFloat()
+        }
 
         val yOff = offsetY
         if (isHovered(
@@ -143,7 +158,7 @@ open class Tab(
                 renderTooltip(stack, text, mouseX.toInt(), mouseY.toInt())
             }
         }
-        if (drawMenu) 72 else if (spec.drawLarger) 27 else 19
+        return renderSize.toInt()
     }
 
     /**
@@ -176,7 +191,7 @@ open class Tab(
                 }
             }
         }
-        if (drawMenu) 72 else if (spec.drawLarger) 27 else 19
+        renderSize.toInt()
     }
 
     /**
@@ -192,11 +207,12 @@ open class Tab(
         container: AbstractContainerScreen<*>
     ) {
         RenderSystem.setShaderTexture(0, widgets)
+
         val player = Minecraft.getInstance().player ?: return
         menuData.x = container.guiLeft - offsetX - 39
         menuData.y = container.guiTop + offsetY
         menuData.width = 59f
-        menuData.height = 72f
+        menuData.height = renderSize
         menuData.poseStack = stack
         container.blit(
             stack, menuData.x.toInt(), menuData.y.toInt(), 197, 0, menuData.width.toInt(), menuData.height.toInt()

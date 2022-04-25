@@ -6,6 +6,7 @@ import com.github.sieves.util.rayTrace
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
@@ -21,36 +22,13 @@ import net.minecraftforge.items.wrapper.InvWrapper
 abstract class ApiTabItem(
     protected val tabKey: ResourceLocation, protected vararg val target: Class<out BlockEntity>
 ) : Item(Properties().stacksTo(1).fireResistant().tab(Registry.Items.CreativeTab)) {
-//    override fun useOn(pContext: UseOnContext): InteractionResult {
-//        val pos = pContext.clickedPos
-//        val be = pContext.level.getBlockEntity(pos)
-//        var valid = false
-//        for (target in this.target) {
-//            if (target.isInstance(be)) {
-//                valid = true
-//                break
-//            }
-//        }
-//        if (valid && pContext.player != null) {
-//            //This will be sent/registered to the client
-//            if (!TabRegistry.hasTab(pContext.player!!.uuid, tabKey)) {
-//                if (TabRegistry.createAndBind(pContext.player!!.uuid, tabKey) {
-//                        configure(it, pContext.level, pContext.player!!, pContext.clickedPos, pContext.clickedFace)
-//                    }) {
-//                    val inv = pContext.player!!.inventory
-//                    if (!pContext.level.isClientSide) {
-//                        inv.setItem(inv.selected, ItemStack.EMPTY)
-//                        inv.setChanged()
-//                    }
-////                    InvWrapper(inv).extractItem(inv.selected, 1, false)
-//                    return InteractionResult.sidedSuccess(pContext.level.isClientSide)
-//                }
-//            }
-//        }
-//        return super.useOn(pContext)
-//    }
+
     override fun isFoil(pStack: ItemStack): Boolean {
         return true
+    }
+
+    protected open fun onUse(player: ServerPlayer, itemStack: ItemStack): ItemStack {
+        return itemStack
     }
 
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
@@ -58,32 +36,43 @@ abstract class ApiTabItem(
         val pos = result.blockPos
         val be = pLevel.getBlockEntity(pos)
         var valid = false
-//        if (TabRegistry.hasTab(pPlayer.uuid, tabKey)) return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand))
         for (target in this.target) {
             if (target.isInstance(be)) {
                 valid = true
                 break
             }
         }
+        val itemstack = if (pLevel.isClientSide) pPlayer.getItemInHand(pUsedHand) else if (!valid) onUse(
+            pPlayer as ServerPlayer,
+            pPlayer.getItemInHand(pUsedHand)
+        ) else pPlayer.getItemInHand(pUsedHand)
+        if(pLevel.isClientSide) return InteractionResultHolder.success(itemstack)
         if (valid) {
             //This will be sent/registered to the client
             if (!TabRegistry.hasTab(pPlayer.uuid, tabKey)) {
                 if (TabRegistry.createAndBind(pPlayer.uuid, tabKey) {
-                        configure(it, pLevel, pPlayer, result.blockPos, result.direction)
+                        configure(it, pLevel, pPlayer, result.blockPos, result.direction, itemstack)
                     }) {
 //                    pPlayer.inventory.setItem(pPlayer.inventory.selected, ItemStack.EMPTY)
-                    if (pLevel.isClientSide) InteractionResultHolder.success(ItemStack.EMPTY)
+                    pPlayer.inventory.removeFromSelected(true)
                     return InteractionResultHolder.consume(ItemStack.EMPTY)
                 }
             }
         }
-        return InteractionResultHolder.fail(pPlayer.getItemInHand(pUsedHand))
+        return InteractionResultHolder.fail(itemstack)
     }
 
     /**
      * Adds some extra configurations. This is called on the both the client and server, configuration is required on both sides
      */
-    protected open fun configure(tab: ApiTab, level: Level, player: Player, hit: BlockPos, face: Direction) = Unit
+    protected open fun configure(
+        tab: ApiTab,
+        level: Level,
+        player: Player,
+        hit: BlockPos,
+        face: Direction,
+        itemStack: ItemStack
+    ) = Unit
 
     companion object
 }

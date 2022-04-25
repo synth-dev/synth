@@ -115,13 +115,35 @@ class ToggleSightPacket() : Packet() {
  */
 class ToggleStepPacket() : Packet() {
     var enabled: Boolean = false
+    var uuid: UUID = UUID.randomUUID()
 
     override fun write(buffer: FriendlyByteBuf) {
         buffer.writeBoolean(enabled)
+        buffer.writeUUID(uuid)
     }
 
     override fun read(buffer: FriendlyByteBuf) {
         enabled = buffer.readBoolean()
+        uuid = buffer.readUUID()
+    }
+}
+
+
+/**
+ * Tells the client to play a certain sound
+ */
+class FlightPacket() : Packet() {
+    var enabled: Boolean = false
+    var uuid: UUID = UUID.randomUUID()
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBoolean(enabled)
+        buffer.writeUUID(uuid)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        enabled = buffer.readBoolean()
+        uuid = buffer.readUUID()
     }
 }
 

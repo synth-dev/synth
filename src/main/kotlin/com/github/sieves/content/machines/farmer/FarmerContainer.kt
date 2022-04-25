@@ -15,8 +15,7 @@ class FarmerContainer(
     inventory: Inventory,
     blockPos: BlockPos,
     tile: FarmerTile,
-) :
-    com.github.sieves.api.ApiContainer<FarmerTile, FarmerContainer>(Registry.Containers.Farmer, id, inventory, blockPos, tile) {
+) : ApiContainer<FarmerTile, FarmerContainer>(Registry.Containers.Farmer, id, inventory, blockPos, tile) {
 
     constructor(id: Int, inventory: Inventory, pos: BlockPos) : this(
         id,

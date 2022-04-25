@@ -27,7 +27,7 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
     /**
      * Adds some extra configurations
      */
-    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction) {
+    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction, itemStack: ItemStack) {
         val tag = CompoundTag()
         tag.putBlockPos("linked_pos", blockPos)
         tag.putEnum("linked_face", direction)
@@ -40,7 +40,7 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
         init {
             Registry.Net.StepToggle.clientListener { packet, _ ->
                 if (physicalClient)
-                    if (packet.enabled) Minecraft.getInstance().player?.maxUpStep = 5.0f
+                    if (packet.enabled) Minecraft.getInstance().player?.maxUpStep = 3.0f
                     else Minecraft.getInstance().player?.maxUpStep = 1.0f
                 true
             }
@@ -53,11 +53,10 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
             .withServerTick(::onServerTick).withServerClick(::onServerClick)
             .withMenu(::renderMenu).build()
 
-
-
         private fun onServerClick(player: ServerPlayer, tab: ApiTab) {
             Registry.Net.sendToClient(Registry.Net.StepToggle {
                 enabled = false
+                uuid = player.uuid
             }, player.uuid)
             removeItem(player, tab)
         }
@@ -103,6 +102,7 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
             if (!TabRegistry.hasTab(player.uuid, tab.key) || tab.getProperty("linked").isEmpty) {
                 Registry.Net.sendToClient(Registry.Net.StepToggle {
                     enabled = false
+                    uuid = player.uuid
                 }, player.uuid)
                 return
             }
@@ -124,10 +124,12 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
                             energy.extractEnergy(target, false)
                             Registry.Net.sendToClient(Registry.Net.StepToggle {
                                 enabled = true
+                                uuid = player.uuid
                             }, player.uuid)
                         } else {
                             Registry.Net.sendToClient(Registry.Net.StepToggle {
                                 enabled = false
+                                uuid = player.uuid
                             }, player.uuid)
                         }
                     }
@@ -136,6 +138,7 @@ class StepModule : ApiTabItem(Registry.Tabs.PlayerStep.key, BatteryTile::class.j
                     removeItem(player, tab)
                     Registry.Net.sendToClient(Registry.Net.StepToggle {
                         enabled = false
+                        uuid = player.uuid
                     }, player.uuid)
                 }
             }

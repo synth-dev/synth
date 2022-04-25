@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "synth:base_module"
+    },
+    {
+      "item": "minecraft:cake"
+    },
+    {
+      "item": "minecraft:netherite_boots"
+    }
+  ],
+  "result": {
+    "item": "synth:step_module",
+    "count": 1
+  }
+}

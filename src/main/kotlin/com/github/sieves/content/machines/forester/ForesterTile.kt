@@ -141,13 +141,8 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
         }
         if (hasEmpty) for (link in links.getLinks()) {
             val state = level?.getBlockState(link.key) ?: continue
-            val block = state.block
-            val seed = block.getCloneItemStack(level!!, blockPos, state)
-
             if (!state.`is`(BlockTags.LOGS) && !state.`is`(BlockTags.LEAVES)) continue
             val drops = Block.getDrops(state, level as ServerLevel, blockPos, null)
-//            val seed =  Block.getDrops(state, level as ServerLevel, blockPos, null).filter { (it.item is BlockItem && (it.item as BlockItem).block) }
-
 
             var removed = false
             savedSaplings.remove(link.key)?.let {

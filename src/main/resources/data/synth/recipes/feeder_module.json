@@ -6,6 +6,9 @@
     },
     {
       "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "synth:farmer"
     }
   ],
   "result": {

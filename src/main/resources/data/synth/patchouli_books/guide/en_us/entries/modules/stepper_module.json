@@ -1,0 +1,17 @@
+{
+  "name": "Stepper",
+  "icon": "synth:step_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:step_module",
+      "text": "The step module Allows you to automatically step up 3 blocks."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:step_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

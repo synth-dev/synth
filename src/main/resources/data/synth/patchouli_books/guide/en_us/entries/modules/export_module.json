@@ -1,0 +1,17 @@
+{
+  "name": "Export",
+  "icon": "synth:export_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:export_module",
+      "text": "Will automatically export items from your inventory. Right click with module in hand to add items to filter."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:export_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

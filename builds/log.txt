@@ -1,5 +1,5 @@
 Java Launcher: C:\Users\james\.jdks\openjdk-17.0.2\bin\java.exe
-Arguments: '--in-jar, C:\Users\james\IdeaProjects\synth\build\libs\synth-1.18.2-04-22.jar, --out-jar, C:\Users\james\IdeaProjects\synth\build\reobfJar\output.jar, --srg-in, C:\Users\james\IdeaProjects\synth\build\createMcpToSrg\output.tsrg, --live'
+Arguments: '--in-jar, C:\Users\james\IdeaProjects\synth\build\libs\synth-1.18.2-04-25.jar, --out-jar, C:\Users\james\IdeaProjects\synth\build\reobfJar\output.jar, --srg-in, C:\Users\james\IdeaProjects\synth\build\createMcpToSrg\output.tsrg, --live'
 Classpath:
  - C:\Users\james\.gradle\caches\forge_gradle\maven_downloader\net\md-5\SpecialSource\1.10.0\SpecialSource-1.10.0-shaded.jar
  - C:\Users\james\.gradle\caches\modules-2\files-2.1\thedarkcolour\kotlinforforge\3.1.0\a4d8680cb74c88d73d44ca247dc35feb3a4773ef\kotlinforforge-3.1.0.jar

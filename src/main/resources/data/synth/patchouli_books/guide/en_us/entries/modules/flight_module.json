@@ -1,0 +1,17 @@
+{
+  "name": "Flight",
+  "icon": "synth:flight_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:flight_module",
+      "text": "The flight module allows you creative flight at the cost of FE."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:flight_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

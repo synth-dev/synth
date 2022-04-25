@@ -1,0 +1,17 @@
+{
+  "name": "Scare",
+  "icon": "synth:scare_module",
+  "category": "synth:modules",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:scare_module",
+      "text": "The scare module automatically scares away any hostile mobs around you for FE."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:scare_module",
+      "text": "Requires getting a $(l:modules/module)Module$(/l) first."
+    }
+  ]
+}

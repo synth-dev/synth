@@ -19,6 +19,7 @@ import com.github.sieves.content.machines.synthesizer.*
 import com.github.sieves.content.machines.trash.*
 import com.github.sieves.content.machines.trash.TrashRenderer
 import com.github.sieves.content.modules.*
+import com.github.sieves.content.modules.io.*
 //import com.github.sieves.content.modules.HungerModule
 //import com.github.sieves.content.modules.PowerModule
 //import com.github.sieves.content.modules.SightModule
@@ -88,7 +89,6 @@ internal object Registry : ListenerRegistry() {
      * ========================Blocks registry========================
      */
     object Blocks : Registry<Block>(ForgeRegistries.BLOCKS) {
-        //        val Sieve by register("sieve") { SieveBlock(BlockBehaviour.Properties.of(Material.STONE)) }
         val Synthesizer by register("synthesizer") { SynthesizerBlock(Properties.of(Material.STONE)) }
         val Battery by register("battery") { BatteryBlock(Properties.of(Material.HEAVY_METAL)) }
         val Box by register("box") { BoxBlock(Properties.of(Material.HEAVY_METAL)) }
@@ -99,9 +99,8 @@ internal object Registry : ListenerRegistry() {
         val Core by register("core") { CoreBlock(Properties.of(Material.HEAVY_METAL)) }
         val Flux by register("flux_block") { object : Block(Properties.of(Material.HEAVY_METAL)) {} }
         val FluxIron by register("flux_iron") {
-            object : Block(
-                Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK)
-                    .isRedstoneConductor { _, _, _ -> true }) {}
+            object : Block(Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK)
+                               .isRedstoneConductor { _, _, _ -> true }) {}
         }
     }
 
@@ -109,7 +108,6 @@ internal object Registry : ListenerRegistry() {
      * ========================Tiles registry========================
      */
     object Tiles : Registry<BlockEntityType<*>>(ForgeRegistries.BLOCK_ENTITIES) {
-        //        val Sieve by register("sieve") { tile(Blocks.Sieve) { SieveTile(it.first, it.second) } }
         val Synthesizer by register("synthesizer") { tile(Blocks.Synthesizer) { SynthesizerTile(it.first, it.second) } }
         val Trash by register("trash") { tile(Blocks.Trash) { TrashTile(it.first, it.second) } }
         val Core by register("core") { tile(Blocks.Core) { CoreTile(it.first, it.second) } }
@@ -136,10 +134,13 @@ internal object Registry : ListenerRegistry() {
         val EfficiencyUpgrade by register("efficiency") { Upgrade(1, 16) }
         val BaseModule by register("base_module") { object : Item(Properties().stacksTo(1).tab(CreativeTab)) {} }
         val StepModule by register("step_module") { StepModule() }
+        val FlightModule by register("flight_module") { FlightModule() }
         val SightModule by register("sight_module") { SightModule() }
         val PowerModule by register("power_module") { PowerModule() }
         val HungerModule by register("hunger_module") { HungerModule() }
         val TeleportModule by register("teleport_module") { TeleportModule() }
+        val ScareModule by register("scare_module") { ScareModule() }
+        val ExportModule by register("export_module") { ExportModule() }
         val Flux by register("flux_block") {
             object :
                 BlockItem(Blocks.Flux, Properties().stacksTo(64).fireResistant().durability(90).tab(CreativeTab)) {}
@@ -155,7 +156,6 @@ internal object Registry : ListenerRegistry() {
             override fun makeIcon(): ItemStack = ItemStack(SpeedUpgrade)
         }
     }
-//
 
 
     /**
@@ -167,6 +167,9 @@ internal object Registry : ListenerRegistry() {
         val PlayerTeleport by Tab.register("player_teleport_tab".resLoc, TeleportModule::TabSpec)
         val PlayerSight by Tab.register("player_sight_tab".resLoc, SightModule::TabSpec)
         val PlayerStep by Tab.register("player_step_tab".resLoc, StepModule::TabSpec)
+        val PlayerFlight by Tab.register("player_flight_tab".resLoc, FlightModule::TabSpec)
+        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
+        val PlayerExport by Tab.register("player_export_tab".resLoc, ExportModule::TabSpec)
 
         override fun register(modId: String, modBus: IEventBus, forgeBus: IEventBus) =
             TabRegistry.register(modId, modBus, forgeBus)
@@ -176,7 +179,7 @@ internal object Registry : ListenerRegistry() {
      * ========================Keys registry========================
      */
     object Keys : KeyRegistry() {
-        val TeleportKey by register("teleport_key", "sieves", InputConstants.KEY_R)
+        val TeleportKey by register("teleport_key", "synth", InputConstants.KEY_R)
     }
 
     /**
@@ -229,6 +232,11 @@ internal object Registry : ListenerRegistry() {
             })
         }
 
+        val Filter: MenuType<FilterContainer> by register("filter") {
+            MenuType(IContainerFactory { id, inv, data ->
+                FilterContainer(id, inv, data.readItem())
+            })
+        }
     }
 
 
@@ -248,14 +256,14 @@ internal object Registry : ListenerRegistry() {
         val SightToggle by register(9) { ToggleSightPacket() }
         val DeleteItem by register(10) { DeleteItemPacket() }
         val StepToggle by register(11) { ToggleStepPacket() }
-        val MenuOpen by register(12) { MenuStatePacket() }
+        val FlightToggle by register(12) { FlightPacket() }
+        val MenuOpen by register(13) { MenuStatePacket() }
     }
 
     @Sub
     @OnlyIn(Dist.CLIENT)
     fun onClientSetup(event: FMLClientSetupEvent) {
         runWhenOn(Dist.CLIENT) {
-
             ItemBlockRenderTypes.setRenderLayer(Blocks.Synthesizer, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Trash, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Core, RenderType.cutoutMipped())
@@ -270,6 +278,7 @@ internal object Registry : ListenerRegistry() {
             MenuScreens.register(Containers.Fluids) { menu, inv, _ -> FluidsScreen(menu, inv) }
             MenuScreens.register(Containers.Farmer) { menu, inv, _ -> FarmerScreen(menu, inv) }
             MenuScreens.register(Containers.Forester) { menu, inv, _ -> ForesterScreen(menu, inv) }
+            MenuScreens.register(Containers.Filter) { menu, inv, _ -> FilterScreen(menu, inv) }
         }
 
     }

@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "com.github.synth.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "synth.refmap.json",
+  "mixins": [
+    "MobMixin"
+  ],
+  "minVersion": "0.8"
+}

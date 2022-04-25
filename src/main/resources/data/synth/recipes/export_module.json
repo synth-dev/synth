@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "synth:base_module"
+    },
+    {
+      "item": "synth:box"
+    }
+  ],
+  "result": {
+    "item": "synth:export_module",
+    "count": 1
+  }
+}
