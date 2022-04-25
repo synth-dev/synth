@@ -37,7 +37,7 @@ class SynthesizerScreen(
                 drawTooltip(
                     stack, "using: §6${
                         NumberFormat.getIntegerInstance()
-                            .format(((tile().targetEnergy) / (tile().getConfig().efficiencyModifier).roundToInt()))
+                            .format((tile().powerCost))
                     }FE/t", mouseX, mouseY
                 )
             } else
@@ -63,7 +63,6 @@ class SynthesizerScreen(
                 drawTooltip(stack, "progress: §6${progress.toInt()}%", mouseX, mouseY)
             else
                 drawTooltip(stack, "time left: §6${time.toInt()}s", mouseX, mouseY)
-
         }
     }
 

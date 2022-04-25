@@ -5,10 +5,12 @@ import com.github.sieves.content.io.link.Links
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.api.caps.*
 import com.github.sieves.registry.Registry
+import com.github.sieves.registry.Registry.Sounds
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundSource.*
 import net.minecraft.world.Nameable
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.item.ItemStack
@@ -26,7 +28,7 @@ class SynthesizerTile(pos: BlockPos, state: BlockState) :
     override val items = TrackedInventory(3, ::update)
     override val fluids: FluidTank = TrackedTank(0, ::update)
     val links = Links()
-    val powerCost: Int get() = ((targetEnergy) / configuration.efficiencyModifier).roundToInt()
+    val powerCost: Int get() = (configuration.upgrades.getStackInSlot(0).count * (targetEnergy) / configuration.efficiencyModifier).roundToInt()
     override val ioPower: Int get() = ((links.getLinks().size * 600) * configuration.efficiencyModifier).roundToInt()
     override val ioRate: Int get() = min(64, (abs(1 - configuration.efficiencyModifier.roundToInt()) * 16) + 1)
     private var targetResult = ItemStack.EMPTY
@@ -39,6 +41,8 @@ class SynthesizerTile(pos: BlockPos, state: BlockState) :
     var progress = 0f
         private set
     private var percent = 0
+    private var soundTime = 0
+    private var playingSound = false
 
     /**
      * Called on the server when ticking happens
@@ -51,8 +55,31 @@ class SynthesizerTile(pos: BlockPos, state: BlockState) :
         else if (extractPower()) {
             updateProgress()
             tick++
+            playSound()
         }
         finishRecipe()
+    }
+
+    /**
+     * Play our sound if it's not playing
+     */
+    fun playSound() {
+        //Finish our blocking of the sound playing after 30 seconds
+        if (soundTime >= 20 * 35) {
+            playingSound = false
+            soundTime = -1
+        }
+        if (playingSound) soundTime++
+        else soundTime = -1
+
+        if (!playingSound) {
+            if (Math.random() > 0.999) {
+                playingSound = true
+                level?.playSound(null, blockPos, Sounds.chant, BLOCKS, 0.5f, Math.random().toFloat())
+            }
+        }
+
+
     }
 
     private fun updateProgress() {

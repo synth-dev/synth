@@ -1,8 +1,8 @@
 {
-  "oof": {
-    "subtitle": "sieves.oof",
+  "chant": {
+    "subtitle": "sieves.chant",
     "sounds": [
-      "synth:oof"
+      "synth:chant"
     ]
   }
 }

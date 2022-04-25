@@ -5,26 +5,35 @@ import com.github.sieves.registry.Registry
 import com.github.sieves.util.join
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.server.level.*
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource.*
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.phys.shapes.BooleanOp
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
+import java.util.*
 
 
 class SynthesizerBlock(properties: Properties) :
     ApiBlock<SynthesizerTile>(properties, { Registry.Tiles.Synthesizer }) {
 
     override fun getStateForPlacement(pContext: BlockPlaceContext): BlockState? {
-        return defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, pContext.horizontalDirection.opposite)
+        return defaultBlockState()
+            .setValue(HorizontalDirectionalBlock.FACING, pContext.horizontalDirection.opposite)
     }
 
     override fun rotate(pState: BlockState, pRotation: Rotation): BlockState {
-        return pState.setValue(HorizontalDirectionalBlock.FACING, pRotation.rotate(pState.getValue(HorizontalDirectionalBlock.FACING)))
+        return pState.setValue(
+            HorizontalDirectionalBlock.FACING,
+            pRotation.rotate(pState.getValue(HorizontalDirectionalBlock.FACING))
+        )
     }
 
     override fun mirror(pState: BlockState, pMirror: Mirror): BlockState {
@@ -40,6 +49,7 @@ class SynthesizerBlock(properties: Properties) :
         if (entity !is SynthesizerTile) return 0
         return ((entity.progress / entity.targetProgress.toFloat()) * 15).toInt()
     }
+
 
 
     override fun getShape(
@@ -117,5 +127,8 @@ class SynthesizerBlock(properties: Properties) :
         .join(Shapes.box(0.625, 0.25, 0.0, 0.875, 0.9375, 0.125), BooleanOp.OR)
         .join(Shapes.box(0.125, 0.25, 0.0, 0.375, 0.9375, 0.125), BooleanOp.OR)
         .join(Shapes.box(0.0625, 0.9375, 0.0625, 0.9375, 1.0, 0.9375), BooleanOp.OR)
+
+    companion object {
+    }
 
 }

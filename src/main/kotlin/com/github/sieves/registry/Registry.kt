@@ -33,6 +33,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.screens.MenuScreens
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.CreativeModeTab
@@ -83,6 +84,12 @@ internal object Registry : ListenerRegistry() {
             }
         }
 
+    }
+
+    object Sounds : Registry<SoundEvent>(ForgeRegistries.SOUND_EVENTS) {
+        val chant by register("chant") {
+            SoundEvent("chant".resLoc)
+        }
     }
 
     /**
@@ -143,10 +150,10 @@ internal object Registry : ListenerRegistry() {
         val ExportModule by register("export_module") { ExportModule() }
         val Flux by register("flux_block") {
             object :
-                BlockItem(Blocks.Flux, Properties().stacksTo(64).fireResistant().durability(90).tab(CreativeTab)) {}
+                BlockItem(Blocks.Flux, Properties().fireResistant().durability(90).tab(CreativeTab)) {}
         }
         val FluxDust by register("flux_dust") {
-            object : Item(Properties().stacksTo(16).tab(CreativeTab).fireResistant().durability(10)) {}
+            object : Item(Properties().tab(CreativeTab).fireResistant().durability(10)) {}
         }
         val FluxIron by register("flux_iron") {
             object : BlockItem(Blocks.FluxIron, Properties().stacksTo(64).fireResistant().tab(CreativeTab)) {}

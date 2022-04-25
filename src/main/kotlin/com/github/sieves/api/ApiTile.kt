@@ -1,6 +1,8 @@
 package com.github.sieves.api
 
 import com.github.sieves.api.ApiConfig.SideConfig.*
+import com.github.sieves.content.machines.synthesizer.*
+import com.github.sieves.registry.Registry.Items
 import net.minecraft.core.*
 import net.minecraft.nbt.*
 import net.minecraft.network.*
@@ -24,6 +26,7 @@ import net.minecraftforge.items.*
 import java.util.function.*
 import kotlin.properties.*
 import kotlin.reflect.*
+import net.minecraft.world.item.Items as McItems
 
 abstract class ApiTile<T : ApiTile<T>>(
     type: BlockEntityType<T>, pos: BlockPos, state: BlockState, nameKey: String
@@ -98,7 +101,13 @@ abstract class ApiTile<T : ApiTile<T>>(
                 val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
                 if (cap.isPresent) {
                     val other = cap.resolve().get()
-                    for (slot in 0 until this.items.slots) {
+                    if (this is SynthesizerTile) {
+                        if (items.getStackInSlot(2).isEmpty) continue
+                        val extracted = items.extractItem(2, ioRate, false)
+                        val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
+                        if (leftOver.isEmpty && !extracted.isEmpty) break
+                        items.insertItem(2, leftOver, false)
+                    } else for (slot in 0 until this.items.slots) {
                         if (items.getStackInSlot(slot).isEmpty) continue
                         val extracted = items.extractItem(slot, ioRate, false)
                         val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
@@ -137,10 +146,22 @@ abstract class ApiTile<T : ApiTile<T>>(
                 val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
                 if (cap.isPresent) {
                     val other = cap.resolve().get()
+
                     for (slot in 0 until other.slots) {
                         if (other.getStackInSlot(slot).isEmpty) continue
                         val extracted = other.extractItem(slot, ioRate, false)
-                        val leftOver = ItemHandlerHelper.insertItem(items, extracted, false)
+                        val leftOver = if (this is SynthesizerTile) if (extracted.`is`(Items.Linker) || extracted.`is`(
+                                McItems.ENDER_EYE
+                            )
+                        ) items.insertItem(
+                            1,
+                            extracted,
+                            false
+                        ) else items.insertItem(
+                                0,
+                                extracted,
+                                false
+                            ) else ItemHandlerHelper.insertItem(items, extracted, false)
                         if (leftOver.isEmpty && !extracted.isEmpty) break
                         other.insertItem(slot, leftOver, false)
                     }
