@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "RFR",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:netherite_block"
+    },
+    "G": {
+      "item": "synth:box"
+    },
+    "R": {
+      "item": "minecraft:bricks"
+    },
+    "F": {
+      "item": "synth:flux_block"
+    }
+  },
+  "result": {
+    "item": "synth:forester",
+    "count": 1
+  }
+}
