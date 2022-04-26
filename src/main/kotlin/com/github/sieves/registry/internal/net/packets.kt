@@ -1,6 +1,7 @@
 package com.github.sieves.registry.internal.net
 
 import com.github.sieves.api.ApiConfig
+import com.github.sieves.content.machines.materializer.*
 import com.github.sieves.util.resLoc
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
@@ -34,6 +35,35 @@ class ConfigurePacket() : Packet() {
 
     override fun toString(): String {
         return "ConfigurePacket(config=$config, blockPos=$blockPos, world=$world)"
+    }
+
+}
+
+class StartMaterializer() : Packet() {
+    var blockPos: BlockPos = BlockPos.ZERO
+    var craft: MaterializerCraft = MaterializerCraft.Empty
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBlockPos(blockPos)
+        buffer.writeNbt(craft.serializeNBT())
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        blockPos = buffer.readBlockPos()
+        craft.deserializeNBT(buffer.readNbt()!!)
+    }
+
+}
+
+class StopMaterializer() : Packet() {
+    var blockPos: BlockPos = BlockPos.ZERO
+
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBlockPos(blockPos)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        blockPos = buffer.readBlockPos()
     }
 
 }

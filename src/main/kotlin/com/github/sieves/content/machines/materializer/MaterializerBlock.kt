@@ -1,20 +1,15 @@
-package com.github.sieves.content.machines.forester
+package com.github.sieves.content.machines.materializer
 
 import com.github.sieves.api.*
-import com.github.sieves.content.machines.forester.ForesterTile
-import com.github.sieves.registry.Registry
-import com.github.sieves.util.join
+import com.github.sieves.registry.Registry.Tiles
+import com.github.sieves.util.*
 import net.minecraft.core.*
-import net.minecraft.world.level.BlockGetter
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.phys.shapes.BooleanOp
-import net.minecraft.world.phys.shapes.CollisionContext
-import net.minecraft.world.phys.shapes.Shapes
-import net.minecraft.world.phys.shapes.VoxelShape
+import net.minecraft.world.level.*
+import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.state.*
+import net.minecraft.world.phys.shapes.*
 
-
-class ForesterBlock(properties: Properties) :
-    ApiBlock<ForesterTile>(properties, { Registry.Tiles.Forester }) {
+class MaterializerBlock(properties: Properties) : ApiBlock<MaterializerTile>(properties, { Tiles.Materializer }) {
 
     private val shape = Shapes.empty()
         .join(Shapes.box(0.0, 0.0, 0.0, 1.0, 0.125, 1.0), BooleanOp.OR)
@@ -25,6 +20,9 @@ class ForesterBlock(properties: Properties) :
         .join(Shapes.box(0.15625, 0.4375, 0.15625, 0.84375, 0.71875, 0.84375), BooleanOp.OR)
 
 
+    override fun getStateDefinition(): StateDefinition<Block, BlockState> {
+        return super.getStateDefinition()
+    }
 
 
     override fun getShape(
@@ -37,5 +35,4 @@ class ForesterBlock(properties: Properties) :
     override fun getShadeBrightness(pState: BlockState, pLevel: BlockGetter, pPos: BlockPos): Float {
         return 0.6f
     }
-
 }

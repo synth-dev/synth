@@ -166,6 +166,7 @@ fun <T : Any> CompoundTag.tryPut(name: String, value: T): Boolean {
         is Boolean -> this.putBoolean(name, value)
         is Byte -> this.putByte(name, value)
         is String -> this.putString(name, value)
+        is ItemStack -> this.put(name, value.serializeNBT())
         is ResourceLocation -> {
             val subTag = CompoundTag()
             subTag.putString("namespace", value.namespace)
@@ -202,6 +203,7 @@ fun <T : Any> CompoundTag.tryGet(name: String, classType: KClass<T>): T? {
         Byte::class -> classType.cast(this.getByte(name))
         String::class -> classType.cast(this.getString(name))
         UUID::class -> classType.cast(this.getUUID(name))
+        ItemStack::class -> classType.cast(ItemStack.of(getCompound(name)))
         IntArray::class -> classType.cast(this.getIntArray(name))
         ByteArray::class -> classType.cast(this.getByteArray(name))
         LongArray::class -> classType.cast(this.getLongArray(name))

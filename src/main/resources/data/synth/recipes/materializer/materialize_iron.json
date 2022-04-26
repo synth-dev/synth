@@ -1,0 +1,75 @@
+{
+  "type": "synth:materializer",
+  "time": "1200",
+  "power": "20",
+  "ingredients": [
+    {
+      "tag": "forge:storage_blocks/iron"
+    }
+  ],
+  "results": [
+    {
+      "item": {
+        "tag": "forge:ores/emerald"
+      },
+      "chance": {
+        "min": 0.0,
+        "max": 0.15
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/diamond"
+      },
+      "chance": {
+        "min": 0.15,
+        "max": 0.2
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/redstone"
+      },
+      "chance": {
+        "min": 0.2,
+        "max": 0.23
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:storage_blocks/quartz"
+      },
+      "chance": {
+        "min": 0.33,
+        "max": 0.335
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/osmium"
+      },
+      "chance": {
+        "min": 0.335,
+        "max": 0.375
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/fluorite"
+      },
+      "chance": {
+        "min": 0.375,
+        "max": 0.425
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/prosperity"
+      },
+      "chance": {
+        "min": 0.425,
+        "max": 0.5
+      }
+    }
+  ]
+}

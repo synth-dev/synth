@@ -106,7 +106,7 @@ class ScareModule : ApiTabItem(Registry.Tabs.PlayerScare.key, BatteryTile::class
                 val be = player.level.getBlockEntity(pos)
                 var valid = true
                 if (be is BatteryTile) {
-                    val cap = be.getCapability(CapabilityEnergy.ENERGY, face)
+                    val cap = be.getCapability(CapabilityEnergy.ENERGY)
                     if (!cap.isPresent) valid = false
                     else {
                         val energy = cap.resolve().get()

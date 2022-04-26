@@ -1,8 +1,9 @@
 package com.github.sieves.compat.jei
 
 import com.github.sieves.Sieves
-import com.github.sieves.recipes.SieveRecipe
+import com.github.sieves.recipes.*
 import com.github.sieves.registry.Registry
+import com.github.sieves.registry.Registry.RecipeTypes.Materializer
 import com.github.sieves.registry.Registry.RecipeTypes.Synthesizer
 import com.github.sieves.util.resLoc
 import mezz.jei.api.IModPlugin
@@ -21,8 +22,8 @@ import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.item.crafting.RecipeType
 
 @JeiPlugin
-class ToyJei : IModPlugin {
-    private val pluginId = "sieves".resLoc
+class SynthJei : IModPlugin {
+    private val pluginId = "synth".resLoc
 
     override fun getPluginUid(): ResourceLocation {
         return pluginId
@@ -30,17 +31,24 @@ class ToyJei : IModPlugin {
 
     override fun registerCategories(registration: IRecipeCategoryRegistration) {
         val guiHelper: IGuiHelper = registration.jeiHelpers.guiHelper
-        registration.addRecipeCategories(SieveRecipeCategory(guiHelper))
+        registration.addRecipeCategories(SynthRecipeCategory(guiHelper))
+        registration.addRecipeCategories(MaterializerRecipeCategory(guiHelper))
     }
 
     override fun registerRecipes(registration: IRecipeRegistration) {
         register("sieve", Synthesizer, registration)
+        register("materializer", Materializer, registration)
     }
 
     override fun registerRecipeCatalysts(registration: IRecipeCatalystRegistration) {
         registration.addRecipeCatalyst(
             VanillaTypes.ITEM_STACK, ItemStack(Registry.Blocks.Synthesizer), mezz.jei.api.recipe.RecipeType(
                 "sieve".resLoc, SieveRecipe::class.java
+            )
+        )
+        registration.addRecipeCatalyst(
+            VanillaTypes.ITEM_STACK, ItemStack(Registry.Blocks.Materializer), mezz.jei.api.recipe.RecipeType(
+                "materializer".resLoc, MaterializerRecipe::class.java
             )
         )
 

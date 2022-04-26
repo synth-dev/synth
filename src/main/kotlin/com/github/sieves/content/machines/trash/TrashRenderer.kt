@@ -89,6 +89,10 @@ class TrashRenderer : ApiRenderer<TrashTile>() {
     ) {
 
 
+
+
+
+
         val toDelete = deletions[entity.blockPos] ?: return
         if (toDelete.isEmpty()) return
         stack.pushPose()
@@ -210,7 +214,7 @@ class TrashRenderer : ApiRenderer<TrashTile>() {
                 0.0,
                 0.0
             )
-            for (i in 0 until  100) {
+            for (i in 0 until 100) {
                 startVec.lerp(pos, (i / 100f))
                 Minecraft.getInstance().level?.addParticle(
                     effect,

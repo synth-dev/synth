@@ -150,6 +150,8 @@ class SynthesizerTile(pos: BlockPos, state: BlockState) :
         }
     }
 
+
+
     /**
      * Called when saving nbt data
      */

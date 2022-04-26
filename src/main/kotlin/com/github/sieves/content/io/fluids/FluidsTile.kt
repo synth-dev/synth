@@ -6,6 +6,7 @@ import com.github.sieves.content.io.link.Links
 import com.github.sieves.registry.Registry
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.nbt.*
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.level.block.state.BlockState
@@ -113,4 +114,18 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
         links.removeLinks()
         update()
     }
+    /**
+     * Called when saving nbt data
+     */
+    override fun onSave(tag: CompoundTag) {
+        tag.put("links", links.serializeNBT())
+    }
+
+    /**
+     * Called when loading the nbt data
+     */
+    override fun onLoad(tag: CompoundTag) {
+        links.deserializeNBT(tag.getCompound("links"))
+    }
+
 }

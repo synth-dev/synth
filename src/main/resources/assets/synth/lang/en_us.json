@@ -7,6 +7,7 @@
   "block.synth.tank": "Fluids",
   "block.synth.farmer": "Farmer",
   "block.synth.forester": "Forester",
+  "block.synth.materializer": "Materializer",
   "block.synth.flux_iron": "Synth Infused Iron",
   "block.synth.flux_block": "Synth",
   "tile.synth.battery": "Power",
@@ -37,5 +38,6 @@
   "container.synth.tank": "Fluids",
   "container.synth.farmer": "Farmer",
   "container.synth.forester": "Forester",
+  "container.synth.materializer": "Materializer",
   "synth.teleport_key": "Teleport Module Key"
 }

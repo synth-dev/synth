@@ -1,10 +1,10 @@
-package com.github.sieves.content.farmer
+package com.github.sieves.content.machines.materializer
 
 import com.github.sieves.api.ApiScreen
 import com.github.sieves.api.gui.ConfigWidget
 import com.github.sieves.api.gui.UpgradesWidget
+import com.github.sieves.content.machines.forester.ForesterTile
 import com.github.sieves.api.ApiConfig
-import com.github.sieves.content.machines.forester.*
 import com.github.sieves.util.resLoc
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.ResourceLocation
@@ -13,10 +13,11 @@ import net.minecraftforge.energy.CapabilityEnergy
 import java.text.NumberFormat
 
 @Suppress("DIFFERENT_NAMES_FOR_THE_SAME_PARAMETER_IN_SUPERTYPES")
-class ForesterScreen(
-    val container: ForesterContainer, playerInv: Inventory
-) : ApiScreen<ForesterContainer, ForesterTile>(container, playerInv), ConfigWidget<ForesterTile>, UpgradesWidget<ForesterTile> {
-    override val texture: ResourceLocation = "textures/gui/farmer_gui.png".resLoc
+class MaterializerScreen(
+    val container: MaterializerContainer, playerInv: Inventory
+) : ApiScreen<MaterializerContainer, MaterializerTile>(container, playerInv), ConfigWidget<MaterializerTile>,
+    UpgradesWidget<MaterializerTile> {
+    override val texture: ResourceLocation = "textures/gui/materializer_gui.png".resLoc
     override fun renderMain(stack: PoseStack, mouseX: Double, mouseY: Double) {
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
     }
@@ -25,6 +26,8 @@ class ForesterScreen(
         renderCharger(stack, mouseX, mouseY)
         val power = (tile().energy.energyStored / tile().energy.maxEnergyStored.toFloat()) * 68
         blit(stack, this.leftPos + 165, this.topPos + 8, 0, 114, 3, power.toInt())
+        val percent = ((tile().craft.currentTime / (tile().craft.time / tile().getConfig().speedModifier))) * 20f
+        blit(stack, this.leftPos + 31, this.topPos + 34, 0, 99, percent.toInt(), 15)
     }
 
     override fun renderToolTips(stack: PoseStack, mouseX: Double, mouseY: Double) {
@@ -64,7 +67,7 @@ class ForesterScreen(
     /**
      * Pass a reference to our tile
      */
-    override val tile: () -> ForesterTile
+    override val tile: () -> MaterializerTile
         get() = { container.tile }
 
     /**

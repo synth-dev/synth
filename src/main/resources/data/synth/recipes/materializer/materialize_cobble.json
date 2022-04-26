@@ -1,0 +1,48 @@
+{
+  "type": "synth:materializer",
+  "time": "300",
+  "power": "5",
+  "ingredients": [
+    {
+      "tag": "forge:cobblestone"
+    }
+  ],
+  "results": [
+    {
+      "item": {
+        "tag": "forge:ores/coal"
+      },
+      "chance": {
+        "min": 0.0,
+        "max": 0.2
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/copper"
+      },
+      "chance": {
+        "min": 0.2,
+        "max": 0.3
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:storage_blocks/copper"
+      },
+      "chance": {
+        "min": 0.3,
+        "max": 0.31
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/zinc"
+      },
+      "chance": {
+        "min": 0.31,
+        "max": 0.4
+      }
+    }
+  ]
+}

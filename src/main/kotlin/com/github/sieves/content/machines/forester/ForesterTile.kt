@@ -1,6 +1,5 @@
 package com.github.sieves.content.machines.forester
 
-import com.github.sieves.Sieves
 import com.github.sieves.api.ApiTile
 import com.github.sieves.content.io.link.Links
 import com.github.sieves.api.ApiConfig
@@ -10,8 +9,6 @@ import com.github.sieves.util.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.BlockTags
@@ -19,12 +16,7 @@ import net.minecraft.world.Nameable
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.phys.AABB
-import net.minecraftforge.common.capabilities.Capability
-import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.fluids.capability.templates.*
-import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.network.NetworkHooks
 import kotlin.collections.ArrayList

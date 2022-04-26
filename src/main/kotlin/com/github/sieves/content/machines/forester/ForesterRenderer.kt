@@ -19,30 +19,26 @@ class ForesterRenderer : ApiRenderer<ForesterTile>() {
     private val texture = ResourceLocation("minecraft", "block/redstone_block")
     private var time = 0f
 
+    private val growthRemovals = ArrayList<Growth>()
+    private val harvestRemovals = ArrayList<Harvest>()
+
+    private val growths = HashMap<BlockPos, ArrayList<Growth>>()
+    private val harvests = HashMap<BlockPos, ArrayList<Harvest>>()
 
 
-
-    companion object {
-        private val growthRemovals = ArrayList<Growth>()
-        private val harvestRemovals = ArrayList<Harvest>()
-
-        private val growths = HashMap<BlockPos, ArrayList<Growth>>()
-        private val harvests = HashMap<BlockPos, ArrayList<Harvest>>()
-
-
-        init{
-            Registry.Net.GrowBlock.clientListener { growBlockPacket, _ ->
-
-                growths.getOrPut(growBlockPacket.ownerPos) { ArrayList() }.add(Growth(growBlockPacket.blockPos, 0f))
-                true
-            }
-            Registry.Net.HarvestBlock.clientListener { growBlockPacket, _ ->
-                harvests.getOrPut(growBlockPacket.ownerPos) { ArrayList() }
-                    .add(Harvest(growBlockPacket.blockPos, 0f, growBlockPacket.harvested))
-                true
-            }
+    init{
+        Registry.Net.GrowBlock.clientListener { growBlockPacket, _ ->
+            growths.getOrPut(growBlockPacket.ownerPos) { ArrayList() }.add(Growth(growBlockPacket.blockPos, 0f))
+            true
+        }
+        Registry.Net.HarvestBlock.clientListener { growBlockPacket, _ ->
+            harvests.getOrPut(growBlockPacket.ownerPos) { ArrayList() }
+                .add(Harvest(growBlockPacket.blockPos, 0f, growBlockPacket.harvested))
+            true
         }
     }
+
+
 
     override fun render(
         pBlockEntity: ForesterTile,

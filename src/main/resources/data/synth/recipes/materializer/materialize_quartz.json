@@ -1,0 +1,57 @@
+{
+  "type": "synth:materializer",
+  "time": "2400",
+  "power": "200",
+  "ingredients": [
+    {
+      "tag": "forge:storage_blocks/quartz"
+    }
+  ],
+  "results": [
+    {
+      "item": {
+        "tag": "forge:ores/lead"
+      },
+      "chance": {
+        "min": 0.0,
+        "max": 0.15
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/netherite_scrap"
+      },
+      "chance": {
+        "min": 0.16,
+        "max": 0.2
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:storage_blocks/uranium"
+      },
+      "chance": {
+        "min": 0.205,
+        "max": 0.215
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/uranium"
+      },
+      "chance": {
+        "min": 0.215,
+        "max": 0.245
+      }
+    },
+    {
+      "item": {
+        "tag": "forge:ores/platinum"
+      },
+      "chance": {
+        "min": 0.245,
+        "max": 0.275
+      }
+    }
+  ]
+}

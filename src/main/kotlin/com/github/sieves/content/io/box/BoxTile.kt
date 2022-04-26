@@ -4,6 +4,7 @@ import com.github.sieves.*
 import com.github.sieves.api.*
 import com.github.sieves.api.caps.*
 import com.github.sieves.content.io.link.*
+import com.github.sieves.content.machines.materializer.*
 import com.github.sieves.registry.Registry
 import net.minecraft.core.*
 import net.minecraft.nbt.*
@@ -33,7 +34,7 @@ class BoxTile(pos: BlockPos, state: BlockState) :
     val powerCost: Int get() = ((links.getLinks().size * 600) / configuration.efficiencyModifier).roundToInt()
     val sleepTime: Int get() = ((20 * 60) / configuration.speedModifier).roundToInt()
     override val ioPower: Int get() = ((links.getLinks().size * 600) * configuration.efficiencyModifier).roundToInt()
-    override val ioRate: Int get() = min(64, (abs(1 - configuration.speedModifier.roundToInt()) * 16) + 1)
+    override val ioRate: Int get() = min(64, (abs(1 - configuration.speedModifier.roundToInt()) * 3) + 1)
 
 
     /**
@@ -73,17 +74,39 @@ class BoxTile(pos: BlockPos, state: BlockState) :
                     for (slot in 0 until items.slots) {
                         val extracted = items.extractItem(slot, ioRate, true)
                         if (!extracted.isEmpty) {
-                            val result = ItemHandlerHelper.insertItem(cap.resolve().get(), extracted, true)
-                            if (result.isEmpty) {
-                                items.extractItem(slot, extracted.count, false)
-                                ItemHandlerHelper.insertItem(cap.resolve().get(), extracted, false)
-                                break
+                            if (other is MaterializerTile) {
+                                val result = cap.resolve().get().insertItem(0, extracted, true)
+                                if (result.isEmpty) {
+                                    items.extractItem(slot, extracted.count, false)
+                                    cap.resolve().get().insertItem(0, extracted, false)
+                                    break
+                                }
+                            } else {
+                                val result = ItemHandlerHelper.insertItem(cap.resolve().get(), extracted, true)
+                                if (result.isEmpty) {
+                                    items.extractItem(slot, extracted.count, false)
+                                    ItemHandlerHelper.insertItem(cap.resolve().get(), extracted, false)
+                                    break
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+    /**
+     * Called when saving nbt data
+     */
+    override fun onSave(tag: CompoundTag) {
+        tag.put("links", links.serializeNBT())
+    }
+
+    /**
+     * Called when loading the nbt data
+     */
+    override fun onLoad(tag: CompoundTag) {
+        links.deserializeNBT(tag.getCompound("links"))
     }
 
     /**
@@ -104,7 +127,6 @@ class BoxTile(pos: BlockPos, state: BlockState) :
         }
         removals.forEach(links::removeLink)
     }
-
 
 
     /**

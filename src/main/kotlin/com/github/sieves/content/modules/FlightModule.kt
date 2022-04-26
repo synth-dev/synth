@@ -27,7 +27,14 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
     /**
      * Adds some extra configurations
      */
-    override fun configure(tab: ApiTab, level: Level, player: Player, blockPos: BlockPos, direction: Direction, itemStack: ItemStack) {
+    override fun configure(
+        tab: ApiTab,
+        level: Level,
+        player: Player,
+        blockPos: BlockPos,
+        direction: Direction,
+        itemStack: ItemStack
+    ) {
         val tag = CompoundTag()
         tag.putBlockPos("linked_pos", blockPos)
         tag.putEnum("linked_face", direction)
@@ -57,6 +64,8 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
 
 
         private fun onServerClick(player: ServerPlayer, tab: ApiTab) {
+            player.abilities.mayfly = false
+            player.onUpdateAbilities()
             Registry.Net.sendToClient(Registry.Net.FlightToggle {
                 enabled = false
                 uuid = player.uuid
@@ -101,6 +110,8 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
 
         private fun onServerTick(player: ServerPlayer, tab: ApiTab) {
             if (!TabRegistry.hasTab(player.uuid, tab.key) || tab.getProperty("linked").isEmpty) {
+                player.onUpdateAbilities()
+                player.abilities.mayfly = true
                 Registry.Net.sendToClient(Registry.Net.FlightToggle {
                     enabled = false
                     uuid = player.uuid
@@ -115,13 +126,14 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
                 val be = player.level.getBlockEntity(pos)
                 var valid = true
                 if (be is BatteryTile) {
-                    val cap = be.getCapability(CapabilityEnergy.ENERGY, face)
+                    val cap = be.getCapability(CapabilityEnergy.ENERGY)
                     if (!cap.isPresent) valid = false
                     else {
                         val energy = cap.resolve().get()
                         val target = (20000 / be.getConfig().efficiencyModifier).toInt()
                         val extracted = energy.extractEnergy(target, true)
                         if (extracted == target) {
+                            player.onUpdateAbilities()
                             player.abilities.mayfly = true
                             energy.extractEnergy(target, false)
                             Registry.Net.sendToClient(Registry.Net.FlightToggle {
@@ -129,8 +141,8 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
                                 uuid = player.uuid
                             }, player.uuid)
                         } else {
-                            player.onUpdateAbilities()
                             player.abilities.mayfly = false
+                            player.onUpdateAbilities()
                             Registry.Net.sendToClient(Registry.Net.FlightToggle {
                                 enabled = false
                                 uuid = player.uuid
@@ -141,6 +153,8 @@ class FlightModule : ApiTabItem(Registry.Tabs.PlayerFlight.key, BatteryTile::cla
                 } else valid = false
                 if (!valid) {
                     removeItem(player, tab)
+                    player.abilities.mayfly = false
+                    player.onUpdateAbilities()
                     Registry.Net.sendToClient(Registry.Net.FlightToggle {
                         enabled = false
                         uuid = player.uuid

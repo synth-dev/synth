@@ -5,19 +5,14 @@ import com.github.sieves.registry.Registry
 import com.github.sieves.util.resLoc
 import com.mojang.blaze3d.vertex.PoseStack
 import mezz.jei.api.constants.VanillaTypes
-import mezz.jei.api.gui.IRecipeLayout
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder
 import mezz.jei.api.gui.drawable.IDrawable
-import mezz.jei.api.gui.ingredient.IGuiIngredientGroup
 import mezz.jei.api.helpers.IGuiHelper
-import mezz.jei.api.ingredients.IIngredientType
 import mezz.jei.api.ingredients.IIngredients
 import mezz.jei.api.recipe.IFocusGroup
 import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.recipe.category.IRecipeCategory
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiComponent
-import net.minecraft.client.gui.GuiComponent.blit
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
@@ -26,7 +21,7 @@ import java.text.NumberFormat
 
 //import (mezz.jei.api.gui.ingredient)
 
-class SieveRecipeCategory(private val helper: IGuiHelper) : IRecipeCategory<SieveRecipe> {
+class SynthRecipeCategory(private val helper: IGuiHelper) : IRecipeCategory<SieveRecipe> {
     private val uid = "sieve".resLoc
     private val texture = "textures/gui/sieve_gui.png".resLoc
     private val background = helper.createDrawable(texture, 0, 0, 176, 80)
@@ -65,7 +60,7 @@ class SieveRecipeCategory(private val helper: IGuiHelper) : IRecipeCategory<Siev
         )
         Minecraft.getInstance().font.draw(
             stack,
-            "total power: ${NumberFormat.getIntegerInstance().format(recipe.power * recipe.time)}rf",
+            "total power: ${NumberFormat.getIntegerInstance().format(recipe.power * recipe.time)}FE",
             5f,
             70f,
             0x404040

@@ -15,11 +15,14 @@ import com.github.sieves.content.machines.core.*
 import com.github.sieves.content.machines.core.CoreScreen
 import com.github.sieves.content.machines.farmer.*
 import com.github.sieves.content.machines.forester.*
+import com.github.sieves.content.machines.materializer.*
 import com.github.sieves.content.machines.synthesizer.*
 import com.github.sieves.content.machines.trash.*
 import com.github.sieves.content.machines.trash.TrashRenderer
 import com.github.sieves.content.modules.*
 import com.github.sieves.content.modules.io.*
+import com.github.sieves.recipes.MaterializerRecipe
+import com.github.sieves.recipes.MaterializerRecipe.*
 //import com.github.sieves.content.modules.HungerModule
 //import com.github.sieves.content.modules.PowerModule
 //import com.github.sieves.content.modules.SightModule
@@ -61,6 +64,7 @@ internal object Registry : ListenerRegistry() {
      */
     object Recipes : Registry<RecipeSerializer<*>>(ForgeRegistries.RECIPE_SERIALIZERS) {
         val SieveSerializer by register("sieve") { Serializer }
+        val MaterializerSerializer by register("materializer") { MaterializerRecipe.Serializer }
     }
 
     /**
@@ -76,10 +80,10 @@ internal object Registry : ListenerRegistry() {
             }
         }
 
-        val Trash: RecipeType<SieveRecipe> by register("trash") {
-            object : RecipeType<SieveRecipe> {
+        val Materializer: RecipeType<MaterializerRecipe> by register("materializer") {
+            object : RecipeType<MaterializerRecipe> {
                 override fun toString(): String {
-                    return "trash".resLoc.toString()
+                    return "materializer".resLoc.toString()
                 }
             }
         }
@@ -102,6 +106,7 @@ internal object Registry : ListenerRegistry() {
         val Fluids by register("tank") { FluidsBlock(Properties.of(Material.HEAVY_METAL)) }
         val Farmer by register("farmer") { FarmerBlock(Properties.of(Material.HEAVY_METAL)) }
         val Forester by register("forester") { ForesterBlock(Properties.of(Material.HEAVY_METAL)) }
+        val Materializer by register("materializer") { MaterializerBlock(Properties.of(Material.HEAVY_METAL)) }
         val Trash by register("trash") { TrashBlock(Properties.of(Material.HEAVY_METAL)) }
         val Core by register("core") { CoreBlock(Properties.of(Material.HEAVY_METAL)) }
         val Flux by register("flux_block") { object : Block(Properties.of(Material.HEAVY_METAL)) {} }
@@ -123,6 +128,14 @@ internal object Registry : ListenerRegistry() {
         val Fluids by register("tank") { tile(Blocks.Fluids) { FluidsTile(it.first, it.second) } }
         val Farmer by register("farmer") { tile(Blocks.Farmer) { FarmerTile(it.first, it.second) } }
         val Forester by register("forester") { tile(Blocks.Forester) { ForesterTile(it.first, it.second) } }
+        val Materializer by register("materializer") {
+            tile(Blocks.Materializer) {
+                MaterializerTile(
+                    it.first,
+                    it.second
+                )
+            }
+        }
     }
 
     /**
@@ -137,6 +150,7 @@ internal object Registry : ListenerRegistry() {
         val Fluids by register("tank") { FluidsItem() }
         val Farmer by register("farmer") { FarmerItem() }
         val Forester by register("forester") { ForesterItem() }
+        val Materializer by register("materializer") { MaterializerItem() }
         val SpeedUpgrade by register("speed") { Upgrade(0, 16) }
         val EfficiencyUpgrade by register("efficiency") { Upgrade(1, 16) }
         val BaseModule by register("base_module") { object : Item(Properties().stacksTo(1).tab(CreativeTab)) {} }
@@ -239,6 +253,12 @@ internal object Registry : ListenerRegistry() {
             })
         }
 
+        val Materializer: MenuType<MaterializerContainer> by register("materializer") {
+            MenuType(IContainerFactory { id, inv, data ->
+                MaterializerContainer(id, inv, data.readBlockPos())
+            })
+        }
+
         val Filter: MenuType<FilterContainer> by register("filter") {
             MenuType(IContainerFactory { id, inv, data ->
                 FilterContainer(id, inv, data.readItem())
@@ -265,6 +285,8 @@ internal object Registry : ListenerRegistry() {
         val StepToggle by register(11) { ToggleStepPacket() }
         val FlightToggle by register(12) { FlightPacket() }
         val MenuOpen by register(13) { MenuStatePacket() }
+        val MaterializerStart by register(14) { StartMaterializer() }
+        val MaterializerStop by register(15) { StopMaterializer() }
     }
 
     @Sub
@@ -285,6 +307,7 @@ internal object Registry : ListenerRegistry() {
             MenuScreens.register(Containers.Fluids) { menu, inv, _ -> FluidsScreen(menu, inv) }
             MenuScreens.register(Containers.Farmer) { menu, inv, _ -> FarmerScreen(menu, inv) }
             MenuScreens.register(Containers.Forester) { menu, inv, _ -> ForesterScreen(menu, inv) }
+            MenuScreens.register(Containers.Materializer) { menu, inv, _ -> MaterializerScreen(menu, inv) }
             MenuScreens.register(Containers.Filter) { menu, inv, _ -> FilterScreen(menu, inv) }
         }
 
@@ -303,6 +326,7 @@ internal object Registry : ListenerRegistry() {
             event.registerBlockEntityRenderer(Tiles.Fluids) { FluidsRenderer() }
             event.registerBlockEntityRenderer(Tiles.Farmer) { FarmerRenderer() }
             event.registerBlockEntityRenderer(Tiles.Forester) { ForesterRenderer() }
+            event.registerBlockEntityRenderer(Tiles.Materializer) { MaterializerRenderer() }
         }
     }
 
