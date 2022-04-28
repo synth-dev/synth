@@ -1,0 +1,17 @@
+{
+  "name": "Farmer",
+  "icon": "synth:materializer",
+  "category": "synth:machines",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:materializer",
+      "text": "The materializer allows you to materialize certain ores right out of things such as cobblestone!"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:materializer",
+      "text": "Requires getting $(l:flux/flux_block)Flux$(/l) First."
+    }
+  ]
+}

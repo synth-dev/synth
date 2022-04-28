@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XGX",
+    "X X",
+    "XGX"
+  ],
+  "key": {
+    "X": {
+      "tag": "minecraft:glass"
+    },
+    "G": {
+      "item": "synth:tank"
+    }
+  },
+  "result": {
+    "item": "synth:solidifer",
+    "count": 1
+  }
+}

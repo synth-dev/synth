@@ -1,7 +1,10 @@
 package com.github.sieves.content.machines.forester
 
 import com.github.sieves.api.ApiRenderer
+import com.github.sieves.content.machines.farmer.*
+import com.github.sieves.content.machines.farmer.FarmerRenderer.*
 import com.github.sieves.registry.Registry
+import com.github.sieves.registry.internal.net.*
 import com.github.sieves.util.length
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
@@ -14,30 +17,40 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.network.*
 
 class ForesterRenderer : ApiRenderer<ForesterTile>() {
-    private val texture = ResourceLocation("minecraft", "block/redstone_block")
-    private var time = 0f
-
     private val growthRemovals = ArrayList<Growth>()
     private val harvestRemovals = ArrayList<Harvest>()
 
-    private val growths = HashMap<BlockPos, ArrayList<Growth>>()
-    private val harvests = HashMap<BlockPos, ArrayList<Harvest>>()
+    companion object {
+        private val growths = HashMap<BlockPos, ArrayList<Growth>>()
+        private val harvests = HashMap<BlockPos, ArrayList<Harvest>>()
 
-
-    init{
-        Registry.Net.GrowBlock.clientListener { growBlockPacket, _ ->
-            growths.getOrPut(growBlockPacket.ownerPos) { ArrayList() }.add(Growth(growBlockPacket.blockPos, 0f))
-            true
+        /**
+         * Called upon the growth of the packet
+         */
+        fun onGrowBlock(growth: GrowBlockPacket, event: NetworkEvent.Context): Boolean {
+            if (growth.isFarmer) return false
+            growths.getOrPut(growth.ownerPos) { ArrayList() }.add(
+                Growth(
+                    growth.blockPos,
+                    0f
+                )
+            )
+            return true
         }
-        Registry.Net.HarvestBlock.clientListener { growBlockPacket, _ ->
-            harvests.getOrPut(growBlockPacket.ownerPos) { ArrayList() }
-                .add(Harvest(growBlockPacket.blockPos, 0f, growBlockPacket.harvested))
-            true
+
+        /**
+         * Called upon harvesting of a crop
+         */
+        fun onHarvestBlock(harvest: HarvestBlockPacket, event: NetworkEvent.Context): Boolean {
+            if (harvest.isFarmer) return false
+            harvests.getOrPut(harvest.ownerPos) { ArrayList() }
+                .add(Harvest(harvest.blockPos, 0f, harvest.harvested))
+            return true
         }
     }
-
 
 
     override fun render(

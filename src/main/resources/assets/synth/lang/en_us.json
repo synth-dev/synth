@@ -29,6 +29,7 @@
   "tab.synth.player_hunger": "Feeder Module",
   "tab.synth.player_teleport": "Teleport Module",
   "tab.synth.player_sight": "Sight Module",
+  "tab.synth.player_scare": "Scare Module",
   "tab.synth.player_step": "Stepper Module",
   "tab.synth.player_flight": "Flight Module",
   "tab.synth.player_export": "Export Module",
@@ -37,6 +38,7 @@
   "container.synth.box": "Items",
   "container.synth.tank": "Fluids",
   "container.synth.farmer": "Farmer",
+  "container.synth.core": "Solidifer",
   "container.synth.forester": "Forester",
   "container.synth.materializer": "Materializer",
   "synth.teleport_key": "Teleport Module Key"

@@ -33,7 +33,7 @@ class BatteryTile(pos: BlockPos, state: BlockState) :
     private val removals = ArrayList<BlockPos>(20)
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(1, ::update)
-    override val fluids = TrackedTank(0, ::update)
+    override val tank = TrackedTank(0, ::update)
     override val ioPower: Int get() = ((10000) * configuration.efficiencyModifier).roundToInt()
     override val ioRate: Int get() = min(64, (abs(1 - configuration.efficiencyModifier.roundToInt()) * 16) + 1)
     val links = Links()

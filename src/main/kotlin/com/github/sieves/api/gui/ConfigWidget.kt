@@ -94,7 +94,7 @@ interface ConfigWidget<T : ApiTile<T>> : BaseWidget<T> {
         blit(stack, this.leftPos() + -60 + 9, this.topPos() + 17, 0, 242, 14, 14)
 
         if (config.autoExport)
-            blit(stack, this.leftPos() + -58 + 27 - 2, this.topPos() + 17 , 14, 243, 13, 13)
+            blit(stack, this.leftPos() + -58 + 27 - 2, this.topPos() + 17, 14, 243, 13, 13)
         blit(stack, this.leftPos() + -61 + 27, this.topPos() + 17, 0, 242, 14, 14)
     }
 
@@ -122,17 +122,7 @@ interface ConfigWidget<T : ApiTile<T>> : BaseWidget<T> {
 
         if (isClicked(dX, dy, 9, 9, mouseX, mouseY)) {
             if (isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) config[direction] = ApiConfig.SideConfig.None
-            else config[direction] = current.next
-            playClickSound()
-
-            Registry.Net.sendToServer(Registry.Net.Configure {
-                config = this@ConfigWidget.config
-                blockPos = this@ConfigWidget.tile().blockPos
-                world = this@ConfigWidget.tile().level!!.dimension()
-            })
-        }else if(isRightClicked(dX, dy, 9, 9, mouseX, mouseY)){
-            if (isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) config[direction] = ApiConfig.SideConfig.None
-            else config[direction] = current.previous
+            else config[direction] = current.nextFor(direction, tile())
             playClickSound()
 
             Registry.Net.sendToServer(Registry.Net.Configure {
@@ -141,6 +131,18 @@ interface ConfigWidget<T : ApiTile<T>> : BaseWidget<T> {
                 world = this@ConfigWidget.tile().level!!.dimension()
             })
         }
+
+        //        else if (isRightClicked(dX, dy, 9, 9, mouseX, mouseY)) {
+//            if (isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) config[direction] = ApiConfig.SideConfig.None
+//            else config[direction] = current.previous
+//            playClickSound()
+//
+//            Registry.Net.sendToServer(Registry.Net.Configure {
+//                config = this@ConfigWidget.config
+//                blockPos = this@ConfigWidget.tile().blockPos
+//                world = this@ConfigWidget.tile().level!!.dimension()
+//            })
+//        }
 
     }
 

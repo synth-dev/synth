@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.Level
 import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.Dist.*
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.ScreenOpenEvent
@@ -66,6 +67,9 @@ object TabRegistry : ListenerRegistry() {
 
     private fun onPlayerLeave(event: ServerStoppingEvent) {
         activeTabs.clear() //attempt to fix for
+        runWhenOn(CLIENT) {
+            Minecraft.getInstance().options.gamma = 0.0
+        }
     }
 
     /**

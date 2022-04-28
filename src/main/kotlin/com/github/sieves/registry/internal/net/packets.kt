@@ -55,6 +55,33 @@ class StartMaterializer() : Packet() {
 
 }
 
+class StartSolidifer() : Packet() {
+    var blockPos: BlockPos = BlockPos.ZERO
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBlockPos(blockPos)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        blockPos = buffer.readBlockPos()
+    }
+
+}
+
+class StopSolidifer() : Packet() {
+    var blockPos: BlockPos = BlockPos.ZERO
+    var item: ItemStack = ItemStack.EMPTY
+    override fun write(buffer: FriendlyByteBuf) {
+        buffer.writeBlockPos(blockPos)
+        buffer.writeItem(item)
+    }
+
+    override fun read(buffer: FriendlyByteBuf) {
+        blockPos = buffer.readBlockPos()
+        item = buffer.readItem()
+    }
+
+}
+
 class StopMaterializer() : Packet() {
     var blockPos: BlockPos = BlockPos.ZERO
 
@@ -269,15 +296,18 @@ class TabBindPacket() : Packet() {
 class GrowBlockPacket() : Packet() {
     var blockPos: BlockPos = BlockPos.ZERO
     var ownerPos: BlockPos = BlockPos.ZERO
+    var isFarmer = false
 
     override fun write(buffer: FriendlyByteBuf) {
         buffer.writeBlockPos(blockPos)
         buffer.writeBlockPos(ownerPos)
+        buffer.writeBoolean(isFarmer)
     }
 
     override fun read(buffer: FriendlyByteBuf) {
         blockPos = buffer.readBlockPos()
         ownerPos = buffer.readBlockPos()
+        isFarmer = buffer.readBoolean()
     }
 
     override fun toString(): String {
@@ -316,6 +346,7 @@ class HarvestBlockPacket() : Packet() {
     var blockPos = BlockPos.ZERO
     var ownerPos = BlockPos.ZERO
     val harvested = ArrayList<ItemStack>()
+    var isFarmer = false
 
     override fun write(buffer: FriendlyByteBuf) {
         buffer.writeBlockPos(blockPos)
@@ -324,6 +355,7 @@ class HarvestBlockPacket() : Packet() {
         harvested.forEach {
             buffer.writeItem(it)
         }
+        buffer.writeBoolean(isFarmer)
     }
 
     override fun read(buffer: FriendlyByteBuf) {
@@ -334,6 +366,7 @@ class HarvestBlockPacket() : Packet() {
         for (i in 0 until count) {
             harvested.add(buffer.readItem())
         }
+        isFarmer = buffer.readBoolean()
     }
 
     override fun toString(): String {

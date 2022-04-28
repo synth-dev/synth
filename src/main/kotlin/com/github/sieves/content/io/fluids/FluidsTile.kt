@@ -9,7 +9,9 @@ import net.minecraft.core.Direction
 import net.minecraft.nbt.*
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.SimpleMenuProvider
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraftforge.fluids.*
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.*
 import net.minecraftforge.fluids.capability.templates.*
@@ -21,10 +23,10 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
     private val removals = ArrayList<BlockPos>(20)
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(1, ::update)
-    override val fluids: FluidTank = TrackedTank(250_000, ::update) //TODO: add capacity upgrade
-    val powerCost: Int get() = ((links.getLinks().size * 600) / configuration.efficiencyModifier).roundToInt()
+    override val tank: FluidTank = TrackedTank(250_000, ::update) //TODO: add capacity upgrade
+    val powerCost: Int get() = (600 + (links.getLinks().size * 600) / configuration.efficiencyModifier).roundToInt()
     override val ioPower: Int get() = ((links.getLinks().size * 600) * configuration.efficiencyModifier).roundToInt()
-    override val ioRate: Int get() = (configuration.speedModifier * 1000).roundToInt() // base level of
+    override val ioRate: Int get() = 1000 + (configuration.speedModifier * 1000).roundToInt() // base level of
     private var tick = 0
     val links = Links()
 
@@ -34,9 +36,11 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
     override fun onServerTick() {
         if (getConfig().autoExport) autoExport()
         if (getConfig().autoImport) autoImport()
-
         if (extractPower()) {
-            if (tick % 5 == 0) exportFluids() // 4 times per second
+            if (tick % 5 == 0) {
+                exportFluids() // 4 times per second
+                pumpFluids()
+            }
             if (tick >= 20) { //once per second
                 validateExports()
                 tick = 0
@@ -46,11 +50,28 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
         }
     }
 
-    private fun extractPower(): Boolean {
-        val extracted = energy.extractEnergy(powerCost, true)
-        if (extracted != powerCost) return false
-        energy.extractEnergy(powerCost, false)
-        return true
+
+    /**
+     * Pump fluids when auto importing
+     */
+    private fun pumpFluids() {
+        if (!configuration.autoImport) return
+        for (key in Direction.values()) {
+            val value = getConfig()[key]
+            if (value.canImportFluid) {
+                val pos = blockPos.offset(key.normal)
+                val state = level?.getBlockState(pos) ?: continue
+                val fluids = state.fluidState
+                if (!fluids.isEmpty) {
+                    val type = fluids.type
+                    val result = this.tank.fill(FluidStack(type, 1000), SIMULATE)
+                    if (result == 1000) {
+                        this.tank.fill(FluidStack(type, 1000), EXECUTE)
+                        level?.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState())
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -63,13 +84,21 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
                 val cap = otherTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side)
                 if (cap.isPresent) {
                     val other = cap.resolve().get()
-                    val extracted = fluids.drain(this.ioRate, SIMULATE)
-                    if (other.fill(extracted, SIMULATE) == extracted.amount) {
-                        other.fill(fluids.drain(this.ioRate, EXECUTE), EXECUTE)
+                    val extracted = tank.drain(this.ioRate, SIMULATE)
+                    val filled = other.fill(extracted, SIMULATE)
+                    if (filled != 0) {
+                        other.fill(tank.drain(filled, EXECUTE), EXECUTE)
                     }
                 }
             }
         }
+    }
+
+    private fun extractPower(): Boolean {
+        val extracted = energy.extractEnergy(powerCost, true)
+        if (extracted != powerCost) return false
+        energy.extractEnergy(powerCost, false)
+        return true
     }
 
     /**
@@ -114,6 +143,7 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
         links.removeLinks()
         update()
     }
+
     /**
      * Called when saving nbt data
      */

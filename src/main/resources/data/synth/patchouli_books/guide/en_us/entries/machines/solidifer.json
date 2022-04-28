@@ -1,0 +1,17 @@
+{
+  "name": "Farmer",
+  "icon": "synth:solidifer",
+  "category": "synth:machines",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "synth:solidifer",
+      "text": "The solidifer you to automate the mundane process of getting cobblestone. (will add more recipes in the future when synth add custom fluids)"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "synth:solidifer",
+      "text": "Requires getting $(l:flux/flux_block)Flux$(/l) First."
+    }
+  ]
+}

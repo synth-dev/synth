@@ -11,12 +11,12 @@
     "facing=west": {
       "model": "synth:block/fluids",
       "x": 90,
-      "y": 270
+      "y": 90
     },
     "facing=east": {
       "model": "synth:block/fluids",
       "x": 90,
-      "y": 90
+      "y": 270
     },
     "facing=up": {
       "model": "synth:block/fluids",

@@ -22,11 +22,11 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 class SynthesizerTile(pos: BlockPos, state: BlockState) :
-    ApiTile<SynthesizerTile>(Registry.Tiles.Synthesizer, pos, state, "tile.synth.synthesizer"), Nameable {
+    ApiTile<SynthesizerTile>(Registry.Tiles.Synthesizer, pos, state, "container.synth.synthesizer"), Nameable {
     private var tick = 0
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(3, ::update)
-    override val fluids: FluidTank = TrackedTank(0, ::update)
+    override val tank: FluidTank = TrackedTank(0, ::update)
     val links = Links()
     val powerCost: Int get() = (configuration.upgrades.getStackInSlot(0).count * (targetEnergy) / configuration.efficiencyModifier).roundToInt()
     override val ioPower: Int get() = ((links.getLinks().size * 600) * configuration.efficiencyModifier).roundToInt()

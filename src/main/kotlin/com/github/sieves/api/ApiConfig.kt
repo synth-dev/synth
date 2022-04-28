@@ -196,6 +196,19 @@ class ApiConfig(private val update: () -> Unit) : INBTSerializable<CompoundTag> 
             Integer.valueOf(color.substring(5, 7), 16) / 255f
         )
         val next: SideConfig get() = values()[nextIndex]
+
+        /**
+         * Gets the next valid side for the given direction
+         */
+        fun nextFor(direction: Direction, tile: ApiTile<*>): SideConfig {
+            var next = this.next
+            while (!tile.isSideValidFor(next, direction)) {
+                next = next.next
+                if (next == None) return None //break loop in case none are valid
+            }
+            return next
+        }
+
         val previous: SideConfig get() = values()[if (ordinal == 0) values().size - 1 else ordinal - 1]
 
     }

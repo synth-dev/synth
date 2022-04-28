@@ -29,7 +29,7 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
     private val removals = ArrayList<BlockPos>()
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(21, ::update)
-    override val fluids: FluidTank = TrackedTank(0, ::update)
+    override val tank: FluidTank = TrackedTank(0, ::update)
     val powerCost: Int get() = ((links.getLinks().size * 1200) / configuration.efficiencyModifier).roundToInt()
     val sleepTime: Int get() = ((20 * 120) / configuration.speedModifier).roundToInt()
     override val ioPower: Int get() = ((links.getLinks().size * 1200) * configuration.efficiencyModifier).roundToInt()
@@ -115,6 +115,7 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
             Registry.Net.sendToClientsWithTileLoaded(Registry.Net.GrowBlock {
                 ownerPos = this@ForesterTile.blockPos
                 blockPos = link.key
+                isFarmer = false
             }, this)
         }
     }
@@ -155,6 +156,7 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
                 this.harvested.addAll(drops)
                 this.ownerPos = this@ForesterTile.blockPos
                 this.blockPos = link.key
+                isFarmer = false
             }, this)
         }
 

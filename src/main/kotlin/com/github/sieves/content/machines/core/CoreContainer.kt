@@ -56,7 +56,7 @@ class CoreContainer(
      */
     override fun setupContainer() {
         addDefaultSlots()
-        addSlot(SlotItemHandler(tile.items, 0, 32, 32))
+        addSlot(SlotItemHandler(tile.items, 0, 137, 35))
         addDataSlots(data)
     }
 

@@ -35,7 +35,7 @@ class TrashTile(pos: BlockPos, state: BlockState) :
     private var tick = 0
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(21, ::update)
-    override val fluids: FluidTank = TrackedTank(0, ::update)
+    override val tank: FluidTank = TrackedTank(0, ::update)
     override val ioPower: Int get() = ((links.getLinks().size * 1200) * configuration.efficiencyModifier).roundToInt()
     override val ioRate: Int get() = min(64, (abs(1 - configuration.efficiencyModifier.roundToInt()) * 16) + 1)
     val links = Links()
@@ -45,36 +45,36 @@ class TrashTile(pos: BlockPos, state: BlockState) :
      * Called on the server when ticking happens
      */
     override fun onServerTick() {
-        if (getConfig().autoExport) autoExport()
-        if (getConfig().autoImport) autoImport()
-        if (tick % 20 == 1) link()
-        if (tick >= (20 * 15)) {
-            val height = getHeight()
-            for (slot in 0 until items.slots) {
-                val item = items.getStackInSlot(slot)
-                if (!item.isEmpty && extractPower() && height >= 1) {
-                    items.extractItem(slot, 1, false)
-                    if (level?.random?.nextInt(100)!! <= getHeight()) {
-                        Net.sendToClientsWithTileLoaded(Net.DeleteItem {
-                            this.blockPos = this@TrashTile.blockPos
-                            this.slot = slot
-                            this.item = item
-                            this.result = ItemStack(Items.FluxIron)
-                        }, this)
-                    } else
-                        Net.sendToClientsWithTileLoaded(Net.DeleteItem {
-                            this.blockPos = this@TrashTile.blockPos
-                            this.slot = slot
-                            this.item = item
-                            this.result = ItemStack.EMPTY
-                        }, this)
-                    tick = 0
-                    break
-                }
-            }
-        }
-        tick++
-        links.poll()
+//        if (getConfig().autoExport) autoExport()
+//        if (getConfig().autoImport) autoImport()
+//        if (tick % 20 == 1) link()
+//        if (tick >= (20 * 15)) {
+//            val height = getHeight()
+//            for (slot in 0 until items.slots) {
+//                val item = items.getStackInSlot(slot)
+//                if (!item.isEmpty && extractPower() && height >= 1) {
+//                    items.extractItem(slot, 1, false)
+//                    if (level?.random?.nextInt(100)!! <= getHeight()) {
+//                        Net.sendToClientsWithTileLoaded(Net.DeleteItem {
+//                            this.blockPos = this@TrashTile.blockPos
+//                            this.slot = slot
+//                            this.item = item
+//                            this.result = ItemStack(Items.FluxIron)
+//                        }, this)
+//                    } else
+//                        Net.sendToClientsWithTileLoaded(Net.DeleteItem {
+//                            this.blockPos = this@TrashTile.blockPos
+//                            this.slot = slot
+//                            this.item = item
+//                            this.result = ItemStack.EMPTY
+//                        }, this)
+//                    tick = 0
+//                    break
+//                }
+//            }
+//        }
+//        tick++
+//        links.poll()
     }
 
     /**

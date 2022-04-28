@@ -14,8 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
+import net.minecraft.core.*
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -371,7 +370,7 @@ fun BlockPos.getInflatedAAABB(inflate: Float): AABB {
  * This will raytrace the given distance for the given player
  */
 fun Player.rayTrace(distance: Double = 75.0): BlockHitResult {
-    val rayTraceResult = pick(distance, 0f, false) as BlockHitResult
+    val rayTraceResult = pick(distance, 0f, true) as BlockHitResult
     var xm = rayTraceResult.location.x
     var ym = rayTraceResult.location.y
     var zm = rayTraceResult.location.z
@@ -383,8 +382,19 @@ fun Player.rayTrace(distance: Double = 75.0): BlockHitResult {
         if (rayTraceResult.direction == Direction.UP) ym--
     }
     pos = BlockPos(xm, ym, zm)
-    return BlockHitResult(rayTraceResult.location, rayTraceResult.direction, pos, false)
+    var fluidState = level.getFluidState(pos)
+    var y = pos.y
+    var isFluid = false
+    while (!fluidState.isEmpty) {
+        pos = BlockPos(pos.x, y++, pos.z)
+        fluidState = level.getFluidState(pos)
+        isFluid = true
+    }
+    return if (!isFluid)
+        BlockHitResult(rayTraceResult.location, rayTraceResult.direction, pos, false)
+    else BlockHitResult(rayTraceResult.location, Direction.UP, pos, false)
 }
+
 
 fun VoxelShape.join(other: VoxelShape, op: BooleanOp): VoxelShape {
     return Shapes.join(this, other, op)

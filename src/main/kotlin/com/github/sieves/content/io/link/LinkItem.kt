@@ -14,6 +14,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraftforge.energy.CapabilityEnergy
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import net.minecraftforge.items.CapabilityItemHandler
 
 class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).durability(1000)) {
@@ -86,6 +87,8 @@ class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).d
                         CapabilityEnergy.ENERGY, pContext.clickedFace
                     ).isPresent && !to.getCapability(
                         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, pContext.clickedFace
+                    ).isPresent && !to.getCapability(
+                        CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, pContext.clickedFace
                     ).isPresent
                 ) return InteractionResult.FAIL
                 fromTile.linkTo(pContext.clickedPos, pContext.clickedFace)

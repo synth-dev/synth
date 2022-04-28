@@ -1,23 +1,22 @@
 {
   "variants": {
     "facing=north": {
-      "model": "synth:block/core"
+      "model": "synth:block/combiner"
     },
     "facing=south": {
-      "model": "synth:block/core"
+      "model": "synth:block/combiner"
     },
     "facing=west": {
-      "model": "synth:block/core"
-
+      "model": "synth:block/combiner"
     },
     "facing=east": {
-      "model": "synth:block/core"
+      "model": "synth:block/combiner"
     },
     "facing=up": {
-      "model": "synth:block/core"
+      "model": "synth:block/combiner"
     },
     "facing=down": {
-      "model": "synth:block/core"
+      "model": "synth:block/combiner"
     }
   }
 }

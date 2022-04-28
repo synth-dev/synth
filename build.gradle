@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat
 import java.util.Date
 
+
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
@@ -28,6 +29,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 apply from: 'https://raw.githubusercontent.com/thedarkcolour/KotlinForForge/site/thedarkcolour/kotlinforforge/gradle/kff-3.1.0.gradle'
 
+
 version = getVersion()
 group = 'com.github.synth'
 archivesBaseName = 'synth'
@@ -49,6 +51,7 @@ String getVersion() {
     }
     return name
 }
+
 /**
  * List out all of the builds
  * @return all the builds
@@ -60,6 +63,9 @@ List<String> getVersions() {
     return names
 }
 
+//project.evaluationDependsOnChildren()
+
+
 
 sourceSets {
     main {
@@ -68,15 +74,7 @@ sourceSets {
     }
 }
 
-
-mixin {
-    add sourceSets.main, "synth.refmap.json"
-    config "synth.mixins.json"
-}
-println(project("tabout").sourceSets.main)
-
 minecraft {
-//    mappings channel: 'official', version: '1.18.2'
     mappings channel: 'parchment', version: '1.18.2-2022.03.13-1.18.2'
     runs {
         client {
@@ -88,8 +86,9 @@ minecraft {
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 synth {
-                    sources(sourceSets.main)
+                    source sourceSets.main
                 }
+
             }
         }
 
@@ -104,6 +103,8 @@ minecraft {
                 synth {
                     sources(sourceSets.main)
                 }
+
+
             }
         }
     }
@@ -138,7 +139,7 @@ repositories {
 }
 
 // Include assets and data from data generators
-//sourceSets.main.resources { srcDirs 'src/generated/resources/' }
+sourceSets.main.resources { srcDirs 'src/generated/resources/' }
 
 
 dependencies {
@@ -148,7 +149,6 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
     compileOnly fg.deobf("curse.maven:the-one-probe-245211:3671753")
-//    runtimeOnly(fg.deobf("vazkii.patchouli:Patchouli-xplat:1.18.2-67"))
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
@@ -158,9 +158,10 @@ dependencies {
     runtimeOnly(fg.deobf("curse.maven:patchouli-306770:3729975"))
     runtimeOnly(fg.deobf("curse.maven:spark-361579:3670050"))
     runtimeOnly(fg.deobf("curse.maven:refined-storage-243076:3712882"))
-//    runtimeOnly(fg.deobf("curse.maven:pneumaticcraft-repressurized:281849"))
     runtimeOnly(fg.deobf("com.blakebr0.cucumber:Cucumber:1.18.2-5.1.0"))
     runtimeOnly(fg.deobf("com.blakebr0.mysticalagriculture:MysticalAgriculture:1.18.2-5.1.0"))
+    runtimeOnly(fg.deobf("curse.maven:oh-the-biomes-youll-go-247560:3759851"))
+    runtimeOnly(fg.deobf("curse.maven:terrablender-563928:3725996"))
 }
 
 

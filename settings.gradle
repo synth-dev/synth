@@ -1,3 +1,3 @@
 rootProject.name = 'synth'
-include(":tabout")
-project(":tabout").projectDir = new File(rootDir.parentFile, "tabout")
+//include ":tabout"
+//project(':tabout').projectDir = new File("../tabout")

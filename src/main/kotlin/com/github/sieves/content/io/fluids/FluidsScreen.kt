@@ -4,12 +4,10 @@ import com.github.sieves.api.ApiScreen
 import com.github.sieves.api.gui.ConfigWidget
 import com.github.sieves.api.gui.UpgradesWidget
 import com.github.sieves.api.ApiConfig
-import com.github.sieves.util.*
 import com.github.sieves.util.resLoc
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.*
-import net.minecraft.client.renderer.RenderStateShard.ShaderStateShard
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraftforge.energy.CapabilityEnergy
@@ -25,7 +23,7 @@ class FluidsScreen(
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
         blit(stack, guiLeft + 49, guiTop + 10, 0, 167, 70, 60)
         drawFluid(
-            stack, guiLeft + 50, guiTop + 10, 70, 60, tile().fluids.getFluidInTank(0), tile().fluids.getTankCapacity(0)
+            stack, guiLeft + 50, guiTop + 10, 70, 60, tile().tank.getFluidInTank(0), tile().tank.getTankCapacity(0)
         )
 
     }
@@ -58,17 +56,18 @@ class FluidsScreen(
         }
 
         if (isHovered(50, 10, 70, 60, mouseX, mouseY)) {
-            val fluid = tile().fluids.fluidAmount
-            val total = tile().fluids.capacity
+            val fluid = tile().tank.fluidAmount
+            val total = tile().tank.capacity
+            val name = tile().tank.fluid.displayName.string
             if (!hasShiftDown())
                 drawTooltip(
-                    stack, "fluid: §6${
+                    stack, "$name: §6${
                         NumberFormat.getIntegerInstance().format(fluid)
                     }MB/${NumberFormat.getIntegerInstance().format(total)}MB", mouseX, mouseY
                 )
             else
                 drawTooltip(
-                    stack, "fluid: §6${
+                    stack, "$name: §6${
                         NumberFormat.getIntegerInstance().format(fluid / 1000)
                     }B/${NumberFormat.getIntegerInstance().format(total / 1000)}B", mouseX, mouseY
                 )

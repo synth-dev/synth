@@ -23,7 +23,7 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
     override val energy: EnergyStorage = TrackedEnergy(250000, ::update)
     override val items: ItemStackHandler = TrackedInventory(11, ::update)
     val powerCost: Int get() = (craft.power / configuration.efficiencyModifier).roundToInt()
-    override val fluids: FluidTank = TrackedTank(0, ::update)
+    override val tank: FluidTank = TrackedTank(0, ::update)
     override val ioPower: Int get() = (1200 * configuration.efficiencyModifier).roundToInt()
     override val ioRate: Int get() = min(64, (abs(1 - configuration.efficiencyModifier.roundToInt()) * 16) + 1)
     val links = Links()
@@ -66,8 +66,9 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
             if (craft.currentTime % 20 == 0) //update client every second, only if we extracted the power
                 update()
         }
-        if (!items.getStackInSlot(0).sameItem(craft.input))
-            craft = MaterializerCraft.Empty
+
+//            if (!items.getStackInSlot(0).sameItem(craft.input))
+//                craft = MaterializerCraft.Empty
     }
 
     /**
@@ -99,6 +100,7 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
             if (items.insertItem(slot, output, true) == ItemStack.EMPTY) {
                 items.insertItem(slot, output, false)
                 craft = MaterializerCraft.Empty
+                update()
                 return
             }
         }

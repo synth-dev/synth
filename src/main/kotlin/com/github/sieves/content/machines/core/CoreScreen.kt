@@ -14,7 +14,7 @@ import java.text.NumberFormat
 class CoreScreen(
     val container: CoreContainer, playerInv: Inventory
 ) : ApiScreen<CoreContainer, CoreTile>(container, playerInv), ConfigWidget<CoreTile> {
-    override val texture: ResourceLocation = "textures/gui/farmer_gui.png".resLoc
+    override val texture: ResourceLocation = "textures/gui/solidifier_gui.png".resLoc
     override fun renderMain(stack: PoseStack, mouseX: Double, mouseY: Double) {
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
     }
@@ -23,6 +23,15 @@ class CoreScreen(
         renderCharger(stack, mouseX, mouseY)
         val power = (tile().energy.energyStored / tile().energy.maxEnergyStored.toFloat()) * 68
         blit(stack, this.leftPos + 165, this.topPos + 8, 0, 114, 3, power.toInt())
+        drawFluid(
+            stack, guiLeft + 23, guiTop + 17, 24, 53, tile().tank.getFluidInTank(0), tile().tank.getTankCapacity(0)
+        )
+
+        drawFluid(
+            stack, guiLeft + 73, guiTop + 17, 24, 53, tile().tankTwo.getFluidInTank(0), tile().tankTwo.getTankCapacity(0)
+        )
+
+        blit(stack, guiLeft + 106, guiTop + 41, 0, 99, ((tile().time / tile().totalTime) * 20f).toInt(), 15)
     }
 
     override fun renderToolTips(stack: PoseStack, mouseX: Double, mouseY: Double) {

@@ -1,6 +1,5 @@
 package com.github.sieves.registry
 
-import com.github.sieves.recipes.SieveRecipe
 import com.github.sieves.recipes.SieveRecipe.Serializer
 import com.github.sieves.api.tab.Tab
 import com.github.sieves.api.tab.TabRegistry
@@ -21,8 +20,7 @@ import com.github.sieves.content.machines.trash.*
 import com.github.sieves.content.machines.trash.TrashRenderer
 import com.github.sieves.content.modules.*
 import com.github.sieves.content.modules.io.*
-import com.github.sieves.recipes.MaterializerRecipe
-import com.github.sieves.recipes.MaterializerRecipe.*
+import com.github.sieves.recipes.*
 //import com.github.sieves.content.modules.HungerModule
 //import com.github.sieves.content.modules.PowerModule
 //import com.github.sieves.content.modules.SightModule
@@ -65,13 +63,13 @@ internal object Registry : ListenerRegistry() {
     object Recipes : Registry<RecipeSerializer<*>>(ForgeRegistries.RECIPE_SERIALIZERS) {
         val SieveSerializer by register("sieve") { Serializer }
         val MaterializerSerializer by register("materializer") { MaterializerRecipe.Serializer }
+        val SolidifierSerializer by register("solidifer") { SolidifierRecipe.Serializer }
     }
 
     /**
      * ========================RecipeTypes registry=================
      */
-    object RecipeTypes :
-        MojangRegistry<net.minecraft.core.Registry<RecipeType<*>>, RecipeType<*>>(net.minecraft.core.Registry.RECIPE_TYPE_REGISTRY) {
+    object RecipeTypes : MojangRegistry<net.minecraft.core.Registry<RecipeType<*>>, RecipeType<*>>(net.minecraft.core.Registry.RECIPE_TYPE_REGISTRY) {
         val Synthesizer: RecipeType<SieveRecipe> by register("sieve") {
             object : RecipeType<SieveRecipe> {
                 override fun toString(): String {
@@ -84,6 +82,15 @@ internal object Registry : ListenerRegistry() {
             object : RecipeType<MaterializerRecipe> {
                 override fun toString(): String {
                     return "materializer".resLoc.toString()
+                }
+            }
+        }
+
+
+        val Solidifier: RecipeType<SolidifierRecipe> by register("solidifer") {
+            object : RecipeType<SolidifierRecipe> {
+                override fun toString(): String {
+                    return "solidifer".resLoc.toString()
                 }
             }
         }
@@ -108,12 +115,8 @@ internal object Registry : ListenerRegistry() {
         val Forester by register("forester") { ForesterBlock(Properties.of(Material.HEAVY_METAL)) }
         val Materializer by register("materializer") { MaterializerBlock(Properties.of(Material.HEAVY_METAL)) }
         val Trash by register("trash") { TrashBlock(Properties.of(Material.HEAVY_METAL)) }
-        val Core by register("core") { CoreBlock(Properties.of(Material.HEAVY_METAL)) }
+        val Core by register("core") { CoreBlock(Properties.of(Material.HEAVY_METAL).noOcclusion()) }
         val Flux by register("flux_block") { object : Block(Properties.of(Material.HEAVY_METAL)) {} }
-        val FluxIron by register("flux_iron") {
-            object : Block(Properties.copy(net.minecraft.world.level.block.Blocks.IRON_BLOCK)
-                               .isRedstoneConductor { _, _, _ -> true }) {}
-        }
     }
 
     /**
@@ -128,14 +131,7 @@ internal object Registry : ListenerRegistry() {
         val Fluids by register("tank") { tile(Blocks.Fluids) { FluidsTile(it.first, it.second) } }
         val Farmer by register("farmer") { tile(Blocks.Farmer) { FarmerTile(it.first, it.second) } }
         val Forester by register("forester") { tile(Blocks.Forester) { ForesterTile(it.first, it.second) } }
-        val Materializer by register("materializer") {
-            tile(Blocks.Materializer) {
-                MaterializerTile(
-                    it.first,
-                    it.second
-                )
-            }
-        }
+        val Materializer by register("materializer") { tile(Blocks.Materializer) { MaterializerTile(it.first, it.second) } }
     }
 
     /**
@@ -160,18 +156,10 @@ internal object Registry : ListenerRegistry() {
         val PowerModule by register("power_module") { PowerModule() }
         val HungerModule by register("hunger_module") { HungerModule() }
         val TeleportModule by register("teleport_module") { TeleportModule() }
-        val ScareModule by register("scare_module") { ScareModule() }
+//        val ScareModule by register("scare_module") { ScareModule() }
         val ExportModule by register("export_module") { ExportModule() }
-        val Flux by register("flux_block") {
-            object :
-                BlockItem(Blocks.Flux, Properties().fireResistant().durability(90).tab(CreativeTab)) {}
-        }
-        val FluxDust by register("flux_dust") {
-            object : Item(Properties().tab(CreativeTab).fireResistant().durability(10)) {}
-        }
-        val FluxIron by register("flux_iron") {
-            object : BlockItem(Blocks.FluxIron, Properties().stacksTo(64).fireResistant().tab(CreativeTab)) {}
-        }
+        val Flux by register("flux_block") { object : BlockItem(Blocks.Flux, Properties().fireResistant().durability(90).tab(CreativeTab)) {} }
+        val FluxDust by register("flux_dust") { object : Item(Properties().tab(CreativeTab).fireResistant().durability(10)) {} }
         val Linker by register("linker") { LinkItem() }
         val CreativeTab = object : CreativeModeTab("Sieves") {
             override fun makeIcon(): ItemStack = ItemStack(SpeedUpgrade)
@@ -189,11 +177,10 @@ internal object Registry : ListenerRegistry() {
         val PlayerSight by Tab.register("player_sight_tab".resLoc, SightModule::TabSpec)
         val PlayerStep by Tab.register("player_step_tab".resLoc, StepModule::TabSpec)
         val PlayerFlight by Tab.register("player_flight_tab".resLoc, FlightModule::TabSpec)
-        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
+//        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
         val PlayerExport by Tab.register("player_export_tab".resLoc, ExportModule::TabSpec)
 
-        override fun register(modId: String, modBus: IEventBus, forgeBus: IEventBus) =
-            TabRegistry.register(modId, modBus, forgeBus)
+        override fun register(modId: String, modBus: IEventBus, forgeBus: IEventBus) = TabRegistry.register(modId, modBus, forgeBus)
     }
 
     /**
@@ -287,6 +274,8 @@ internal object Registry : ListenerRegistry() {
         val MenuOpen by register(13) { MenuStatePacket() }
         val MaterializerStart by register(14) { StartMaterializer() }
         val MaterializerStop by register(15) { StopMaterializer() }
+        val SolidiferStart by register(16) { StartSolidifer() }
+        val SolidiferStop by register(17) { StopSolidifer() }
     }
 
     @Sub
@@ -295,10 +284,10 @@ internal object Registry : ListenerRegistry() {
         runWhenOn(Dist.CLIENT) {
             ItemBlockRenderTypes.setRenderLayer(Blocks.Synthesizer, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Trash, RenderType.cutoutMipped())
-            ItemBlockRenderTypes.setRenderLayer(Blocks.Core, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Battery, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Box, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Fluids, RenderType.translucent())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Core, RenderType.cutout())
             MenuScreens.register(Containers.Synthesizer) { menu, inv, _ -> SynthesizerScreen(menu, inv) }
             MenuScreens.register(Containers.Trash) { menu, inv, _ -> TrashScreen(menu, inv) }
             MenuScreens.register(Containers.Core) { menu, inv, _ -> CoreScreen(menu, inv) }
@@ -318,9 +307,16 @@ internal object Registry : ListenerRegistry() {
     fun clientOnRendererRegister(event: RegisterRenderers) {
         runWhenOn(Dist.CLIENT) {
             Net.DeleteItem.clientListener(TrashRenderer::netListener)
+            Net.HarvestBlock.clientListener(FarmerRenderer::onHarvestBlock)
+            Net.GrowBlock.clientListener(FarmerRenderer::onGrowBlock)
+            Net.HarvestBlock.clientListener(ForesterRenderer::onHarvestBlock)
+            Net.GrowBlock.clientListener(ForesterRenderer::onGrowBlock)
+
+            Net.SolidiferStart.clientListener(CoreRenderer::onStart)
+            Net.SolidiferStop.clientListener(CoreRenderer::onStop)
             event.registerBlockEntityRenderer(Tiles.Synthesizer) { SynthesizerRenderer() }
             event.registerBlockEntityRenderer(Tiles.Trash) { TrashRenderer() }
-            event.registerBlockEntityRenderer(Tiles.Core) { CoreRenderer() }
+            event.registerBlockEntityRenderer(Tiles.Core) { CoreRenderer(it) }
             event.registerBlockEntityRenderer(Tiles.Battery) { BatteryRenderer() }
             event.registerBlockEntityRenderer(Tiles.Box) { BoxRenderer() }
             event.registerBlockEntityRenderer(Tiles.Fluids) { FluidsRenderer() }

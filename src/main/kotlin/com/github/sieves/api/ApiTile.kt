@@ -1,5 +1,6 @@
 package com.github.sieves.api
 
+import com.github.sieves.api.ApiConfig.*
 import com.github.sieves.api.ApiConfig.SideConfig.*
 import com.github.sieves.content.machines.materializer.*
 import com.github.sieves.content.machines.synthesizer.*
@@ -25,6 +26,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.*
 import net.minecraftforge.fluids.capability.templates.*
 import net.minecraftforge.items.*
 import java.util.function.*
+import kotlin.collections.HashMap
 import kotlin.properties.*
 import kotlin.reflect.*
 import net.minecraft.world.item.Items as McItems
@@ -42,8 +44,8 @@ abstract class ApiTile<T : ApiTile<T>>(
     protected val energyHandler: LazyOptional<EnergyStorage> = LazyOptional.of { energy }
     abstract val items: ItemStackHandler
     protected val itemHandler: LazyOptional<IItemHandler> = LazyOptional.of { items }
-    abstract val fluids: FluidTank
-    val fluidHandler: LazyOptional<IFluidHandler> = LazyOptional.of { fluids }
+    abstract val tank: FluidTank
+    val tankHandler: LazyOptional<IFluidHandler> = LazyOptional.of { tank }
 
     abstract val ioPower: Int
     abstract val ioRate: Int
@@ -52,10 +54,9 @@ abstract class ApiTile<T : ApiTile<T>>(
      * Updates the block on the client
      */
     fun update() {
-        requestModelDataUpdate()
+//        requestModelDataUpdate()
         setChanged()
         if (level != null) {
-            level!!.setBlockAndUpdate(worldPosition, blockState)
             level!!.sendBlockUpdated(worldPosition, blockState, blockState, 3)
         }
     }
@@ -76,6 +77,13 @@ abstract class ApiTile<T : ApiTile<T>>(
         }
     }
 
+    /**
+     * Block a given side for the tile config
+     */
+    open fun isSideValidFor(side: SideConfig, direction: Direction): Boolean {
+        return true
+    }
+
     override fun getRenderBoundingBox(): AABB {
         return INFINITE_EXTENT_AABB
     }
@@ -89,50 +97,119 @@ abstract class ApiTile<T : ApiTile<T>>(
         for (key in Direction.values()) {
             val value = getConfig()[key]
             val tile = level?.getBlockEntity(blockPos.offset(key.normal)) ?: continue
-            if (value.canExportPower) {
-                val cap = tile.getCapability(CapabilityEnergy.ENERGY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-                    val extracted = energy.extractEnergy(ioPower, true)
-                    val leftOver = other.receiveEnergy(extracted, false)
-                    energy.extractEnergy(leftOver, false)
-                }
+            exportPower(value, tile, key)
+            exportItems(value, tile, key)
+            exportFluids(value, tile, key)
+        }
+    }
+
+    protected open fun exportPower(value: SideConfig, tile: BlockEntity, direction: Direction) {
+        if (value.canExportPower) {
+            val cap = tile.getCapability(CapabilityEnergy.ENERGY, direction.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                val extracted = energy.extractEnergy(ioPower, true)
+                val leftOver = other.receiveEnergy(extracted, false)
+                energy.extractEnergy(leftOver, false)
             }
-            if (value.canExportItem) {
-                val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-                    if (this is MaterializerTile) {
-                        for (slot in 1 until this.items.slots) {
-                            if (items.getStackInSlot(slot).isEmpty) continue
-                            val extracted = items.extractItem(slot, ioRate, false)
-                            val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
-                            if (leftOver.isEmpty && !extracted.isEmpty) break
-                            items.insertItem(slot, leftOver, false)
-                        }
-                    } else if (this is SynthesizerTile) {
-                        if (items.getStackInSlot(2).isEmpty) continue
-                        val extracted = items.extractItem(2, ioRate, false)
-                        val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
-                        if (leftOver.isEmpty && !extracted.isEmpty) break
-                        items.insertItem(2, leftOver, false)
-                    } else for (slot in 0 until this.items.slots) {
+        }
+    }
+
+    protected open fun exportItems(value: SideConfig, tile: BlockEntity, direction: Direction) {
+        if (value.canExportItem) {
+            val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                if (this is MaterializerTile) {
+                    for (slot in 1 until this.items.slots) {
                         if (items.getStackInSlot(slot).isEmpty) continue
                         val extracted = items.extractItem(slot, ioRate, false)
                         val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
-                        if (leftOver.isEmpty && !extracted.isEmpty) break
+                        if (leftOver.isEmpty && !extracted.isEmpty) return
                         items.insertItem(slot, leftOver, false)
                     }
+                } else if (this is SynthesizerTile) {
+                    if (items.getStackInSlot(2).isEmpty) return
+                    val extracted = items.extractItem(2, ioRate, false)
+                    val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
+                    if (leftOver.isEmpty && !extracted.isEmpty) return
+                    items.insertItem(2, leftOver, false)
+                } else for (slot in 0 until this.items.slots) {
+                    if (items.getStackInSlot(slot).isEmpty) continue
+                    val extracted = items.extractItem(slot, ioRate, false)
+                    val leftOver = ItemHandlerHelper.insertItem(other, extracted, false)
+                    if (leftOver.isEmpty && !extracted.isEmpty) break
+                    items.insertItem(slot, leftOver, false)
                 }
             }
-            if (value.canExportFluid && fluids.capacity > 0) {
-                val cap = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-                    val extracted = fluids.drain(this.ioRate, SIMULATE)
-                    if (other.fill(extracted, SIMULATE) == extracted.amount) {
-                        other.fill(fluids.drain(this.ioRate, EXECUTE), EXECUTE)
-                    }
+        }
+    }
+
+    protected open fun exportFluids(value: SideConfig, tile: BlockEntity, direction: Direction) {
+        if (value.canExportFluid && tank.capacity > 0) {
+            val cap = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                val extracted = tank.drain(this.ioRate, SIMULATE)
+                if (other.fill(extracted, SIMULATE) == extracted.amount) {
+                    other.fill(tank.drain(this.ioRate, EXECUTE), EXECUTE)
+                }
+            }
+        }
+    }
+
+    protected open fun importPower(value: SideConfig, tile: BlockEntity, key: Direction) {
+        if (value.canImportPower) {
+            val cap = tile.getCapability(CapabilityEnergy.ENERGY, key.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                val extracted = other.extractEnergy(ioPower, true)
+                val leftOver = energy.receiveEnergy(extracted, false)
+                other.extractEnergy(leftOver, false)
+            }
+        }
+    }
+
+    protected open fun importItems(value: SideConfig, tile: BlockEntity, key: Direction) {
+        if (value.canImportItem) {
+            val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                for (slot in 0 until other.slots) {
+                    if (other.getStackInSlot(slot).isEmpty) continue
+                    val extracted = other.extractItem(slot, ioRate, false)
+
+                    val leftOver =
+                        if (this is SynthesizerTile) if (extracted.`is`(Items.Linker) || extracted.`is`(McItems.ENDER_EYE)
+                        ) items.insertItem(
+                            1,
+                            extracted,
+                            false
+                        ) else items.insertItem(
+                            0,
+                            extracted,
+                            false
+                        ) else if (this is MaterializerTile) items.insertItem(
+                            0,
+                            extracted,
+                            false
+                        ) else ItemHandlerHelper.insertItem(items, extracted, false)
+                    if (leftOver.isEmpty && !extracted.isEmpty) break
+                    other.insertItem(slot, leftOver, false)
+                }
+            }
+        }
+    }
+
+    protected open fun importFluids(value: SideConfig, tile: BlockEntity, key: Direction) {
+        if (value.canImportFluid && tank.capacity > 0) {
+            val cap = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, key.opposite)
+            if (cap.isPresent) {
+                val other = cap.resolve().get()
+                val extracted = other.drain(this.ioRate, SIMULATE)
+                val result = tank.fill(extracted, SIMULATE)
+                if (tank.fill(extracted, SIMULATE) == extracted.amount) {
+                    tank.fill(other.drain(this.ioRate, EXECUTE), EXECUTE)
                 }
             }
         }
@@ -142,54 +219,9 @@ abstract class ApiTile<T : ApiTile<T>>(
         for (key in Direction.values()) {
             val value = getConfig()[key]
             val tile = level?.getBlockEntity(blockPos.offset(key.normal)) ?: continue
-            if (value.canImportPower) {
-                val cap = tile.getCapability(CapabilityEnergy.ENERGY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-                    val extracted = other.extractEnergy(ioPower, true)
-                    val leftOver = energy.receiveEnergy(extracted, false)
-                    other.extractEnergy(leftOver, false)
-                }
-            }
-            if (value.canImportItem) {
-                val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-
-                    for (slot in 0 until other.slots) {
-                        if (other.getStackInSlot(slot).isEmpty) continue
-                        val extracted = other.extractItem(slot, ioRate, false)
-
-                        val leftOver =
-                            if (this is SynthesizerTile) if (extracted.`is`(Items.Linker) || extracted.`is`(McItems.ENDER_EYE)
-                            ) items.insertItem(
-                                1,
-                                extracted,
-                                false
-                            ) else items.insertItem(
-                                0,
-                                extracted,
-                                false
-                            ) else if (this is MaterializerTile) items.insertItem(
-                                0,
-                                extracted,
-                                false
-                            ) else ItemHandlerHelper.insertItem(items, extracted, false)
-                        if (leftOver.isEmpty && !extracted.isEmpty) break
-                        other.insertItem(slot, leftOver, false)
-                    }
-                }
-            }
-            if (value.canImportFluid && fluids.capacity > 0) {
-                val cap = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, key.opposite)
-                if (cap.isPresent) {
-                    val other = cap.resolve().get()
-                    val extracted = other.drain(this.ioRate, SIMULATE)
-                    if (fluids.fill(extracted, SIMULATE) == extracted.amount) {
-                        fluids.fill(other.drain(this.ioRate, EXECUTE), EXECUTE)
-                    }
-                }
-            }
+            importPower(value, tile, key)
+            importItems(value, tile, key)
+            importFluids(value, tile, key)
         }
     }
 
@@ -230,20 +262,19 @@ abstract class ApiTile<T : ApiTile<T>>(
 
     override fun <T : Any?> getCapability(cap: Capability<T>, side: Direction?): LazyOptional<T> {
         if (side == null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && items.slots > 0) return itemHandler.cast()
-        if (side == null && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && fluids.capacity > 0) return fluidHandler.cast()
+        if (side == null && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && tank.capacity > 0) return tankHandler.cast()
         if (side == null && cap == CapabilityEnergy.ENERGY && energy.maxEnergyStored > 0) return energyHandler.cast()
         if (side == null) return super.getCapability(cap, null)
         return when (getConfig()[side]) {
             InputItem, OutputItem, InputOutputItems -> if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == cap) itemHandler.cast() else LazyOptional.empty()
             InputPower, OutputPower, InputOutputPower -> if (CapabilityEnergy.ENERGY == cap) energyHandler.cast() else LazyOptional.empty()
-            InputFluid, OutputFluid, InputOutputFluid -> if (CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY == cap) fluidHandler.cast() else LazyOptional.empty()
+            InputFluid, OutputFluid, InputOutputFluid -> if (CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY == cap) tankHandler.cast() else LazyOptional.empty()
             InputOutputAll -> if (CapabilityItemHandler.ITEM_HANDLER_CAPABILITY == cap) itemHandler.cast()
             else if (CapabilityEnergy.ENERGY == cap) energyHandler.cast()
-            else if (CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY == cap) fluidHandler.cast()
+            else if (CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY == cap) tankHandler.cast()
             else LazyOptional.empty()
             None -> LazyOptional.empty()
         }
-
     }
 
 
@@ -278,7 +309,7 @@ abstract class ApiTile<T : ApiTile<T>>(
      */
     protected open fun onInvalidate() {
         this.energyHandler.invalidate()
-        this.fluidHandler.invalidate()
+        this.tankHandler.invalidate()
         this.itemHandler.invalidate()
     }
 
@@ -300,7 +331,7 @@ abstract class ApiTile<T : ApiTile<T>>(
         extra.put("items", items.serializeNBT())
         extra.put("energy", energy.serializeNBT())
         extra.put(
-            "fluids", this.fluids.writeToNBT(CompoundTag())
+            "fluids", this.tank.writeToNBT(CompoundTag())
         )
         tag.put("extra_data", extra)
     }
@@ -313,7 +344,7 @@ abstract class ApiTile<T : ApiTile<T>>(
         configuration.deserializeNBT(extra.getCompound("configuration"))
         items.deserializeNBT(extra.getCompound("items"))
         energy.deserializeNBT(extra.get("energy"))
-        fluids.readFromNBT(extra.getCompound("fluids"))
+        tank.readFromNBT(extra.getCompound("fluids"))
     }
 
     override fun getUpdatePacket(): Packet<ClientGamePacketListener>? {

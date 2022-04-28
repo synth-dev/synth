@@ -28,7 +28,7 @@ class BoxTile(pos: BlockPos, state: BlockState) :
     private val removals = ArrayList<BlockPos>(20)
     override val energy = TrackedEnergy(250_000, ::update)
     override val items = TrackedInventory(24, ::update)
-    override val fluids = TrackedTank(0, ::update)//250 buckets base
+    override val tank = TrackedTank(0, ::update)//250 buckets base
     private var tick = 0
     val links = Links()
     val powerCost: Int get() = ((links.getLinks().size * 600) / configuration.efficiencyModifier).roundToInt()

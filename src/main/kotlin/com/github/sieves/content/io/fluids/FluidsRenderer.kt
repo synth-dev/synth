@@ -201,7 +201,7 @@ class FluidsRenderer : ApiRenderer<FluidsTile>() {
     }
 
     override fun getViewDistance(): Int {
-        return 256
+        return 64
     }
 
     override fun shouldRender(pBlockEntity: FluidsTile, pCameraPos: Vec3): Boolean {

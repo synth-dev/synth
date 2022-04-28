@@ -52,6 +52,7 @@ class SightModule : ApiTabItem(Registry.Tabs.PlayerSight.key, BatteryTile::class
             .withTarget("net.minecraft.client.gui.screens.inventory.InventoryScreen")
             .withTarget("net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen")
             .withInit(::init)
+            .withInterval(20)
             .withServerTick(::onServerTick).withClientTick(::onClientTick).withServerClick(::onServerClick)
             .withMenu(::renderMenu).build()
 
