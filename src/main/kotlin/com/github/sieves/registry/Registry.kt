@@ -368,13 +368,13 @@ internal object Registry : ListenerRegistry() {
      */
     @Sub
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        val player = event.player
-        val level = player.level
-        val be = level.getBlockEntity(event.pos) ?: return
-        if (be is IMultiBlock<*>) {
-            if (event.side.isClient) event.face?.let { event.cancellationResult = be.onUseClient(player, event.itemStack, it) }
-            if (event.side.isServer) event.face?.let { event.cancellationResult = be.onUseServer(player as ServerPlayer, event.itemStack, it) }
-        }
+//        val player = event.player
+//        val level = player.level
+//        val be = level.getBlockEntity(event.pos) ?: return
+//        if (be is IMultiBlock<*>) {
+//            if (event.side.isClient) event.face?.let { event.cancellationResult = be.onUseClient(player, event.itemStack, it) }
+//            if (event.side.isServer) event.face?.let { event.cancellationResult = be.onUseServer(player as ServerPlayer, event.itemStack, it) }
+//        }
     }
 
 

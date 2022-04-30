@@ -49,8 +49,12 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : ReactorTile<Cont
     override fun onServerTick() {
         if (tick >= 10) {
             if (level != null) {
-                if (!multiBlock.checkBlocks(level!!))
+                if (!multiBlock.checkBlocks(level!!)) {
                     update()
+                    this.multiBlock.links.removeLinks()
+                    this.multiBlock.isFormed = false
+                    sparks.removeLinks()
+                }
             }
             if (multiBlock.isFormed) {
                 multiBlock.updateBounds()
@@ -88,17 +92,16 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : ReactorTile<Cont
         }
         if (be.ctrl.isAbsent || be.ctrlPos == BlockPos.ZERO)
             be.ctrlPos = (this.blockPos)
-        val behind = be.neighborState(Side.Front, false)
-        if (behind.`is`(Blocks.Input) && !sparks.contains(blockPos)) {
+        if (!sparks.contains(blockPos)) {
             sparks.addLink(blockPos)
             info { "Added spark root at: ${blockPos.toShortString()}" }
             update()
         }
-        if (this.sparks.contains(blockPos) && !behind.`is`(Blocks.Input)) {
-            sparks.removeLink(blockPos)
-            info { "Removed spark at: ${blockPos.toShortString()}" }
-            update()
-        }
+//        if (this.sparks.contains(blockPos)) {
+//            sparks.removeLink(blockPos)
+//            info { "Removed spark at: ${blockPos.toShortString()}" }
+//            update()
+//        }
     }
 
     override fun onSave(tag: CompoundTag) {

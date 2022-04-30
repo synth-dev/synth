@@ -162,6 +162,7 @@ dependencies {
     runtimeOnly(fg.deobf("com.blakebr0.mysticalagriculture:MysticalAgriculture:1.18.2-5.1.0"))
     runtimeOnly(fg.deobf("curse.maven:oh-the-biomes-youll-go-247560:3759851"))
     runtimeOnly(fg.deobf("curse.maven:terrablender-563928:3725996"))
+    runtimeOnly(fg.deobf("curse.maven:worldedit-225608:3697298"))
 }
 
 

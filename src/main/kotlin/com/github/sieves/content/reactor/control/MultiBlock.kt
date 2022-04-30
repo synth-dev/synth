@@ -26,7 +26,6 @@ import net.minecraftforge.common.util.INBTSerializable
  */
 data class MultiBlock(val center: BlockPos) : INBTSerializable<CompoundTag> {
     var isFormed: Boolean = false
-        private set
     internal val links = Links()
     private val processed = HashMap<BlockPos, BlockState>()
     var min: Vec3i = Vec3i.ZERO.min()
@@ -50,10 +49,10 @@ data class MultiBlock(val center: BlockPos) : INBTSerializable<CompoundTag> {
     fun form(level: Level, forward: Direction) {
         if (isFormed) return
         //Reset all the state
-        for (link in links.getLinks().keys) {
-            val state = level.getBlockState(link).block.defaultBlockState()
-            level.setBlockAndUpdate(link, state)
-        }
+//        for (link in links.getLinks().keys) {
+//            val state = level.getBlockState(link).block.defaultBlockState()
+//            level.setBlockAndUpdate(link, state)
+//        }
         links.removeLinks()
         processed.clear()
         checkAddNeighbors(level, center, forward)
@@ -66,6 +65,10 @@ data class MultiBlock(val center: BlockPos) : INBTSerializable<CompoundTag> {
 
             }
             isFormed = true
+        } else {
+            links.removeLinks()
+            processed.clear()
+            isFormed = false
         }
     }
 
@@ -102,7 +105,6 @@ data class MultiBlock(val center: BlockPos) : INBTSerializable<CompoundTag> {
     private fun checkAddNeighbors(level: Level, blockPos: BlockPos, forward: Direction) {
         val state = level.getBlockState(blockPos)
         //Break when we hit air, no side checks here
-        if (state.isAir) return
         if (links.getLinks().containsKey(blockPos) || processed.containsKey(blockPos)) return
         processed[blockPos] = state
         if (state.`is`(Blocks.Control)) {
@@ -114,21 +116,29 @@ data class MultiBlock(val center: BlockPos) : INBTSerializable<CompoundTag> {
         //get the up/down/left/right offsets for the direction,
         //Iterate through each blockpos offset check to see if it's valid
         val up = level.getBlockState(blockPos.offset(UP))
-        if (up.`is`(Blocks.Panel) || up.`is`(Blocks.Case) || up.`is`(Blocks.Input) || up.`is`(Blocks.Output)) checkAddNeighbors(
+        if ((up.`is`(Blocks.Panel) || up.`is`(Blocks.Case) || up.`is`(Blocks.Input) || up.`is`(Blocks.Output)) && !processed.containsKey(blockPos.offset(UP))) checkAddNeighbors(
             level, blockPos.offset(UP), forward
         )
         val down = level.getBlockState(blockPos.offset(DOWN))
-        if (down.`is`(Blocks.Panel) || down.`is`(Blocks.Case) || down.`is`(Blocks.Input) || down.`is`(Blocks.Output)) checkAddNeighbors(
+        if ((down.`is`(Blocks.Panel) || down.`is`(Blocks.Case) || down.`is`(Blocks.Input) || down.`is`(Blocks.Output)) && !processed.containsKey(
+                blockPos.offset(
+                    DOWN
+                )
+            )) checkAddNeighbors(
             level, blockPos.offset(DOWN), forward
         )
         val left = level.getBlockState(blockPos.offset(forward.clockWise))
-        if (left.`is`(Blocks.Panel) || left.`is`(Blocks.Case) || left.`is`(Blocks.Input) || left.`is`(Blocks.Output)) checkAddNeighbors(
+        if ((left.`is`(Blocks.Panel) || left.`is`(Blocks.Case) || left.`is`(Blocks.Input) || left.`is`(Blocks.Output)) && !processed.containsKey(
+                blockPos.offset(
+                    forward.clockWise
+                )
+            )) checkAddNeighbors(
             level, blockPos.offset(forward.clockWise), forward
         )
         val right = level.getBlockState(blockPos.offset(forward.counterClockWise))
 
         val back = level.getBlockState(blockPos.offset(forward))
-        if (back.`is`(Blocks.Panel) || back.`is`(Blocks.Case) && left.isAir) {
+        if ((back.`is`(Blocks.Panel) || back.`is`(Blocks.Case) && left.isAir) && !processed.containsKey(blockPos.offset(forward))) {
             checkAddNeighbors(level, blockPos.offset(forward), forward.counterClockWise)
         }
 
