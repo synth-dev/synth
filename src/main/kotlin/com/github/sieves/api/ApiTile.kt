@@ -175,7 +175,8 @@ abstract class ApiTile<T : ApiTile<T>>(
             val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, key.opposite)
             if (cap.isPresent) {
                 val other = cap.resolve().get()
-                for (slot in 0 until other.slots) {
+                val slots = if (tile is MaterializerTile) 1 else 0
+                for (slot in slots until other.slots) {
                     if (other.getStackInSlot(slot).isEmpty) continue
                     val extracted = other.extractItem(slot, ioRate, false)
 

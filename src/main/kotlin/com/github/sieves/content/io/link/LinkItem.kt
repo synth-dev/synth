@@ -5,8 +5,7 @@ import com.github.sieves.content.io.battery.BatteryTile
 import com.github.sieves.content.io.box.*
 import com.github.sieves.content.io.fluids.FluidsTile
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.getBlockPos
-import com.github.sieves.util.putBlockPos
+import com.github.sieves.util.*
 import net.minecraft.network.chat.TextComponent
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.Nameable
@@ -35,7 +34,7 @@ class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).d
         if (pContext.player?.isShiftKeyDown == true && tile == null) {
             if (tag.contains("from")) {
                 val from = tag.getBlockPos("from")
-                val block = level.getBlockState(from)
+                val block = level.getBlockState(from.bp)
 
                 tag.remove("hasFrom")
                 pContext.player?.displayClientMessage(
@@ -48,7 +47,7 @@ class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).d
             if (pContext.player?.isShiftKeyDown == true && (tile is ApiLinkable)) {
                 if (tag.contains("hasFrom")) {
                     val from = tag.getBlockPos("from")
-                    val fromTile = level.getBlockEntity(from)
+                    val fromTile = level.getBlockEntity(from.bp)
                     if (fromTile !is ApiLinkable) return InteractionResult.FAIL
                     if (from == tile.blockPos) return InteractionResult.FAIL
                     val to = level.getBlockEntity(pContext.clickedPos) ?: return InteractionResult.FAIL
@@ -69,7 +68,7 @@ class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).d
                 } else {
                     tile.unlink()
                     val from = tag.getBlockPos("from")
-                    val block = level.getBlockState(from)
+                    val block = level.getBlockState(from.bp)
                     pContext.player?.displayClientMessage(
                         TextComponent("removed → ${block.block.name.string}"), false
                     )
@@ -79,7 +78,7 @@ class LinkItem : Item(Properties().tab(Registry.Items.CreativeTab).stacksTo(1).d
 
             } else if (tag.getBoolean("hasFrom")) {
                 val from = tag.getBlockPos("from")
-                val fromTile = level.getBlockEntity(from)
+                val fromTile = level.getBlockEntity(from.bp)
                 if (fromTile !is ApiLinkable) return InteractionResult.FAIL
                 if (from == tile!!.blockPos) return InteractionResult.FAIL
                 val to = level.getBlockEntity(pContext.clickedPos) ?: return InteractionResult.FAIL

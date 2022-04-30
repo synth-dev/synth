@@ -3,6 +3,7 @@ package com.github.sieves.registry
 import com.github.sieves.recipes.SieveRecipe.Serializer
 import com.github.sieves.api.tab.Tab
 import com.github.sieves.api.tab.TabRegistry
+import com.github.sieves.api.tile.*
 import com.github.sieves.content.upgrade.Upgrade
 import com.github.sieves.content.battery.*
 import com.github.sieves.content.farmer.*
@@ -20,6 +21,11 @@ import com.github.sieves.content.machines.trash.*
 import com.github.sieves.content.machines.trash.TrashRenderer
 import com.github.sieves.content.modules.*
 import com.github.sieves.content.modules.io.*
+import com.github.sieves.content.reactor.casing.*
+import com.github.sieves.content.reactor.control.*
+import com.github.sieves.content.reactor.fuel.*
+import com.github.sieves.content.reactor.io.*
+import com.github.sieves.content.reactor.spark.*
 import com.github.sieves.recipes.*
 //import com.github.sieves.content.modules.HungerModule
 //import com.github.sieves.content.modules.PowerModule
@@ -34,6 +40,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.screens.MenuScreens
 import net.minecraft.client.renderer.ItemBlockRenderTypes
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.inventory.MenuType
 import net.minecraft.world.item.BlockItem
@@ -49,6 +56,8 @@ import net.minecraft.world.level.material.Material
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.network.IContainerFactory
@@ -117,6 +126,13 @@ internal object Registry : ListenerRegistry() {
         val Trash by register("trash") { TrashBlock(Properties.of(Material.HEAVY_METAL)) }
         val Core by register("core") { CoreBlock(Properties.of(Material.HEAVY_METAL).noOcclusion()) }
         val Flux by register("flux_block") { object : Block(Properties.of(Material.HEAVY_METAL)) {} }
+        val Panel by register("panel") { PanelBlock() }
+        val Spark by register("spark") { SparkBlock() }
+        val Case by register("case") { CasingBlock() }
+        val Control by register("control") { ControlBlock() }
+        val Input by register("input") { InputBlock() }
+        val Output by register("output") { OutputBlock() }
+        val Fuel by register("fuel") { FuelBlock() }
     }
 
     /**
@@ -132,6 +148,11 @@ internal object Registry : ListenerRegistry() {
         val Farmer by register("farmer") { tile(Blocks.Farmer) { FarmerTile(it.first, it.second) } }
         val Forester by register("forester") { tile(Blocks.Forester) { ForesterTile(it.first, it.second) } }
         val Materializer by register("materializer") { tile(Blocks.Materializer) { MaterializerTile(it.first, it.second) } }
+        val Control by register("control") { tile(Blocks.Control) { ControlTile(it.first, it.second) } }
+        val Input by register("input") { tile(Blocks.Input) { InputTile(it.first, it.second) } }
+        val Output by register("output") { tile(Blocks.Output) { OutputTile(it.first, it.second) } }
+        val Spark by register("spark") { tile(Blocks.Spark) { SparkTile(it.first, it.second) } }
+//        val Fuel by register("output") { tile(Blocks.Output) { OutputTile(it.first, it.second) } }
     }
 
     /**
@@ -146,6 +167,13 @@ internal object Registry : ListenerRegistry() {
         val Fluids by register("tank") { FluidsItem() }
         val Farmer by register("farmer") { FarmerItem() }
         val Forester by register("forester") { ForesterItem() }
+        val Panel by register("panel") { object : BlockItem(Blocks.Panel, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Spark by register("spark") { object : BlockItem(Blocks.Spark, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Case by register("case") { object : BlockItem(Blocks.Case, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Control by register("control") { object : BlockItem(Blocks.Control, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Input by register("input") { object : BlockItem(Blocks.Input, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Output by register("output") { object : BlockItem(Blocks.Output, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Fuel by register("fuel") { object : BlockItem(Blocks.Fuel, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
         val Materializer by register("materializer") { MaterializerItem() }
         val SpeedUpgrade by register("speed") { Upgrade(0, 16) }
         val EfficiencyUpgrade by register("efficiency") { Upgrade(1, 16) }
@@ -156,10 +184,11 @@ internal object Registry : ListenerRegistry() {
         val PowerModule by register("power_module") { PowerModule() }
         val HungerModule by register("hunger_module") { HungerModule() }
         val TeleportModule by register("teleport_module") { TeleportModule() }
-//        val ScareModule by register("scare_module") { ScareModule() }
+
+        //        val ScareModule by register("scare_module") { ScareModule() }
         val ExportModule by register("export_module") { ExportModule() }
-        val Flux by register("flux_block") { object : BlockItem(Blocks.Flux, Properties().fireResistant().durability(90).tab(CreativeTab)) {} }
-        val FluxDust by register("flux_dust") { object : Item(Properties().tab(CreativeTab).fireResistant().durability(10)) {} }
+        val Flux by register("flux_block") { object : BlockItem(Blocks.Flux, Properties().fireResistant().stacksTo(64).tab(CreativeTab)) {} }
+        val FluxDust by register("flux_dust") { object : Item(Properties().tab(CreativeTab).fireResistant().stacksTo(64)) {} }
         val Linker by register("linker") { LinkItem() }
         val CreativeTab = object : CreativeModeTab("Sieves") {
             override fun makeIcon(): ItemStack = ItemStack(SpeedUpgrade)
@@ -177,7 +206,8 @@ internal object Registry : ListenerRegistry() {
         val PlayerSight by Tab.register("player_sight_tab".resLoc, SightModule::TabSpec)
         val PlayerStep by Tab.register("player_step_tab".resLoc, StepModule::TabSpec)
         val PlayerFlight by Tab.register("player_flight_tab".resLoc, FlightModule::TabSpec)
-//        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
+
+        //        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
         val PlayerExport by Tab.register("player_export_tab".resLoc, ExportModule::TabSpec)
 
         override fun register(modId: String, modBus: IEventBus, forgeBus: IEventBus) = TabRegistry.register(modId, modBus, forgeBus)
@@ -278,6 +308,7 @@ internal object Registry : ListenerRegistry() {
         val SolidiferStop by register(17) { StopSolidifer() }
     }
 
+
     @Sub
     @OnlyIn(Dist.CLIENT)
     fun onClientSetup(event: FMLClientSetupEvent) {
@@ -288,6 +319,12 @@ internal object Registry : ListenerRegistry() {
             ItemBlockRenderTypes.setRenderLayer(Blocks.Box, RenderType.cutoutMipped())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Fluids, RenderType.translucent())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Core, RenderType.cutout())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Panel, RenderType.cutout())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Spark, RenderType.cutout())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Case, RenderType.translucent())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Input, RenderType.translucent())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Output, RenderType.translucent())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Fuel, RenderType.translucent())
             MenuScreens.register(Containers.Synthesizer) { menu, inv, _ -> SynthesizerScreen(menu, inv) }
             MenuScreens.register(Containers.Trash) { menu, inv, _ -> TrashScreen(menu, inv) }
             MenuScreens.register(Containers.Core) { menu, inv, _ -> CoreScreen(menu, inv) }
@@ -325,5 +362,20 @@ internal object Registry : ListenerRegistry() {
             event.registerBlockEntityRenderer(Tiles.Materializer) { MaterializerRenderer() }
         }
     }
+
+    /**
+     * Handles the custom interaction on right click even when shiftclicking
+     */
+    @Sub
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val player = event.player
+        val level = player.level
+        val be = level.getBlockEntity(event.pos) ?: return
+        if (be is IMultiBlock<*>) {
+            if (event.side.isClient) event.face?.let { event.cancellationResult = be.onUseClient(player, event.itemStack, it) }
+            if (event.side.isServer) event.face?.let { event.cancellationResult = be.onUseServer(player as ServerPlayer, event.itemStack, it) }
+        }
+    }
+
 
 }

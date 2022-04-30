@@ -1,23 +1,28 @@
 package com.github.sieves.content.io.link
 
-import com.github.sieves.util.getBlockPos
-import com.github.sieves.util.putBlockPos
+import com.github.sieves.util.*
 import com.google.common.collect.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.Direction.*
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.*
+import net.minecraft.world.level.block.entity.*
 import net.minecraftforge.common.util.INBTSerializable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.reflect.*
 
 /**
  * Used to link together one to many blocks
  */
-class Links() : INBTSerializable<CompoundTag> {
+class Links() : INBTSerializable<CompoundTag>, Iterable<BlockPos> {
     private val links = HashMap<BlockPos, ArrayList<Direction>>()
     private val toRemove: Queue<BlockPos> = Queues.newArrayDeque()
     private var top: BlockPos = BlockPos(0, -64, 0)
+
+    fun contains(blockPos: BlockPos): Boolean = links.containsKey(blockPos)
 
     fun getLinks(): Map<BlockPos, List<Direction>> {
         return links
@@ -32,6 +37,27 @@ class Links() : INBTSerializable<CompoundTag> {
         val list = links.getOrPut(other) { ArrayList() }
         if (!list.contains(direction)) list.add(direction)
     }
+
+
+    /**
+     * allows for iteration over the inlined block entity types retrieved from the level
+     */
+    inline fun <reified T : BlockEntity> forEach(level: Level, consumer: (T) -> Unit) {
+        for (link in getLinks().keys) {
+            val be = level.getBlockEntity(link)
+            if (T::class.isInstance(be))
+                consumer(T::class.cast(be))
+        }
+    }
+
+    /**
+     * Returns a collection containing only the filtered out block entities
+     */
+    inline fun <reified T : BlockEntity> instancesOf(level: Level): Iterable<T> {
+        return getLinks().keys.mapNotNull { level.getBlockEntity(it) }.filterIsInstance<T>()
+    }
+
+    fun addLink(other: BlockPos) = addLink(other, NORTH)
 
     fun removeLink(pos: BlockPos, direction: Direction? = null) {
         if (direction == null) links.remove(pos)
@@ -81,12 +107,12 @@ class Links() : INBTSerializable<CompoundTag> {
     override fun deserializeNBT(nbt: CompoundTag) {
         val size = nbt.getInt("count")
         links.clear()
-        this.top = nbt.getBlockPos("top")
+        this.top = nbt.getBlockPos("top").bp
         for (i in 0 until size) {
             val pos = nbt.getBlockPos("pos_${i}")
             val values = nbt.getCompound("link_${i}")
             val count = values.getInt("size")
-            val list = links.getOrPut(pos) { ArrayList() }
+            val list = links.getOrPut(pos.bp) { ArrayList() }
             for (j in 0 until count) {
                 val dir = Direction.values()[values.getInt("dir_${j}")]
                 list.add(dir)
@@ -94,4 +120,8 @@ class Links() : INBTSerializable<CompoundTag> {
         }
     }
 
+    /**
+     * Returns an iterator over the elements of this object.
+     */
+    override fun iterator(): Iterator<BlockPos> = links.keys.iterator()
 }

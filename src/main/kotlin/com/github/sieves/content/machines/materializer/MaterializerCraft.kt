@@ -21,7 +21,7 @@ data class MaterializerCraft(
 ) :
     INBTSerializable<CompoundTag> {
     val isEmpty: Boolean
-        get() = time == 0 && power == 0 && input.isEmpty && output.isEmpty()
+        get() = this == Empty
 
     companion object {
         val Empty get() = MaterializerCraft(0, 0, ItemStack.EMPTY, mutableListOf(), 0)

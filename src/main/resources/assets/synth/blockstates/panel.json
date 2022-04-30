@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "state=unformed": {
+      "model": "synth:block/reactor/casing_full"
+    },
+    "state=side,facing=north": {
+      "model": "synth:block/reactor/casing_partial"
+    },
+    "state=side,facing=east": {
+      "model": "synth:block/reactor/casing_partial",
+      "y": 90
+    },
+    "state=side,facing=south": {
+      "model": "synth:block/reactor/casing_partial",
+      "y": 180
+    },
+    "state=side,facing=west": {
+      "model": "synth:block/reactor/casing_partial",
+      "y": 270
+    },
+    "state=side,facing=up": {
+      "model": "synth:block/reactor/casing_partial",
+      "x": 270
+    },
+    "state=side,facing=down": {
+      "model": "synth:block/reactor/casing_partial",
+      "x": 90
+    },
+    "state=vedge,facing=north": {
+      "model": "synth:block/reactor/casing_frame"
+    },
+    "state=vedge,facing=west": {
+      "model": "synth:block/reactor/casing_frame",
+      "y": 270
+    },
+    "state=vedge,facing=south": {
+      "model": "synth:block/reactor/casing_frame",
+      "y": 180
+    },
+    "state=vedge,facing=east": {
+      "model": "synth:block/reactor/casing_frame",
+      "y": 90
+    },
+    "state=hedge,facing=north": {
+      "model": "synth:block/reactor/casing_frame",
+      "x": 90,
+      "y": 270
+    },
+    "state=hedge,facing=west": {
+      "model": "synth:block/reactor/casing_frame",
+      "x": 90,
+      "y": 180
+    },
+    "state=hedge,facing=south": {
+      "model": "synth:block/reactor/casing_frame",
+      "x": 90,
+      "y": 90
+    },
+    "state=hedge,facing=east": {
+      "model": "synth:block/reactor/casing_frame",
+      "x": 90
+    },
+    "state=corner,facing=north": {
+      "model": "synth:block/reactor/casing_frame_small"
+    },
+    "state=corner,facing=west": {
+      "model": "synth:block/reactor/casing_frame_small",
+      "y": 270
+    },
+    "state=corner,facing=south": {
+      "model": "synth:block/reactor/casing_frame_small",
+      "y": 180
+    },
+    "state=corner,facing=east": {
+      "model": "synth:block/reactor/casing_frame_small",
+      "y": 90
+    }
+  }
+}

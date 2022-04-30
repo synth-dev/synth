@@ -82,9 +82,9 @@ class SightModule : ApiTabItem(Registry.Tabs.PlayerSight.key, BatteryTile::class
 //                menuData.poseStack.pushPose()
                 menuData.poseStack.scale(0.5f, 0.5f, 0.5f)
                 val pos = linked.get().getBlockPos("linked_pos")
-                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos) ?: return
+                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos.bp) ?: return
                 cachedEntities[player.uuid] = be
-                val itemstack = ItemStack(player.level.getBlockState(pos).block)
+                val itemstack = ItemStack(player.level.getBlockState(pos.bp).block)
                 if (be !is BatteryTile) return
                 val target = (2500 / be.getConfig().efficiencyModifier).toInt()
                 container.drawTextShadow(
@@ -116,7 +116,7 @@ class SightModule : ApiTabItem(Registry.Tabs.PlayerSight.key, BatteryTile::class
             linked.ifPresent {
                 val pos = it.getBlockPos("linked_pos")
                 val face = it.getEnum<Direction>("linked_face")
-                val be = player.level.getBlockEntity(pos)
+                val be = player.level.getBlockEntity(pos.bp)
                 var valid = true
                 if (be is BatteryTile) {
                     val cap = be.getCapability(CapabilityEnergy.ENERGY, face)

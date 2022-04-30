@@ -82,9 +82,9 @@ class TeleportModule : ApiTabItem(Registry.Tabs.PlayerTeleport.key, BatteryTile:
 //                menuData.poseStack.pushPose()
                 menuData.poseStack.scale(0.5f, 0.5f, 0.5f)
                 val pos = linked.get().getBlockPos("linked_pos")
-                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos) ?: return
+                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos.bp) ?: return
                 cachedEntities[player.uuid] = be
-                val itemstack = ItemStack(player.level.getBlockState(pos).block)
+                val itemstack = ItemStack(player.level.getBlockState(pos.bp).block)
                 if (be !is BatteryTile) return
                 val target = (10000 / be.getConfig().efficiencyModifier).toInt()
                 container.drawTextShadow(
@@ -131,7 +131,7 @@ class TeleportModule : ApiTabItem(Registry.Tabs.PlayerTeleport.key, BatteryTile:
             linked.ifPresent {
                 val pos = it.getBlockPos("linked_pos")
                 val face = it.getEnum<Direction>("linked_face")
-                val be = player.level.getBlockEntity(pos)
+                val be = player.level.getBlockEntity(pos.bp)
                 var valid = true
                 if (be is BatteryTile) {
                     val cap = be.getCapability(CapabilityEnergy.ENERGY, face)

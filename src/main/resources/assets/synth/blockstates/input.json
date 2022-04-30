@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "formed=false,piped=false": {
+      "model": "synth:block/reactor/io/input"
+    },
+    "formed=false,piped=true": {
+      "model": "synth:block/reactor/io/input"
+    },
+    "formed=true,facing=north,piped=false": {
+      "model": "synth:block/reactor/io/input_partial"
+    },
+    "formed=true,facing=east,piped=false": {
+      "model": "synth:block/reactor/io/input_partial",
+      "y": 90
+    },
+    "formed=true,facing=south,piped=false": {
+      "model": "synth:block/reactor/io/input_partial",
+      "y": 180
+    },
+    "formed=true,facing=west,piped=false": {
+      "model": "synth:block/reactor/io/input_partial",
+      "y": 270
+    },
+    "formed=true,facing=north,piped=true": {
+      "model": "synth:block/reactor/io/input_partial_pipe"
+    },
+    "formed=true,facing=east,piped=true": {
+      "model": "synth:block/reactor/io/input_partial_pipe",
+      "y": 90
+    },
+    "formed=true,facing=south,piped=true": {
+      "model": "synth:block/reactor/io/input_partial_pipe",
+      "y": 180
+    },
+    "formed=true,facing=west,piped=true": {
+      "model": "synth:block/reactor/io/input_partial_pipe",
+      "y": 270
+    }
+  }
+}

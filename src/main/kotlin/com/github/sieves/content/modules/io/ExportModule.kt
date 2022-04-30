@@ -92,9 +92,9 @@ class ExportModule : ApiTabItem(Registry.Tabs.PlayerExport.key, BoxTile::class.j
             if (linked.isPresent) {
                 menuData.poseStack.scale(0.5f, 0.5f, 0.5f)
                 val pos = linked.get().getBlockPos("linked_pos")
-                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos) ?: return
+                val be = cachedEntities[player.uuid] ?: player.level.getBlockEntity(pos.bp) ?: return
                 cachedEntities[player.uuid] = be
-                val itemstack = ItemStack(player.level.getBlockState(pos).block)
+                val itemstack = ItemStack(player.level.getBlockState(pos.bp).block)
                 if (be !is BoxTile) return
                 val target = (2500 / be.getConfig().efficiencyModifier).toInt()
                 container.drawTextShadow(
@@ -153,7 +153,7 @@ class ExportModule : ApiTabItem(Registry.Tabs.PlayerExport.key, BoxTile::class.j
             linked.ifPresent {
                 val pos = it.getBlockPos("linked_pos")
                 val face = it.getEnum<Direction>("linked_face")
-                val be = player.level.getBlockEntity(pos)
+                val be = player.level.getBlockEntity(pos.bp)
                 var valid = true
                 if (be is BoxTile) {
                     val itemCap = be.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face)

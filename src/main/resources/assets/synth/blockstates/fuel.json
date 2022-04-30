@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "state=none": {
+      "model": "synth:block/reactor/io/tank/tank"
+    },
+    "state=up": {
+      "model": "synth:block/reactor/io/tank/tank_up"
+    },
+    "state=down": {
+      "model": "synth:block/reactor/io/tank/tank_down"
+    },
+    "state=updown": {
+      "model": "synth:block/reactor/io/tank/tank_up_down"
+    }
+  }
+}

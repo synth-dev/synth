@@ -1,5 +1,6 @@
 package com.github.sieves.api
 
+import com.github.sieves.api.ApiTile.*
 import com.github.sieves.registry.Registry
 import com.github.sieves.registry.Registry.Items
 import com.github.sieves.registry.internal.net.ConfigurePacket
@@ -28,7 +29,7 @@ abstract class ApiBlock<R : com.github.sieves.api.ApiTile<R>>(
     private val type: () -> BlockEntityType<R>
 ) :
     Block(properties), EntityBlock {
-    private val ticker: BlockEntityTicker<R> = com.github.sieves.api.ApiTile.Ticker()
+    private val ticker: BlockEntityTicker<R> = Ticker()
 
 
     init {

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalContracts::class)
+
 package com.github.sieves.util
 
 import com.github.sieves.Sieves
@@ -8,7 +10,6 @@ import com.github.sieves.api.tab.TabSpec
 import com.github.sieves.registry.internal.IRegister
 import com.github.sieves.registry.internal.Registry
 import com.github.sieves.registry.internal.net.Packet
-import com.github.sieves.util.Log.debug
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
@@ -52,6 +53,7 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import kotlin.contracts.*
 import kotlin.math.sqrt
 import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
@@ -265,8 +267,7 @@ fun AbstractContainerScreen<*>.isClicked(
 ): Boolean {
     val now = System.currentTimeMillis()
     if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
-            Minecraft.getInstance().window.window,
-            GLFW.GLFW_MOUSE_BUTTON_LEFT
+            Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_LEFT
         ) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
@@ -280,8 +281,7 @@ fun AbstractContainerScreen<*>.isRightClicked(
 ): Boolean {
     val now = System.currentTimeMillis()
     if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
-            Minecraft.getInstance().window.window,
-            GLFW.GLFW_MOUSE_BUTTON_RIGHT
+            Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_RIGHT
         ) == GLFW.GLFW_PRESS && now - lastClick > 250
     ) {
         lastClick = now
@@ -366,6 +366,18 @@ fun BlockPos.getInflatedAAABB(inflate: Float): AABB {
 //}
 
 
+fun BlockPos.offset(direction: Direction): BlockPos {
+    return offset(direction.normal)
+}
+
+fun BlockState.instanceOf(block: Block): Boolean {
+    return this.block == block
+}
+
+inline fun <reified T : Block> BlockState.instanceOf(): Boolean {
+    return T::class.isInstance(this.block)
+}
+
 /**
  * This will raytrace the given distance for the given player
  */
@@ -390,8 +402,7 @@ fun Player.rayTrace(distance: Double = 75.0): BlockHitResult {
         fluidState = level.getFluidState(pos)
         isFluid = true
     }
-    return if (!isFluid)
-        BlockHitResult(rayTraceResult.location, rayTraceResult.direction, pos, false)
+    return if (!isFluid) BlockHitResult(rayTraceResult.location, rayTraceResult.direction, pos, false)
     else BlockHitResult(rayTraceResult.location, Direction.UP, pos, false)
 }
 
@@ -400,11 +411,11 @@ fun VoxelShape.join(other: VoxelShape, op: BooleanOp): VoxelShape {
     return Shapes.join(this, other, op)
 }
 
-fun CompoundTag.putBlockPos(name: String, blockPos: BlockPos) {
+fun CompoundTag.putBlockPos(name: String, blockPos: Vec3i) {
     putIntArray(name, intArrayOf(blockPos.x, blockPos.y, blockPos.z))
 }
 
-fun CompoundTag.getBlockPos(name: String): BlockPos {
+fun CompoundTag.getBlockPos(name: String): Vec3i {
     val array = getIntArray(name)
     if (array.size != 3) return BlockPos.ZERO
     return BlockPos(array[0], array[1], array[2])
@@ -500,3 +511,115 @@ internal fun runOnRender(block: () -> Unit) {
 internal fun runOnServer(block: () -> Unit): CompletableFuture<Void> {
     return runOn(LogicalSide.SERVER, block)
 }
+
+
+/**
+ * Optional/Maybe type for Kotlin.
+ *
+ * Simple immutable value wrapper with one of three possible states:
+ *
+ * - non-null value,
+ * - null value,
+ * - absent/unset/undefined/unspecified/missing.
+ *
+ * This is useful when we need to store information whether some variable/value was specified or not and at the same
+ * time this variable is nullable, so we can't use `null` as "not specified". One example is parsing of JSON if we
+ * need to distinguish latter two cases:
+ *
+ * - `{"foo": "bar"}`
+ * - `{"foo": null}`
+ * - `{}`
+ */
+@JvmInline
+value class Opt<out V> @PublishedApi internal constructor(
+    @PublishedApi internal val value: Any?
+) {
+    companion object {
+        fun <V> of(value: V): Opt<V> = Opt(value)
+        fun empty(): Opt<Nothing> = Opt(Absent)
+        fun <V : Any> ofNullable(value: V?): Opt<V> = if (value == null) empty() else of(value)
+    }
+
+    inline val isPresent: Boolean get() = value !== Absent
+    inline val isAbsent: Boolean get() = value === Absent
+
+    fun get(): V = getOrElse { throw NoSuchElementException() }
+
+    operator fun invoke(): V = get()
+
+    fun getOrNull(): V? = getOrElse { null }
+
+    override fun toString(): String {
+        return if (isPresent) {
+            "OptionalValue.of($value)"
+        } else {
+            "OptionalValue.absent()"
+        }
+    }
+
+    @PublishedApi
+    internal object Absent
+}
+
+@OptIn(ExperimentalContracts::class)
+
+inline fun <V> Opt<V>.getOrElse(onAbsent: () -> V): V {
+    contract {
+        callsInPlace(onAbsent, InvocationKind.AT_MOST_ONCE)
+    }
+    return map({ return@map it }, onAbsent)
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <V, R> Opt<V>.mapValue(transform: (V) -> R): Opt<R> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
+    return map({ Opt.of(transform(it)) }, { Opt.empty() })
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <V> Opt<V>.ifPresent(onPresent: (V) -> Unit) {
+    contract {
+        callsInPlace(onPresent, InvocationKind.AT_MOST_ONCE)
+    }
+    map(onPresent) {}
+}
+
+@OptIn(ExperimentalContracts::class)
+
+inline fun Opt<*>.ifAbsent(onAbsent: () -> Unit) {
+    contract {
+        callsInPlace(onAbsent, InvocationKind.AT_MOST_ONCE)
+    }
+    map({}, onAbsent)
+}
+
+@OptIn(ExperimentalContracts::class)
+
+inline fun <V, R> Opt<V>.map(onPresent: (V) -> R, onAbsent: () -> R): R {
+    contract {
+        callsInPlace(onPresent, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(onAbsent, InvocationKind.AT_MOST_ONCE)
+    }
+    return if (isPresent) onPresent(value as V) else onAbsent()
+}
+
+fun <K, V> Map<K, V>.getOptional(key: K): Opt<V> {
+    val value = this[key]
+    return if (value != null || containsKey(key)) {
+        Opt.of(value as V)
+    } else {
+        Opt.empty()
+    }
+}
+
+fun Vec3i.min(): Vec3i = Vec3i(Int.MIN_VALUE, Int.MIN_VALUE, Int.MIN_VALUE)
+fun Vec3i.max(): Vec3i = Vec3i(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE)
+
+val Vec3i.bp: BlockPos get() = if (this is BlockPos) this else BlockPos(this.x, this.y, this.z)
+
+val Vec3i.isMin: Boolean get() = this.x == Int.MIN_VALUE && this.y == Int.MIN_VALUE && this.z == Int.MIN_VALUE
+val Vec3i.isMax: Boolean get() = this.x == Int.MAX_VALUE && this.y == Int.MAX_VALUE && this.z == Int.MAX_VALUE
+
+

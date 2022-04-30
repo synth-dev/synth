@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "give=true,facing=down": {
+      "model": "synth:block/reactor/spark/give"
+    },
+    "give=true,facing=up": {
+      "model": "synth:block/reactor/spark/give",
+      "x": 180
+    },
+    "give=true,facing=north": {
+      "model": "synth:block/reactor/spark/give",
+      "x": 90,
+      "y": 180
+    },
+    "give=true,facing=east": {
+      "model": "synth:block/reactor/spark/give",
+      "x": 90,
+      "y": 270
+    },
+    "give=true,facing=south": {
+      "model": "synth:block/reactor/spark/give",
+      "x": 90
+    },
+    "give=true,facing=west": {
+      "model": "synth:block/reactor/spark/give",
+      "x": 90,
+      "y": 90
+    },
+    "give=false,facing=down": {
+      "model": "synth:block/reactor/spark/take"
+    },
+    "give=false,facing=up": {
+      "model": "synth:block/reactor/spark/take",
+      "x": 180
+    },
+    "give=false,facing=north": {
+      "model": "synth:block/reactor/spark/take",
+      "x": 90,
+      "y": 180
+    },
+    "give=false,facing=east": {
+      "model": "synth:block/reactor/spark/take",
+      "x": 90,
+      "y": 90
+    },
+    "give=false,facing=south": {
+      "model": "synth:block/reactor/spark/take",
+      "x": 90
+    },
+    "give=false,facing=west": {
+      "model": "synth:block/reactor/spark/take",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

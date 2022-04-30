@@ -44,15 +44,19 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
      * Attempts to find the correct crafting recipe
      */
     private fun attemptCraft() {
+        craft.currentTime = 0
         val craftResult =
             level?.recipeManager?.let { MaterializerCraftManager.findRecipe(it, items.getStackInSlot(0)) } ?: return
         if (!craftResult.isEmpty) {
-            items.extractItem(0, 1, false)
-            this.craft = craftResult
-            Net.sendToClientsWithTileLoaded(Net.MaterializerStart {
-                blockPos = this@MaterializerTile.blockPos
-                craft = this@MaterializerTile.craft
-            }, this)
+            val extracted = items.extractItem(0, 1, true)
+            if (extracted.sameItem(craftResult.input)) {
+                items.extractItem(0, 1, false)
+                this.craft = craftResult
+                Net.sendToClientsWithTileLoaded(Net.MaterializerStart {
+                    blockPos = this@MaterializerTile.blockPos
+                    craft = this@MaterializerTile.craft
+                }, this)
+            }
         }
     }
 
@@ -67,8 +71,9 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
                 update()
         }
 
-//            if (!items.getStackInSlot(0).sameItem(craft.input))
-//                craft = MaterializerCraft.Empty
+//        if (!items.getStackInSlot(0).sameItem(craft.input) && !craft.isEmpty) {
+//            craft = MaterializerCraft.Empty
+//        }
     }
 
     /**
@@ -98,13 +103,13 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
         output.count = 1
         for (slot in 1 until 11) {
             if (items.insertItem(slot, output, true) == ItemStack.EMPTY) {
+//                items.setStackInSlot(slot, output)
                 items.insertItem(slot, output, false)
                 craft = MaterializerCraft.Empty
                 update()
                 return
             }
         }
-
     }
 
     /**
@@ -118,7 +123,6 @@ class MaterializerTile(pos: BlockPos, state: BlockState) :
         ApiConfig.Side.Right -> Direction.EAST
         ApiConfig.Side.Left -> Direction.WEST
     }
-
 
     override fun onLoad(tag: CompoundTag) {
         links.deserializeNBT(tag.getCompound("links"))

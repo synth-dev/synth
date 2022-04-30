@@ -1,27 +1,18 @@
 package com.github.sieves.registry.internal
 
 import com.github.sieves.util.Log.info
-import com.google.common.collect.Queues
-import net.minecraft.resources.ResourceKey
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.common.ForgeConfig.Client
-import net.minecraftforge.eventbus.api.Event
-import net.minecraftforge.eventbus.api.EventPriority
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.event.IModBusEvent
-import net.minecraftforge.fml.loading.FMLEnvironment
-import net.minecraftforge.network.IContainerFactory
-import net.minecraftforge.registries.DeferredRegister
-import net.minecraftforge.registries.IForgeRegistry
-import net.minecraftforge.registries.IForgeRegistryEntry
-import net.minecraftforge.registries.RegistryObject
+import com.google.common.collect.*
+import net.minecraft.resources.*
+import net.minecraft.world.level.block.*
+import net.minecraftforge.api.distmarker.*
+import net.minecraftforge.eventbus.api.*
+import net.minecraftforge.fml.event.*
+import net.minecraftforge.fml.loading.*
+import net.minecraftforge.registries.*
 import java.util.*
-import java.util.function.Supplier
-import kotlin.collections.HashMap
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.KVisibility
+import java.util.function.*
+import kotlin.properties.*
+import kotlin.reflect.*
 import kotlin.reflect.full.*
 
 
