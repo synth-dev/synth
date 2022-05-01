@@ -1,5 +1,6 @@
 package com.github.sieves.content.reactor.spark
 
+import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.tile.*
 import com.github.sieves.registry.Registry.Tiles
 import com.github.sieves.util.*
@@ -18,7 +19,7 @@ import net.minecraft.world.level.material.*
 import net.minecraft.world.phys.*
 import net.minecraft.world.phys.shapes.*
 
-class SparkBlock : Block(Properties.of(Material.HEAVY_METAL).lightLevel { 10 }), EntityBlock {
+class SparkBlock : TileBlock<SparkTile>({ Tiles.Spark }, 0) {
 
     override fun getStateForPlacement(pContext: BlockPlaceContext): BlockState? {
         return defaultBlockState().setValue(DirectionalBlock.FACING, pContext.clickedFace.opposite).setValue(State, true)
@@ -27,13 +28,6 @@ class SparkBlock : Block(Properties.of(Material.HEAVY_METAL).lightLevel { 10 }),
     override fun createBlockStateDefinition(pBuilder: StateDefinition.Builder<Block, BlockState>) {
         pBuilder.add(DirectionalBlock.FACING).add(State)
     }
-
-//    override fun use(pState: BlockState, pLevel: Level, pPos: BlockPos, pPlayer: Player, pHand: InteractionHand, pHit: BlockHitResult): InteractionResult {
-//        val tile = pLevel.getBlockEntity(pPos)
-//        if (tile !is IMultiBlock<*>) return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit)
-//        return if (pLevel.isClientSide) tile.onUseClient(pPlayer, pHand, pHit)
-//        else tile.onUseServer(pPlayer as ServerPlayer, pHand, pHit)
-//    }
 
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     override fun getShape(
@@ -62,9 +56,7 @@ class SparkBlock : Block(Properties.of(Material.HEAVY_METAL).lightLevel { 10 }),
         val State: BooleanProperty = BooleanProperty.create("give")
     }
 
-    override fun newBlockEntity(pPos: BlockPos, pState: BlockState): BlockEntity? = Tiles.Spark.create(pPos, pState)
-
-        private val tdown = Shapes.empty().join(Shapes.box(0.4375, 0.0, 0.4375, 0.5625, 0.359375, 0.5625), BooleanOp.OR)
+    private val tdown = Shapes.empty().join(Shapes.box(0.4375, 0.0, 0.4375, 0.5625, 0.359375, 0.5625), BooleanOp.OR)
         .join(Shapes.box(0.5625, 0.621875, 0.4375, 0.59375, 0.653125, 0.5625), BooleanOp.OR)
         .join(Shapes.box(0.46875, 0.40625, 0.46875, 0.53125, 0.53125, 0.53125), BooleanOp.OR)
         .join(Shapes.box(0.4375, 0.0, 0.559375, 0.5625, 0.25, 0.640625), BooleanOp.OR)

@@ -1,6 +1,7 @@
 package com.github.sieves.content.reactor.spark
 
 import com.github.sieves.api.caps.*
+import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.tile.*
 import com.github.sieves.content.io.link.*
 import com.github.sieves.content.reactor.control.*
@@ -16,48 +17,40 @@ import net.minecraft.server.level.*
 import net.minecraft.world.*
 import net.minecraft.world.entity.player.*
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.*
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraftforge.common.capabilities.*
 import net.minecraftforge.common.util.LazyOptional
+import net.minecraftforge.items.CapabilityItemHandler
 import java.util.UUID
 
 /**
  * Keeps track of the internal input buffer of items being pumped into the controller
  */
-class SparkTile(blockPos: BlockPos, blockState: BlockState) : ReactorTile<SparkTile>(Registry.Tiles.Spark, blockPos, blockState) {
+class SparkTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<SparkTile>(Registry.Tiles.Spark, blockPos, blockState), ISlave<ControlTile, SparkTile> {
     private var tick = 0
-    private val links = Links()
-    private val buffer = TrackedInventory(1, ::update)
-    private val bufferHandler = LazyOptional.of { buffer }
-
-    val isRoot: Boolean
-        get() = if (ctrl.isAbsent) false else {
-            ctrl().sparks.contains(blockPos)
-        }
-
+    private val items by handlerOf<Delegates.Items>("items", 1)
     /**
      * Will only tick when the controller is present
      */
-    override fun onServerTick() = ctrl.ifPresent {
+    override fun onTick(level: Level) = master.ifPresent {
         if (tick >= 10) {
 
         }
         tick++
     }
 
-
     /**
-     * Do nbt saving here
+     * Return out item handler capability
      */
-    override fun onSave(tag: CompoundTag) {
-        tag.put("links", links.serializeNBT())
-        tag.put("buffer", buffer.serializeNBT())
+    override fun <T : Any?> getCapability(cap: Capability<T>, side: Direction?): LazyOptional<T> {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return items.cast()
+        return super.getCapability(cap, side)
     }
 
-    /**
-     * Load nbt data here
-     */
-    override fun onLoad(tag: CompoundTag) {
-        links.deserializeNBT(tag.getCompound("links"))
-        buffer.deserializeNBT(tag.getCompound("buffer"))
-    }
+    /**Get and set the master instance**/
+    override var master: Opt<IMaster<ControlTile>> = Opt.nil()
+
+    /**Used for interactions with the master**/
+    override var store: Opt<StructureStore> = Opt.nil()
 }

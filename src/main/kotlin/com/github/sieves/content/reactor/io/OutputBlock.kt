@@ -1,24 +1,18 @@
 package com.github.sieves.content.reactor.io
 
-import com.github.sieves.api.tile.*
+import com.github.sieves.api.multiblock.*
 import com.github.sieves.registry.Registry.Tiles
 import com.github.sieves.util.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.server.level.*
-import net.minecraft.world.*
-import net.minecraft.world.entity.player.*
 import net.minecraft.world.item.context.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.*
-import net.minecraft.world.level.block.entity.*
 import net.minecraft.world.level.block.state.*
 import net.minecraft.world.level.block.state.properties.*
-import net.minecraft.world.level.material.*
-import net.minecraft.world.phys.*
 import net.minecraft.world.phys.shapes.*
 
-class OutputBlock : Block(Properties.of(Material.HEAVY_METAL).noOcclusion()), EntityBlock {
+class OutputBlock : TileBlock<OutputTile>({ Tiles.Output }, 0) {
 
     init {
         registerDefaultState(stateDefinition.any().setValue(HorizontalDirectionalBlock.FACING, NORTH).setValue(Formed, false).setValue(Piped, false))
@@ -32,26 +26,22 @@ class OutputBlock : Block(Properties.of(Material.HEAVY_METAL).noOcclusion()), En
         pBuilder.add(HorizontalDirectionalBlock.FACING).add(Formed).add(Piped)
     }
 
-    override fun newBlockEntity(pPos: BlockPos, pState: BlockState): BlockEntity? = Tiles.Output.create(pPos, pState)
-
-    override fun onDestroyedByPlayer(state: BlockState?, level: Level?, pos: BlockPos?, player: Player?, willHarvest: Boolean, fluid: FluidState?): Boolean {
-        val tile = pos?.let { level?.getBlockEntity(it) } ?: return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid)
-        if (tile !is IMultiBlock<*>) return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid)
-        player?.let { fluid?.let { it1 -> tile.onDestroy(it, willHarvest, it1) } }
-        return super.onDestroyedByPlayer(
-            state, level, pos, player, willHarvest, fluid
-        )
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+    override fun getShape(
+        pState: BlockState, pLevel: BlockGetter, pPos: BlockPos, pContext: CollisionContext
+    ): VoxelShape {
+        val piped = pState.getValue(Piped)
+        return if (pState.getValue(Formed)) {
+            when (pState.getValue(HorizontalDirectionalBlock.FACING)) {
+                NORTH -> if (!piped) northShape else qnorthShape
+                SOUTH -> if (!piped) southShape else qsouthShape
+                WEST -> if (!piped) westShape else qwestShape
+                EAST -> if (!piped) eastShape else qeastShape
+                else -> northShape
+            }
+        } else Shapes.block()
     }
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : BlockEntity?> getTicker(pLevel: Level, pState: BlockState, pBlockEntityType: BlockEntityType<T>): BlockEntityTicker<T> =
-        ReactorTile.Ticker as BlockEntityTicker<T>
 
-//    override fun use(pState: BlockState, pLevel: Level, pPos: BlockPos, pPlayer: Player, pHand: InteractionHand, pHit: BlockHitResult): InteractionResult {
-//        val tile = pLevel.getBlockEntity(pPos)
-//        if (tile !is IMultiBlock<*>) return super.use(pState, pLevel, pPos, pPlayer, pHand, pHit)
-//        return if (pLevel.isClientSide) tile.onUseClient(pPlayer, pHand, pHit)
-//        else tile.onUseServer(pPlayer as ServerPlayer, pHand, pHit)
-//    }
 
     private val northShape = Shapes.empty()
         .join(Shapes.box(0.0, 0.0, 0.5, 1.0, 1.0, 1.0), BooleanOp.OR)
@@ -189,24 +179,6 @@ class OutputBlock : Block(Properties.of(Material.HEAVY_METAL).noOcclusion()), En
         .join(Shapes.box(0.15625, 0.43437499999999984, 0.359375, 0.21875, 0.6968749999999999, 0.640625), BooleanOp.OR)
         .join(Shapes.box(0.09375, 0.4093749999999998, 0.359375, 0.15625, 0.671875, 0.640625), BooleanOp.OR)
         .join(Shapes.box(0.03125, 0.3843749999999998, 0.359375, 0.09375, 0.6468749999999999, 0.640625), BooleanOp.OR)
-
-
-    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-    override fun getShape(
-        pState: BlockState, pLevel: BlockGetter, pPos: BlockPos, pContext: CollisionContext
-    ): VoxelShape {
-        val piped = pState.getValue(Piped)
-        return if (pState.getValue(Formed)) {
-            when (pState.getValue(HorizontalDirectionalBlock.FACING)) {
-                NORTH -> if (!piped) northShape else qnorthShape
-                SOUTH -> if (!piped) southShape else qsouthShape
-                WEST -> if (!piped) westShape else qwestShape
-                EAST -> if (!piped) eastShape else qeastShape
-                else -> northShape
-            }
-        } else Shapes.block()
-    }
-
 
     companion object {
         val Formed: BooleanProperty = BooleanProperty.create("formed")

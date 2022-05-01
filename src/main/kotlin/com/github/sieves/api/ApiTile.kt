@@ -88,10 +88,6 @@ abstract class ApiTile<T : ApiTile<T>>(
         return INFINITE_EXTENT_AABB
     }
 
-    @Retention(AnnotationRetention.RUNTIME)
-    @Target(AnnotationTarget.FIELD)
-    annotation class Serialize(val compoundTag: Boolean = true)
-
 
     protected fun autoExport() {
         for (key in Direction.values()) {

@@ -5,17 +5,26 @@ package com.github.sieves.util
 import com.github.sieves.Sieves
 import com.github.sieves.api.ApiTab
 import com.github.sieves.api.ApiTabItem
+import com.github.sieves.api.multiblock.*
+import com.github.sieves.api.multiblock.StructureBlockVariant.*
+import com.github.sieves.api.multiblock.StructureBlockVariant.Corner
+import com.github.sieves.api.multiblock.StructureBlockVariant.Side
 import com.github.sieves.api.tab.TabRegistry
 import com.github.sieves.api.tab.TabSpec
+import com.github.sieves.content.reactor.casing.*
+import com.github.sieves.content.reactor.casing.PanelBlock.*
+import com.github.sieves.content.reactor.casing.PanelBlock.PanelState.*
 import com.github.sieves.registry.internal.IRegister
 import com.github.sieves.registry.internal.Registry
 import com.github.sieves.registry.internal.net.Packet
+import com.github.sieves.util.Log.warn
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.*
+import net.minecraft.core.Direction.*
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -35,6 +44,7 @@ import net.minecraft.world.phys.shapes.BooleanOp
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
 import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.common.util.INBTSerializable
 import net.minecraftforge.common.util.LogicalSidedProvider
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.LogicalSide
@@ -94,6 +104,36 @@ fun Packet.getLevel(key: ResourceKey<Level>): Level {
 }
 
 
+val Direction.horizontal: Direction
+    get() = when (this) {
+        UP, DOWN -> NORTH
+        else -> this
+    }
+
+val StructureBlockVariant.panelState: PanelState
+    get() = when (this) {
+        Side -> PanelState.Side
+        Inner -> Unformed
+        VerticalEdge -> VEdge
+        HorizontalEdge -> HEdge
+        Corner -> PanelState.Corner
+    }
+
+/**
+ * Attempts to create a nicely formmated to string
+ */
+val Any.str: String
+    get() {
+        var string = this.toString().replace(this::class.java.simpleName, "")
+        if (string.startsWith("[")) string = string.substring(1)
+        else if (string.startsWith("(")) string = string.substring(1)
+        else if (string.startsWith("{")) string = string.substring(1)
+        if (string.endsWith("]")) string = string.substring(0, string.lastIndex)
+        else if (string.endsWith(")")) string = string.substring(0, string.lastIndex)
+        else if (string.endsWith("}")) string = string.substring(0, string.lastIndex)
+        return "[$string]"
+    }
+
 /**
  * Convert a generic map to nbt
  */
@@ -107,6 +147,19 @@ inline fun <reified K : Any, reified V : Any> Map<K, V>.toCompound(): CompoundTa
     }
     tag.put("store", store)
     return tag
+}
+
+inline fun <reified K : Any, reified V : Any> CompoundTag.putMap(name: String, map: Map<K, V>) {
+    val compound = map.toCompound()
+    this.put(name, compound)
+}
+
+/**
+ * Gets a map with the given name
+ */
+inline fun <reified K : Any, reified V : Any> CompoundTag.getMap(name: String): MutableMap<K, V> {
+    if (!this.contains(name)) return hashMapOf()
+    return this.getCompound(name).toMap()
 }
 
 /**
@@ -160,6 +213,7 @@ inline fun <reified V : Any> CompoundTag.toList(): MutableList<V> {
  */
 fun <T : Any> CompoundTag.tryPut(name: String, value: T): Boolean {
     when (value) {
+        is Enum<*> -> this.putEnumBasic(name, value)
         is BlockPos -> this.putBlockPos(name, value)
         is Int -> this.putInt(name, value)
         is Float -> this.putFloat(name, value)
@@ -181,7 +235,7 @@ fun <T : Any> CompoundTag.tryPut(name: String, value: T): Boolean {
         is LongArray -> this.putLongArray(name, value)
         is CompoundTag -> this.put(name, value)
         else -> {
-            Log.warn { "Attempted to serialize unknown serialization type of ${value::class.qualifiedName} for name $name" }
+            warn { "Attempted to serialize unknown serialization type of ${value::class.qualifiedName} for name $name" }
             return false
         }
     }
@@ -195,6 +249,7 @@ inline fun <reified T : Any> CompoundTag.tryGet(name: String): T? = tryGet(name,
  * Attempts to get the value
  */
 fun <T : Any> CompoundTag.tryGet(name: String, classType: KClass<T>): T? {
+    if (classType.java.isEnum) return classType.cast(getEnumBasic(name).getOrNull())
     return when (classType) {
         BlockPos::class -> classType.cast(this.getBlockPos(name))
         Int::class -> classType.cast(this.getInt(name))
@@ -341,6 +396,33 @@ inline fun <reified T : IRegister> T.registerAll(
         }
     }
 }
+
+/**
+ * Serialize a generic type of a enum
+ */
+fun CompoundTag.putEnumBasic(name: String, enum: Enum<*>): CompoundTag {
+    this.putString("${name}_enum_name", enum.name)
+    this.putString("${name}_enum_class", enum::class.java.name)
+    return this
+}
+
+/**
+ * Gets a generic type of enum
+ */
+@Suppress("UNCHECKED_CAST")
+fun CompoundTag.getEnumBasic(name: String): Opt<Enum<*>> {
+    val enumName = this.getString("${name}_enum_name")
+    val clazzName = this.getString("${name}_enum_class")
+    return try {
+        val clazz = Class.forName(clazzName) as Class<out Enum<*>>
+        val enumValue = java.lang.Enum.valueOf(clazz, enumName)
+        Opt.ofNullable(enumValue)
+    } catch (ex: Exception) {
+        warn { "Attempted to deserialize enum class named $clazzName but it wasn't found on the class path!" }
+        Opt.nil()
+    }
+}
+
 
 fun <E : Enum<E>> CompoundTag.putEnum(name: String, enum: E): CompoundTag {
     this.putInt("${name}_enum", enum.ordinal)
@@ -536,8 +618,8 @@ value class Opt<out V> @PublishedApi internal constructor(
 ) {
     companion object {
         fun <V> of(value: V): Opt<V> = Opt(value)
-        fun empty(): Opt<Nothing> = Opt(Absent)
-        fun <V : Any> ofNullable(value: V?): Opt<V> = if (value == null) empty() else of(value)
+        fun nil(): Opt<Nothing> = Opt(Absent)
+        fun <V : Any> ofNullable(value: V?): Opt<V> = if (value == null) nil() else of(value)
     }
 
     inline val isPresent: Boolean get() = value !== Absent
@@ -550,11 +632,8 @@ value class Opt<out V> @PublishedApi internal constructor(
     fun getOrNull(): V? = getOrElse { null }
 
     override fun toString(): String {
-        return if (isPresent) {
-            "OptionalValue.of($value)"
-        } else {
-            "OptionalValue.absent()"
-        }
+        return if (isPresent) "Opt(value=$value)"
+        else "Opt(value=empty)"
     }
 
     @PublishedApi
@@ -575,7 +654,7 @@ inline fun <V, R> Opt<V>.mapValue(transform: (V) -> R): Opt<R> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
-    return map({ Opt.of(transform(it)) }, { Opt.empty() })
+    return map({ Opt.of(transform(it)) }, { Opt.nil() })
 }
 
 @OptIn(ExperimentalContracts::class)
@@ -610,7 +689,7 @@ fun <K, V> Map<K, V>.getOptional(key: K): Opt<V> {
     return if (value != null || containsKey(key)) {
         Opt.of(value as V)
     } else {
-        Opt.empty()
+        Opt.nil()
     }
 }
 
@@ -618,8 +697,13 @@ fun Vec3i.min(): Vec3i = Vec3i(Int.MIN_VALUE, Int.MIN_VALUE, Int.MIN_VALUE)
 fun Vec3i.max(): Vec3i = Vec3i(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE)
 
 val Vec3i.bp: BlockPos get() = if (this is BlockPos) this else BlockPos(this.x, this.y, this.z)
+val Vec3i.f: Vec3 get() = Vec3.atLowerCornerOf(this)
 
 val Vec3i.isMin: Boolean get() = this.x == Int.MIN_VALUE && this.y == Int.MIN_VALUE && this.z == Int.MIN_VALUE
 val Vec3i.isMax: Boolean get() = this.x == Int.MAX_VALUE && this.y == Int.MAX_VALUE && this.z == Int.MAX_VALUE
 
+
+fun IItemHandler.insertItem(itemStack: ItemStack, simulate: Boolean): ItemStack {
+    return ItemHandlerHelper.insertItem(this, itemStack, simulate)
+}
 
