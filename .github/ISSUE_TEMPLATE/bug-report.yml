@@ -18,7 +18,7 @@ body:
     id: relevant-issues
     attributes:
       label: Relevant issues
-      description: Did you find any existing issues relevant to this one? If you found the same issue, please contribute to that one instead of making a duplicate.?
+      description: Did you find any existing issues relevant to this one? If you found the same issue, please contribute to that one instead of making a duplicate.
     validations:
       required: true
   - type: textarea
@@ -39,7 +39,7 @@ body:
     id: screenshots
     attributes:
       label: Screenshots
-      description: If applicable, add screenshots or a video to help explain your problem. DO NOT use screenshots or video in place of description of the problem and replication steps though.?
+      description: If applicable, add screenshots or a video to help explain your problem. DO NOT use screenshots or video in place of description of the problem and replication steps though.
     validations:
       required: false
   - type: dropdown
@@ -55,7 +55,7 @@ body:
   - type: dropdown
     id: repetition
     attributes:
-      label: Does the bug persist after respawning the tool?
+      label: Does the bug persist after restarting?
       options:
         - "No"
         - "Yes"
@@ -64,7 +64,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Tool Version Number (Found in the bottom left of the main menu)
+      label: Mod version number
       placeholder: 1.2.3?
     validations:
       required: true
