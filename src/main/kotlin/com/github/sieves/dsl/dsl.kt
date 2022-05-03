@@ -1,72 +1,63 @@
 @file:OptIn(ExperimentalContracts::class)
 
-package com.github.sieves.util
+package com.github.sieves.dsl
 
-import com.github.sieves.Sieves
-import com.github.sieves.api.ApiTab
-import com.github.sieves.api.ApiTabItem
+import com.github.sieves.*
+import com.github.sieves.api.*
 import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.multiblock.StructureBlockVariant.*
 import com.github.sieves.api.multiblock.StructureBlockVariant.Corner
 import com.github.sieves.api.multiblock.StructureBlockVariant.Side
-import com.github.sieves.api.tab.TabRegistry
-import com.github.sieves.api.tab.TabSpec
-import com.github.sieves.content.reactor.casing.*
+import com.github.sieves.api.tab.*
 import com.github.sieves.content.reactor.casing.PanelBlock.*
 import com.github.sieves.content.reactor.casing.PanelBlock.PanelState.*
-import com.github.sieves.registry.internal.IRegister
+import com.github.sieves.dsl.Log.warn
+import com.github.sieves.registry.internal.*
 import com.github.sieves.registry.internal.Registry
-import com.github.sieves.registry.internal.net.Packet
-import com.github.sieves.util.Log.warn
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Vector3f
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import com.github.sieves.registry.internal.net.*
+import com.mojang.blaze3d.systems.*
+import com.mojang.blaze3d.vertex.*
+import com.mojang.math.*
+import net.minecraft.client.*
+import net.minecraft.client.gui.screens.inventory.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.resources.ResourceKey
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemStack
+import net.minecraft.nbt.*
+import net.minecraft.network.chat.*
+import net.minecraft.resources.*
+import net.minecraft.server.level.*
+import net.minecraft.world.entity.item.*
+import net.minecraft.world.entity.player.*
+import net.minecraft.world.item.*
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.entity.BlockEntityType
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.phys.AABB
-import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.Vec3
-import net.minecraft.world.phys.shapes.BooleanOp
-import net.minecraft.world.phys.shapes.Shapes
-import net.minecraft.world.phys.shapes.VoxelShape
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.common.util.INBTSerializable
-import net.minecraftforge.common.util.LogicalSidedProvider
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.LogicalSide
-import net.minecraftforge.fml.loading.FMLEnvironment
-import net.minecraftforge.fml.util.thread.SidedThreadGroups
-import net.minecraftforge.items.IItemHandler
-import net.minecraftforge.items.ItemHandlerHelper
-import net.minecraftforge.items.wrapper.InvWrapper
-import net.minecraftforge.network.NetworkDirection
-import net.minecraftforge.network.NetworkEvent
-import net.minecraftforge.server.ServerLifecycleHooks
-import org.apache.logging.log4j.LogManager
-import org.lwjgl.glfw.GLFW
-import thedarkcolour.kotlinforforge.forge.FORGE_BUS
-import thedarkcolour.kotlinforforge.forge.MOD_BUS
-import java.util.Optional
-import java.util.UUID
-import java.util.concurrent.CompletableFuture
+import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.entity.*
+import net.minecraft.world.level.block.state.*
+import net.minecraft.world.phys.*
+import net.minecraft.world.phys.shapes.*
+import net.minecraftforge.api.distmarker.*
+import net.minecraftforge.api.distmarker.Dist.*
+import net.minecraftforge.common.util.*
+import net.minecraftforge.eventbus.api.*
+import net.minecraftforge.fml.*
+import net.minecraftforge.fml.loading.*
+import net.minecraftforge.fml.util.thread.*
+import net.minecraftforge.items.*
+import net.minecraftforge.items.wrapper.*
+import net.minecraftforge.network.*
+import net.minecraftforge.server.*
+import org.apache.logging.log4j.*
+import org.lwjgl.glfw.*
+import org.lwjgl.system.CallbackI.*
+import thedarkcolour.kotlinforforge.forge.*
+import java.util.*
+import java.util.concurrent.*
 import kotlin.contracts.*
+import kotlin.contracts.InvocationKind.*
 import kotlin.math.sqrt
 import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
+
 
 /**
  * ==========================WARNING===========================
@@ -83,8 +74,6 @@ This is where I hide all of my dirty little kotlin secrets..
 Do not read this kts, you will not! like what you find...
 you've been warned...
  */
-
-
 object Log {
     val logger = LogManager.getLogger(Sieves.ModId)
 
@@ -323,8 +312,7 @@ fun AbstractContainerScreen<*>.isClicked(
     val now = System.currentTimeMillis()
     if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
             Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_LEFT
-        ) == GLFW.GLFW_PRESS && now - lastClick > 250
-    ) {
+        ) == GLFW.GLFW_PRESS && now - lastClick > 250) {
         lastClick = now
         return true
     }
@@ -337,8 +325,7 @@ fun AbstractContainerScreen<*>.isRightClicked(
     val now = System.currentTimeMillis()
     if (isHovered(x, y, width, height, mouseX, mouseY) && GLFW.glfwGetMouseButton(
             Minecraft.getInstance().window.window, GLFW.GLFW_MOUSE_BUTTON_RIGHT
-        ) == GLFW.GLFW_PRESS && now - lastClick > 250
-    ) {
+        ) == GLFW.GLFW_PRESS && now - lastClick > 250) {
         lastClick = now
         return true
     }
@@ -365,13 +352,6 @@ fun AbstractContainerScreen<*>.drawTextShadow(
     stack: TabSpec.MenuData,
     x: Float, y: Float, text: String, color: Int,
 ) = Minecraft.getInstance().font.drawShadow(stack.poseStack, text, x, y, color)
-
-
-/**
- * Gets a resource location based upon the give string
- */
-internal val String.resLoc: ResourceLocation
-    get() = ResourceLocation(Sieves.ModId, this)
 
 
 /**
@@ -416,7 +396,7 @@ fun CompoundTag.getEnumBasic(name: String): Opt<Enum<*>> {
     return try {
         val clazz = Class.forName(clazzName) as Class<out Enum<*>>
         val enumValue = java.lang.Enum.valueOf(clazz, enumName)
-        Opt.ofNullable(enumValue)
+        Opt.ofNilable(enumValue)
     } catch (ex: Exception) {
         warn { "Attempted to deserialize enum class named $clazzName but it wasn't found on the class path!" }
         Opt.nil()
@@ -612,22 +592,28 @@ internal fun runOnServer(block: () -> Unit): CompletableFuture<Void> {
  * - `{"foo": null}`
  * - `{}`
  */
+
+
 @JvmInline
 value class Opt<out V> @PublishedApi internal constructor(
     @PublishedApi internal val value: Any?
 ) {
     companion object {
-        fun <V> of(value: V): Opt<V> = Opt(value)
+        private val nil: Opt<Nothing> = Opt(Absent)
+
+        infix fun <V> of(value: V): Opt<V> = Opt(value)
         fun nil(): Opt<Nothing> = Opt(Absent)
-        fun <V : Any> ofNullable(value: V?): Opt<V> = if (value == null) nil() else of(value)
+        fun <V : Any> ofNilable(value: V?): Opt<V> = if (value == null) nil() else of(value)
     }
 
     inline val isPresent: Boolean get() = value !== Absent
     inline val isAbsent: Boolean get() = value === Absent
 
-    fun get(): V = getOrElse { throw NoSuchElementException() }
 
+    fun get(): V = getOrElse { throw NoSuchElementException() }
     operator fun invoke(): V = get()
+
+    operator fun not(): Boolean = isAbsent
 
     fun getOrNull(): V? = getOrElse { null }
 
@@ -640,9 +626,37 @@ value class Opt<out V> @PublishedApi internal constructor(
     internal object Absent
 }
 
-@OptIn(ExperimentalContracts::class)
 
-inline fun <V> Opt<V>.getOrElse(onAbsent: () -> V): V {
+internal fun <V> opt(that: V): Opt<V> = Opt.of(that)
+
+internal fun <V> optNil(that: V?): Opt<V> = Opt.ofNilable(that)
+
+
+internal fun <V> nil(): Opt<V> = Opt.nil()
+
+inline operator fun <V> Opt<V>.invoke(consumer: V.() -> Unit) {
+    if (!this) return
+    get().consumer()
+}
+
+@OptIn(ExperimentalContracts::class)
+inline infix fun <R, V> Opt<V>.map(transformer: (V) -> R): R {
+    contract {
+        callsInPlace(transformer, InvocationKind.AT_MOST_ONCE)
+    }
+    return map(transformer) { throw NoSuchElementException() }
+}
+
+@OptIn(ExperimentalContracts::class)
+inline infix fun <R, V> Opt<V>.mapNil(transformer: (V) -> R): R? {
+    contract {
+        callsInPlace(transformer, InvocationKind.AT_MOST_ONCE)
+    }
+    return map(transformer) { null }
+}
+
+@OptIn(ExperimentalContracts::class)
+inline infix fun <V> Opt<V>.getOrElse(onAbsent: () -> V): V {
     contract {
         callsInPlace(onAbsent, InvocationKind.AT_MOST_ONCE)
     }
@@ -658,7 +672,7 @@ inline fun <V, R> Opt<V>.mapValue(transform: (V) -> R): Opt<R> {
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun <V> Opt<V>.ifPresent(onPresent: (V) -> Unit) {
+inline infix fun <V> Opt<V>.ifPresent(onPresent: (V) -> Unit) {
     contract {
         callsInPlace(onPresent, InvocationKind.AT_MOST_ONCE)
     }
@@ -666,8 +680,7 @@ inline fun <V> Opt<V>.ifPresent(onPresent: (V) -> Unit) {
 }
 
 @OptIn(ExperimentalContracts::class)
-
-inline fun Opt<*>.ifAbsent(onAbsent: () -> Unit) {
+inline infix fun Opt<*>.ifAbsent(onAbsent: () -> Unit) {
     contract {
         callsInPlace(onAbsent, InvocationKind.AT_MOST_ONCE)
     }
@@ -693,11 +706,13 @@ fun <K, V> Map<K, V>.getOptional(key: K): Opt<V> {
     }
 }
 
+
 fun Vec3i.min(): Vec3i = Vec3i(Int.MIN_VALUE, Int.MIN_VALUE, Int.MIN_VALUE)
 fun Vec3i.max(): Vec3i = Vec3i(Int.MAX_VALUE, Int.MAX_VALUE, Int.MAX_VALUE)
 
 val Vec3i.bp: BlockPos get() = if (this is BlockPos) this else BlockPos(this.x, this.y, this.z)
-val Vec3i.f: Vec3 get() = Vec3.atLowerCornerOf(this)
+val Vec3i.corner: Vec3 get() = Vec3.atLowerCornerOf(this)
+val Vec3i.center: Vec3 get() = Vec3.atCenterOf(this)
 
 val Vec3i.isMin: Boolean get() = this.x == Int.MIN_VALUE && this.y == Int.MIN_VALUE && this.z == Int.MIN_VALUE
 val Vec3i.isMax: Boolean get() = this.x == Int.MAX_VALUE && this.y == Int.MAX_VALUE && this.z == Int.MAX_VALUE
@@ -707,3 +722,128 @@ fun IItemHandler.insertItem(itemStack: ItemStack, simulate: Boolean): ItemStack 
     return ItemHandlerHelper.insertItem(this, itemStack, simulate)
 }
 
+fun test() {
+    val test = arrayOf("test", "testing")
+    test.toList()
+}
+
+
+/**
+ * returns the next enum
+ */
+inline fun <reified T : Enum<T>> T.skip(skipBy: Int): T {
+    val index = this.ordinal
+    val values = T::class.java.enumConstants
+    var next = (index + skipBy)
+    if (next < 0) next = values.lastIndex
+    else if (next > values.lastIndex) next = 0
+    return values[next]
+}
+
+/**
+ * Gets the next enum by skipping by 1
+ */
+inline val <reified T : Enum<T>> T.next get() = skip(1)
+
+/**
+ * Gets the next enum by skipping by 1
+ */
+inline val <reified T : Enum<T>> T.prev get() = skip(-1)
+
+/**
+ * Increment the enum
+ */
+inline operator fun <reified T : Enum<T>> T.inc(): T = next
+
+/**
+ * Decrement the enum
+ */
+inline operator fun <reified T : Enum<T>> T.dec(): T = prev
+
+/**
+ * Computes the resource location for the given class
+ */
+internal inline fun <reified T : Any> computeName(underscore: Boolean = true, capitialized: Boolean = false): String =
+    computeName(T::class, underscore, capitialized)
+
+/**
+ * Computes the resource location for the given class
+ */
+internal inline fun <reified T : Any> computeComp(overrideValue: String? = null, baseIn: String? = null, modID: String = Sieves.ModId): Component =
+    computeComp(T::class, overrideValue, baseIn, modID)
+
+internal fun String.spaced(): String = this.replace("(.)([A-Z])".toRegex(), "$1 $2")
+
+
+/**
+ * Computes the resource location for the given class
+ */
+internal fun <T : Any> computeName(clazz: KClass<T>, underscore: Boolean = true, capitalized: Boolean = false): String {
+    val name = clazz.simpleName!!.replace("\\d+".toRegex(), "").replace("Tile", "").replace("Model", "").replace("Block", "").replace("Item", "")
+        .replace("(.)([A-Z])".toRegex(), if (underscore) "$1_$2" else "$1 $2")
+    return if (!capitalized) name.lowercase() else name
+}
+
+internal fun <T : Any> computeComp(clazz: KClass<T>, overrideValue: String? = null, baseIn: String? = null, modID: String = Sieves.ModId): Component {
+    if (overrideValue != null) return TextComponent(overrideValue)
+    val clsName = clazz.simpleName ?: return TextComponent("Invalid name component for ${clazz::class.simpleName}")
+    val name = computeName(clazz)
+    val base: String = baseIn ?: if (clsName.endsWith("Tile") || clsName.endsWith("Block")) "block"
+    else if (clsName.endsWith("Item")) "item"
+    else if (clsName.endsWith("Container")) "container"
+    else if (clsName.endsWith("Screen")) "screen"
+    else if (clsName.endsWith("Tab")) "tab"
+    else "misc"
+    return TranslatableComponent("${base}.${modID}.${name}")
+}
+
+/**
+ * Deleagte to instances of T
+ */
+internal inline fun <reified T : Any> T.computeComp(overrideValue: String? = null, baseIn: String? = null, modID: String = Sieves.ModId): Component =
+    com.github.sieves.dsl.computeComp<T>(overrideValue, baseIn, modID)
+
+
+internal inline fun <reified T : Any> T.computeName(underscore: Boolean = true, capitialized: Boolean = false): String =
+    com.github.sieves.dsl.computeName<T>(underscore, capitialized)
+
+/**
+ * Computes the resource location for the given class
+ */
+internal inline fun <reified T : Any> computeRes(): ResourceLocation = computeName<T>().res
+
+/**
+ * Computes the resource location for the given class
+ */
+internal inline fun <reified T : Any> T.computeRes(): ResourceLocation = computeName().res
+
+/**
+ * Gets a resource location based upon the give string
+ */
+internal val String.res: ResourceLocation
+    get() = ResourceLocation(Sieves.ModId, this)
+
+
+private var player: Opt<Player> = Opt.nil()
+
+/**
+ * Gets the local player via a cached player instance. Only valid on client
+ */
+internal val localplayer: Opt<Player>
+    get() {
+        if (FMLEnvironment.dist == DEDICATED_SERVER) return Opt.nil()
+        if (player.isAbsent) player = Opt.ofNilable(Minecraft.getInstance().player)
+        return player
+    }
+
+
+@Suppress("UNCHECKED_CAST")
+@OptIn(ExperimentalContracts::class)
+inline fun <T : BlockEntity, R : BlockEntity> ISlave<T, R>.master(onPresent: T.(store: Opt<StructureStore>) -> Unit): Boolean {
+    contract { callsInPlace(onPresent, AT_MOST_ONCE) }
+    //Downcast the master to the type of T that it represents
+    return if (master.isPresent) {
+        (master.get() as T).onPresent(store)
+        true
+    } else false
+}

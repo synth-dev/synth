@@ -5,7 +5,7 @@ import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.tile.*
 import com.github.sieves.content.reactor.control.*
 import com.github.sieves.registry.*
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState

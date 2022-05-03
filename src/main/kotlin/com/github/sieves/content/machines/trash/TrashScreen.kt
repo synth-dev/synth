@@ -3,7 +3,7 @@ package com.github.sieves.content.machines.trash
 import com.github.sieves.api.ApiScreen
 import com.github.sieves.api.gui.ConfigWidget
 import com.github.sieves.api.ApiConfig
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
@@ -14,7 +14,7 @@ import java.text.NumberFormat
 class TrashScreen(
     val container: TrashContainer, playerInv: Inventory
 ) : ApiScreen<TrashContainer, TrashTile>(container, playerInv), ConfigWidget<TrashTile> {
-    override val texture: ResourceLocation = "textures/gui/farmer_gui.png".resLoc
+    override val texture: ResourceLocation = "textures/gui/farmer_gui.png".res
     override fun renderMain(stack: PoseStack, mouseX: Double, mouseY: Double) {
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
     }

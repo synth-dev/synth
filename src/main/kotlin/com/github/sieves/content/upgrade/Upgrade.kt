@@ -3,7 +3,7 @@ package com.github.sieves.content.upgrade
 import com.github.sieves.api.ApiItem
 import com.github.sieves.api.ApiTile
 import com.github.sieves.content.machines.trash.*
-import com.github.sieves.util.rayTrace
+import com.github.sieves.dsl.rayTrace
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.player.Player

@@ -75,7 +75,7 @@ class SynthesizerTile(pos: BlockPos, state: BlockState) :
         if (!playingSound) {
             if (Math.random() > 0.999) {
                 playingSound = true
-                level?.playSound(null, blockPos, Sounds.chant, BLOCKS, 0.5f, Math.random().toFloat())
+                level?.playSound(null, blockPos, Sounds.Chant, BLOCKS, 0.5f, Math.random().toFloat())
             }
         }
 

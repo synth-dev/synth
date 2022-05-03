@@ -1,8 +1,7 @@
 package com.github.sieves.content.io.battery
 
-import com.github.sieves.api.ApiBlock
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.join
+import com.github.sieves.dsl.join
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.world.item.context.BlockPlaceContext

@@ -2,8 +2,7 @@ package com.github.sieves.compat.jei
 
 import com.github.sieves.recipes.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.resLoc
-import com.mojang.blaze3d.systems.RenderSystem
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.vertex.PoseStack
 import mezz.jei.api.constants.VanillaTypes
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder
@@ -14,19 +13,17 @@ import mezz.jei.api.recipe.IFocusGroup
 import mezz.jei.api.recipe.RecipeIngredientRole
 import mezz.jei.api.recipe.category.IRecipeCategory
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiComponent.*
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import java.text.NumberFormat
-import kotlin.math.*
 
 //import (mezz.jei.api.gui.ingredient)
 
 class MaterializerRecipeCategory(private val helper: IGuiHelper) : IRecipeCategory<MaterializerRecipe> {
-    private val uid = "materializer".resLoc
-    private val texture = "textures/gui/materializer_gui.png".resLoc
-    private val widgets = "textures/gui/widgets.png".resLoc
+    private val uid = "materializer".res
+    private val texture = "textures/gui/materializer_gui.png".res
+    private val widgets = "textures/gui/widgets.png".res
     private val background = helper.createDrawable(texture, 0, 0, 176, 80)
     private val icon = helper.createDrawableIngredient(ItemStack(Registry.Blocks.Synthesizer))
 

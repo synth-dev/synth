@@ -1,6 +1,6 @@
 package com.github.sieves.content.machines.synthesizer
 
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Quaternion
 import net.minecraft.client.Minecraft
@@ -23,7 +23,7 @@ class SynthesizerRenderer : BlockEntityRenderer<SynthesizerTile> {
     companion object {
         private val Player = Minecraft.getInstance().entityModels.bakeLayer(ModelLayers.PLAYER)
         private val Model = PlayerModel<AbstractClientPlayer>(Player, false)
-        private val Texture = "textures/entity/quantum.png".resLoc
+        private val Texture = "textures/entity/quantum.png".res
     }
 
     private var decreasing = false

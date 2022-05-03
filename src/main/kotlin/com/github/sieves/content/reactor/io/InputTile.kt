@@ -4,19 +4,16 @@ import com.github.sieves.api.ApiConfig.*
 import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.tile.*
 import com.github.sieves.content.reactor.control.*
+import com.github.sieves.content.reactor.core.*
+import com.github.sieves.dsl.*
 import com.github.sieves.registry.Registry
 import com.github.sieves.registry.Registry.Items
-import com.github.sieves.util.*
 import net.minecraft.core.*
 import net.minecraft.world.level.*
-import net.minecraft.world.level.block.HorizontalDirectionalBlock
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraftforge.common.capabilities.*
-import net.minecraftforge.common.util.*
-import net.minecraftforge.energy.CapabilityEnergy
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.*
-import net.minecraftforge.items.CapabilityItemHandler
+import net.minecraft.world.level.block.state.*
+import net.minecraftforge.energy.*
+import net.minecraftforge.fluids.capability.*
+import net.minecraftforge.items.*
 
 /**
  * Keeps track of the internal input buffer of items being pumped into the controller
@@ -29,14 +26,6 @@ class InputTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<InputTile
     /**Used for interactions with the master**/
     override var store: Opt<StructureStore> = Opt.nil()
 
-    /**Our internal item buffer, we keep create a delegated item handler that has 10 slots**/
-    private val items by handlerOf<Delegates.Items>("items", 10)
-
-    /**Store our fluids buffer with a 100 bucket buffer**/
-    private val fluids by handlerOf<Delegates.Fluids>("fluids", 100_000)
-
-    /**Store an internal buffer of 100k fe**/
-    private val energy by handlerOf<Delegates.Energy>("energy", 100_000)
 
     /**Keep track of tick to do logic at fixed rate**/
     private var tick = 0
@@ -45,49 +34,45 @@ class InputTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<InputTile
      * Will only tick when the controller is present
      */
     override fun onTick(level: Level) {
-        if (level.isClientSide || master.isAbsent) return
+        if (level.isClientSide || !master) return
         tryUpdateState()
-        extract()
+        distributeDust()
     }
 
     /**
-     * Extracts the items from the touching inventories to our local inventory
+     * Extracts exactly 1 item per tick from the facing inventory and directly inserts it into the controller tile only if it's empty,
+     * so that means there is basically zero internal fuel buffer.
      */
-    private fun extract() {
-        val forward = blockState.getValue(HorizontalDirectionalBlock.FACING)
-        val tile = level?.getBlockEntity(blockPos.offset(forward)) ?: return
-        val cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, forward.opposite)
+    private fun distributeDust() {
+        if (!store || !world) return
+        val pos = this.pos.offset(relativeDir(Side.Front))
+
+        val be = world().getBlockEntity(pos)
+        val cap = be?.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ?: return
         if (cap.isPresent) {
-            val inv = cap.resolve().get()
-            for (slot in 0 until inv.slots) {
-                val stack = inv.getStackInSlot(slot)
-                if (stack.`is`(Items.FluxDust)) {
-                    val items = inv.extractItem(slot, 1, true)
-                    if (!items.isEmpty) {
-                        val inserted = this.items().insertItem(items, true)
-                        if (inserted.isEmpty) {
-                            this.items().insertItem(items, false)
-                            inv.extractItem(slot, 1, false)
+            val otherInv = cap.resolve().get()
+            for (slot in 0 until otherInv.slots) {
+                val extracted = otherInv.extractItem(slot, 1, true)
+                if (extracted.`is`(Items.FluxDust)) {
+                    var escape = false
+                    master {
+                        for (slave in get<ChamberTile>(store)) {
+                            val invCap = slave.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                            if (!invCap.isPresent) continue
+                            val inv = invCap.resolve().get()
+                            if (extracted.isEmpty) continue
+                            val result = inv.insertItem(0, extracted, false)
+                            if (result.isEmpty) { //Insert the items into the spark, break upon inserting. only 1 item allowed into any sparks per tick. 1 total allowed in spark
+                                otherInv.extractItem(slot, 1, false)
+                                escape = true
+                                break
+                            }
                         }
                     }
+                    if (escape) break
                 }
             }
         }
-        val fluids = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-        if (fluids.isPresent) {
-            val tank = fluids.resolve().get()
-            val result = tank.drain(1000, SIMULATE)
-            tank.drain(this.fluids().fill(result, EXECUTE), EXECUTE)
-        }
-        val energy = tile.getCapability(CapabilityEnergy.ENERGY)
-        if (energy.isPresent) {
-            val cell = energy.resolve().get()
-            if (cell.canExtract()) {
-                val result = cell.extractEnergy(1000, true)
-                cell.extractEnergy(this.energy().receiveEnergy(result, false), false)
-            }
-        }
-
     }
 
     /**
@@ -102,13 +87,6 @@ class InputTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<InputTile
         level?.setBlockAndUpdate(
             blockPos, blockState.setValue(InputBlock.Piped, valid)
         )
-    }
-
-    override fun <T : Any?> getCapability(cap: Capability<T>, side: Direction?): LazyOptional<T> {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return items.cast()
-        }
-        return super.getCapability(cap, side)
     }
 
 

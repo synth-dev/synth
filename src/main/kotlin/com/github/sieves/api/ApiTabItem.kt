@@ -2,22 +2,18 @@ package com.github.sieves.api
 
 import com.github.sieves.api.tab.TabRegistry
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.rayTrace
+import com.github.sieves.dsl.rayTrace
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.phys.BlockHitResult
-import net.minecraftforge.items.wrapper.InvWrapper
 
 abstract class ApiTabItem(
     protected val tabKey: ResourceLocation, protected vararg val target: Class<out BlockEntity>

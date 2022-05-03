@@ -1,10 +1,8 @@
 package com.github.sieves.content.machines.trash
 
-import com.github.sieves.content.machines.forester.ForesterTile
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.join
+import com.github.sieves.dsl.join
 import net.minecraft.core.BlockPos
-import net.minecraft.tags.BlockTags
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.Block

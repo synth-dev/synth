@@ -2,10 +2,9 @@ package com.github.sieves.api.multiblock
 
 import com.github.sieves.api.multiblock.StructureBlockVariant.*
 import com.github.sieves.api.tile.*
-import com.github.sieves.content.reactor.control.*
-import com.github.sieves.util.*
-import com.github.sieves.util.Log.debug
-import com.github.sieves.util.Log.error
+import com.github.sieves.dsl.*
+import com.github.sieves.dsl.Log.debug
+import com.github.sieves.dsl.Log.error
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
 import net.minecraft.world.level.*
@@ -112,14 +111,16 @@ interface IMaster<T : BlockEntity> : ITile<T> {
      * This will return true if we can form the multi block
      */
     fun isValid(structureIn: Opt<StructureStore>): Boolean {
-        if (world.isAbsent || structureIn.isAbsent) return false
+        if (!world || !structureIn) return false
         val level = world()
         val structure = structureIn()
         for ((block, _) in structure[Side]) if (!isValidSideVariant(block, level, structureIn)) return false
-        for ((block, _) in structure[Inner]) if (!isValidInnerVariant(block, level, structureIn)) return false
+        for ((block, _) in structure[Inner]) if (!isValidInnerVariant(block, level, structureIn)) {
+            return false
+        }
         for ((block, _) in structure[VerticalEdge]) if (!isValidVerticalEdgeVariant(block, level, structureIn)) return false
         for ((block, _) in structure[HorizontalEdge]) if (!isValidHorizontalEdgeVariant(block, level, structureIn)) return false
-//        for ((block, _) in structure[Corner]) if (!isValidCornerVariant(block, level, structureIn)) return false
+        //for ((block, _) in structure[Corner]) if (!isValidCornerVariant(block, level, structureIn)) return false
         return true
     }
 
@@ -150,7 +151,7 @@ interface IMaster<T : BlockEntity> : ITile<T> {
      * Gets the block state from the world instance and calls the isValid method
      */
     fun isBlockValidVariant(blockPos: BlockPos, type: StructureBlockVariant, structure: Opt<StructureStore>): Boolean {
-        if (world.isAbsent) return false
+        if (!world) return false
         return isValidVariant(blockPos, world().getBlockState(blockPos), type, structure)
     }
 
@@ -210,7 +211,7 @@ interface IMaster<T : BlockEntity> : ITile<T> {
      */
     @Suppress("UNCHECKED_CAST")
     fun getSlaves(store: Opt<StructureStore>): Set<ISlave<T, *>> {
-        if (store.isAbsent || world.isAbsent) return emptySet()
+        if (!store || !world) return emptySet()
         val set = HashSet<ISlave<T, *>>()
         for ((block, _) in store()) {
             val be = world().getBlockEntity(block) ?: continue
@@ -228,7 +229,7 @@ interface IMaster<T : BlockEntity> : ITile<T> {
      */
     @Suppress("UNCHECKED_CAST")
     fun setFormedAt(blockPos: BlockPos, direction: Direction, variant: StructureBlockVariant, store: StructureStore): BlockState {
-        if (world.isAbsent) return Blocks.AIR.defaultBlockState()
+        if (!world) return Blocks.AIR.defaultBlockState()
         val tile = world().getBlockEntity(blockPos)
         if (tile is ISlave<*, *>) {
             val slave = (tile as ISlave<T, *>)
@@ -253,12 +254,13 @@ interface IMaster<T : BlockEntity> : ITile<T> {
         return world().getBlockState(blockPos).block.defaultBlockState()
     }
 
+
     /**
      * Updates the slaves to have a reference to their master
      */
     @Suppress("UNCHECKED_CAST")
     fun updateSlaves(structure: Opt<StructureStore>) {
-        if (world.isAbsent || structure.isAbsent) return
+        if (!world || !structure) return
         for ((pos, _) in structure()) {
             val be = world().getBlockEntity(pos) ?: continue
             if (be is ISlave<*, *>) {

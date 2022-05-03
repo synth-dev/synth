@@ -1,17 +1,17 @@
 package com.github.sieves.content.reactor.casing
 
 import com.github.sieves.content.reactor.casing.PanelBlock.PanelState.*
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.util.StringRepresentable
+import net.minecraft.util.*
 import net.minecraft.world.*
 import net.minecraft.world.entity.player.*
 import net.minecraft.world.item.context.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.*
-import net.minecraft.world.level.block.state.properties.EnumProperty
+import net.minecraft.world.level.block.state.properties.*
 import net.minecraft.world.level.material.*
 import net.minecraft.world.phys.*
 import net.minecraft.world.phys.shapes.*

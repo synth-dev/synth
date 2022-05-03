@@ -5,8 +5,8 @@ import com.github.sieves.registry.Registry
 import com.github.sieves.registry.Registry.Items
 import com.github.sieves.registry.internal.net.ConfigurePacket
 import com.github.sieves.registry.internal.net.TakeUpgradePacket
-import com.github.sieves.util.Log
-import com.github.sieves.util.getLevel
+import com.github.sieves.dsl.Log
+import com.github.sieves.dsl.getLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand

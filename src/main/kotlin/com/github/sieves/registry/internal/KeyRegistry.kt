@@ -1,7 +1,7 @@
 package com.github.sieves.registry.internal
 
 import com.github.sieves.Sieves
-import com.github.sieves.util.Log
+import com.github.sieves.dsl.Log
 import net.minecraft.client.KeyMapping
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.ClientRegistry

@@ -1,17 +1,14 @@
 package com.github.sieves.content.io.link
 
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.google.common.collect.*
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
+import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.entity.*
-import net.minecraftforge.common.util.INBTSerializable
+import net.minecraftforge.common.util.*
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.reflect.*
 
 /**
@@ -21,6 +18,8 @@ class Links() : INBTSerializable<CompoundTag>, Iterable<BlockPos> {
     private val links = HashMap<BlockPos, ArrayList<Direction>>()
     private val toRemove: Queue<BlockPos> = Queues.newArrayDeque()
     private var top: BlockPos = BlockPos(0, -64, 0)
+
+    val size: Int get() = links.size
 
     fun contains(blockPos: BlockPos): Boolean = links.containsKey(blockPos)
 
@@ -32,7 +31,7 @@ class Links() : INBTSerializable<CompoundTag>, Iterable<BlockPos> {
         return top
     }
 
-    fun addLink(other: BlockPos, direction: Direction) {
+    fun add(other: BlockPos, direction: Direction) {
         if (other.y > top.y) top = other
         val list = links.getOrPut(other) { ArrayList() }
         if (!list.contains(direction)) list.add(direction)
@@ -57,9 +56,9 @@ class Links() : INBTSerializable<CompoundTag>, Iterable<BlockPos> {
         return getLinks().keys.mapNotNull { level.getBlockEntity(it) }.filterIsInstance<T>()
     }
 
-    fun addLink(other: BlockPos) = addLink(other, NORTH)
+    fun add(other: BlockPos) = add(other, NORTH)
 
-    fun removeLink(pos: BlockPos, direction: Direction? = null) {
+    fun remove(pos: BlockPos, direction: Direction? = null) {
         if (direction == null) links.remove(pos)
         else links[pos]?.remove(direction)
         if (pos == top) {
@@ -77,7 +76,7 @@ class Links() : INBTSerializable<CompoundTag>, Iterable<BlockPos> {
 
     fun poll() {
         while (!toRemove.isEmpty()) {
-            removeLink(toRemove.poll())
+            remove(toRemove.poll())
         }
     }
 

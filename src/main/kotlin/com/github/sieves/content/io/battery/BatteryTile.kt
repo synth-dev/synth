@@ -1,27 +1,18 @@
 package com.github.sieves.content.io.battery
 
-import com.github.sieves.Sieves
 import com.github.sieves.api.*
 import com.github.sieves.api.caps.*
-import com.github.sieves.content.io.fluids.*
 import com.github.sieves.content.io.link.Links
 import com.github.sieves.registry.Registry
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.Nameable
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
-import net.minecraftforge.common.capabilities.Capability
-import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.CapabilityEnergy
-import net.minecraftforge.fluids.capability.*
-import net.minecraftforge.fluids.capability.templates.FluidTank
-import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.network.NetworkHooks
 import kotlin.math.abs
 import kotlin.math.min
@@ -102,7 +93,7 @@ class BatteryTile(pos: BlockPos, state: BlockState) :
                 }
             }
         }
-        removals.forEach(links::removeLink)
+        removals.forEach(links::remove)
     }
 
     /**
@@ -145,7 +136,7 @@ class BatteryTile(pos: BlockPos, state: BlockState) :
      * Adds our link and syncs with the client
      */
     override fun linkTo(other: BlockPos, face: Direction) {
-        links.addLink(other, face)
+        links.add(other, face)
         update()
     }
 

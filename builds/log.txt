@@ -1,5 +1,5 @@
 Java Launcher: C:\Users\james\.jdks\openjdk-17.0.2\bin\java.exe
-Arguments: '--in-jar, C:\Users\james\IdeaProjects\synth\build\libs\synth-1.18.2-04-28.jar, --out-jar, C:\Users\james\IdeaProjects\synth\build\reobfJar\output.jar, --srg-in, C:\Users\james\IdeaProjects\synth\build\createMcpToSrg\output.tsrg, --live'
+Arguments: '--in-jar, C:\Users\james\IdeaProjects\synth\build\libs\synth-1.18.2-05-03.jar, --out-jar, C:\Users\james\IdeaProjects\synth\build\reobfJar\output.jar, --srg-in, C:\Users\james\IdeaProjects\synth\build\createMcpToSrg\output.tsrg, --live'
 Classpath:
  - C:\Users\james\.gradle\caches\forge_gradle\maven_downloader\net\md-5\SpecialSource\1.10.0\SpecialSource-1.10.0-shaded.jar
  - C:\Users\james\.gradle\caches\modules-2\files-2.1\thedarkcolour\kotlinforforge\3.1.0\a4d8680cb74c88d73d44ca247dc35feb3a4773ef\kotlinforforge-3.1.0.jar
@@ -9,6 +9,7 @@ Classpath:
  - C:\Users\james\.gradle\caches\forge_gradle\deobf_dependencies\mezz\jei\jei-1.18.2-forge-api\10.0.0.191_mapped_parchment_1.18.2-2022.03.13-1.18.2\jei-1.18.2-forge-api-10.0.0.191_mapped_parchment_1.18.2-2022.03.13-1.18.2.jar
  - C:\Users\james\.gradle\caches\forge_gradle\deobf_dependencies\mezz\jei\jei-1.18.2-common-api\10.0.0.191_mapped_parchment_1.18.2-2022.03.13-1.18.2\jei-1.18.2-common-api-10.0.0.191_mapped_parchment_1.18.2-2022.03.13-1.18.2.jar
  - C:\Users\james\.gradle\caches\forge_gradle\deobf_dependencies\curse\maven\the-one-probe-245211\3671753_mapped_parchment_1.18.2-2022.03.13-1.18.2\the-one-probe-245211-3671753_mapped_parchment_1.18.2-2022.03.13-1.18.2.jar
+ - C:\Users\james\.gradle\caches\forge_gradle\deobf_dependencies\software\bernie\geckolib\geckolib-1.18-forge\3.0.15_mapped_parchment_1.18.2-2022.03.13-1.18.2\geckolib-1.18-forge-3.0.15_mapped_parchment_1.18.2-2022.03.13-1.18.2.jar
  - C:\Users\james\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.18.2-40.1.0_mapped_parchment_1.18.2-2022.03.13-1.18.2\forge-1.18.2-40.1.0_mapped_parchment_1.18.2-2022.03.13-1.18.2-recomp.jar
  - C:\Users\james\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-stdlib-jdk7\1.6.10\e1c380673654a089c4f0c9f83d0ddfdc1efdb498\kotlin-stdlib-jdk7-1.6.10.jar
  - C:\Users\james\.gradle\caches\modules-2\files-2.1\org.jetbrains.kotlin\kotlin-reflect\1.6.10\1cbe9c92c12a94eea200d23c2bbaedaf3daf5132\kotlin-reflect-1.6.10.jar

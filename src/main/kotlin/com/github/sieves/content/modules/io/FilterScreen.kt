@@ -1,6 +1,6 @@
 package com.github.sieves.content.modules.io
 
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.mojang.blaze3d.systems.*
 import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.gui.screens.inventory.*
@@ -26,7 +26,7 @@ class FilterScreen(container: FilterContainer, inventory: Inventory) :
     }
 
     companion object {
-        private val Texture = "textures/gui/filter_gui.png".resLoc
+        private val Texture = "textures/gui/filter_gui.png".res
     }
 
 }

@@ -1,10 +1,9 @@
 package com.github.sieves.content.machines.farmer
 
 import com.github.sieves.api.ApiRenderer
-import com.github.sieves.content.machines.forester.ForesterTile
 import com.github.sieves.registry.Registry
 import com.github.sieves.registry.internal.net.*
-import com.github.sieves.util.length
+import com.github.sieves.dsl.length
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Vector3f
 import net.minecraft.client.Minecraft
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.block.model.ItemTransforms
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3

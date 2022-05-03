@@ -2,7 +2,7 @@ package com.github.sieves.content.io.battery
 
 import com.github.sieves.api.ApiRenderer
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.length
+import com.github.sieves.dsl.length
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Quaternion
 import com.mojang.math.Vector3f

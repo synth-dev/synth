@@ -1,33 +1,21 @@
 package com.github.sieves.content.machines.trash
 
-import com.github.sieves.Sieves
 import com.github.sieves.api.ApiTile
 import com.github.sieves.content.io.link.Links
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.api.caps.*
 import com.github.sieves.registry.Registry
 import com.github.sieves.registry.Registry.Blocks
-import com.github.sieves.registry.Registry.Items
-import com.github.sieves.registry.Registry.Net
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Direction.*
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.TranslatableComponent
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.Nameable
 import net.minecraft.world.SimpleMenuProvider
-import net.minecraft.world.item.*
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.phys.AABB
-import net.minecraftforge.common.capabilities.Capability
-import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.energy.CapabilityEnergy
 import net.minecraftforge.fluids.capability.templates.*
-import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.network.NetworkHooks
-import kotlin.collections.ArrayList
 import kotlin.math.*
 
 class TrashTile(pos: BlockPos, state: BlockState) :
@@ -94,7 +82,7 @@ class TrashTile(pos: BlockPos, state: BlockState) :
             val pos = BlockPos(blockPos.x, blockPos.y + i, blockPos.z)
             val state = level?.getBlockState(pos) ?: continue
             if (state.`is`(Blocks.Core)) {
-                links.addLink(pos, UP)
+                links.add(pos, UP)
             } else break
         }
         for (link in links.getLinks()) {

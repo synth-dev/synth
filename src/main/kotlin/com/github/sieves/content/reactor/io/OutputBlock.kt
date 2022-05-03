@@ -2,7 +2,7 @@ package com.github.sieves.content.reactor.io
 
 import com.github.sieves.api.multiblock.*
 import com.github.sieves.registry.Registry.Tiles
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
 import net.minecraft.world.item.context.*

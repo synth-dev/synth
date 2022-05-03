@@ -5,7 +5,7 @@ import com.github.sieves.content.io.link.Links
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.api.caps.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -77,11 +77,11 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
                     val state = level?.getBlockState(pos) ?: continue
                     val block = state.block
                     if (block is SaplingBlock) {
-                        links.addLink(pos, Direction.UP)
+                        links.add(pos, Direction.UP)
                         savedSaplings[pos] = block
                     }
-                    if (state.`is`(BlockTags.LOGS)) links.addLink(pos, Direction.UP)
-                    if (state.`is`(BlockTags.LEAVES)) links.addLink(pos, Direction.UP)
+                    if (state.`is`(BlockTags.LOGS)) links.add(pos, Direction.UP)
+                    if (state.`is`(BlockTags.LEAVES)) links.add(pos, Direction.UP)
                 }
             }
         }
@@ -100,7 +100,7 @@ class ForesterTile(pos: BlockPos, state: BlockState) :
                 link.key
             )
         }
-        removals.forEach(links::removeLink)
+        removals.forEach(links::remove)
     }
 
     /**

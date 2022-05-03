@@ -2,7 +2,7 @@ package com.github.sieves.compat.jei
 
 import com.github.sieves.recipes.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.systems.*
 import com.mojang.blaze3d.vertex.PoseStack
 import mezz.jei.api.constants.VanillaTypes
@@ -27,8 +27,8 @@ import java.text.NumberFormat
 //import (mezz.jei.api.gui.ingredient)
 
 class SolidifierRecipeCategory(private val helper: IGuiHelper) : IRecipeCategory<SolidifierRecipe> {
-    private val uid = "solidifer".resLoc
-    private val texture = "textures/gui/solidifier_gui.png".resLoc
+    private val uid = "solidifer".res
+    private val texture = "textures/gui/solidifier_gui.png".res
     private val background = helper.createDrawable(texture, 0, 0, 176, 80)
     private val icon = helper.createDrawableIngredient(ItemStack(Registry.Blocks.Core))
 

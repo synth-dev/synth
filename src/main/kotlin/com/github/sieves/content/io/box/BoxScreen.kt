@@ -5,7 +5,7 @@ import com.github.sieves.api.gui.ConfigWidget
 import com.github.sieves.api.gui.UpgradesWidget
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.content.io.box.*
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
@@ -16,7 +16,7 @@ import java.text.NumberFormat
 class BoxScreen(
     val container: BoxContainer, playerInv: Inventory
 ) : ApiScreen<BoxContainer, BoxTile>(container, playerInv), ConfigWidget<BoxTile>, UpgradesWidget<BoxTile> {
-    override val texture: ResourceLocation = "textures/gui/box_gui.png".resLoc
+    override val texture: ResourceLocation = "textures/gui/box_gui.png".res
     override fun renderMain(stack: PoseStack, mouseX: Double, mouseY: Double) {
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
     }

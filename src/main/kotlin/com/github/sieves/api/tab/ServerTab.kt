@@ -1,7 +1,7 @@
 package com.github.sieves.api.tab
 
 import com.github.sieves.api.ApiTab
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -9,10 +9,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import java.util.*
-import java.util.function.Supplier
 import kotlin.collections.HashMap
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
 import com.github.sieves.registry.Registry.Net as Net
 
 /**

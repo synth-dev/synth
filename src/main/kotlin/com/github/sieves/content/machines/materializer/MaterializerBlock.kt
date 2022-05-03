@@ -2,7 +2,7 @@ package com.github.sieves.content.machines.materializer
 
 import com.github.sieves.api.*
 import com.github.sieves.registry.Registry.Tiles
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.*

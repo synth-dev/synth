@@ -5,7 +5,7 @@ import com.github.sieves.api.ApiTabItem
 import com.github.sieves.api.tab.*
 import com.github.sieves.content.io.box.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.mojang.math.Vector3f
 
 import net.minecraft.core.BlockPos

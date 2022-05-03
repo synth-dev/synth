@@ -5,9 +5,8 @@ import com.github.sieves.api.ApiTabItem
 import com.github.sieves.api.tab.Tab
 import com.github.sieves.api.tab.TabSpec
 import com.github.sieves.content.io.box.*
-import com.github.sieves.content.io.fluids.FluidsTile
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.mojang.math.Vector3f
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction

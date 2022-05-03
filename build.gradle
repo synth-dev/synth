@@ -136,6 +136,7 @@ repositories {
     maven {
         url "https://maven.blakesmods.com"
     }
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 
 // Include assets and data from data generators
@@ -149,6 +150,7 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
     compileOnly fg.deobf("curse.maven:the-one-probe-245211:3671753")
+    implementation fg.deobf('software.bernie.geckolib:geckolib-1.18-forge:3.0.15')
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")

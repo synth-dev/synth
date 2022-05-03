@@ -20,11 +20,11 @@
     },
     "formed=true,facing=up": {
       "model": "synth:block/reactor/panel_partial",
-      "x": 270
+      "x": 90
     },
     "formed=true,facing=down": {
       "model": "synth:block/reactor/panel_partial",
-      "x": 90
+      "x": 270
     }
   }
 }

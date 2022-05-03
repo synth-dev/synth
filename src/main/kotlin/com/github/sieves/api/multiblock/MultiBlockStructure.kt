@@ -1,15 +1,11 @@
 package com.github.sieves.api.multiblock
 
 import com.github.sieves.api.multiblock.StructureBlockVariant.*
-import com.github.sieves.util.*
-import com.github.sieves.util.Log.debug
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
+import com.github.sieves.dsl.*
+import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.core.Vec3i
-import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.*
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.collections.MutableMap.*
 import kotlin.math.*
 
@@ -21,7 +17,7 @@ data class MultiBlockStructure(val min: Vec3i, val max: Vec3i) : Iterable<Mutabl
     val size: Vec3i = Vec3i(max.x - min.x, max.y - min.y, max.z - min.z)
 
     /**An aabb with the world-position transform relative to the inside the multiblock**/
-    val inside: AABB = AABB(min.offset(1, 1, 1).f, max.offset(1, 1, 1).f)
+    val inside: AABB = AABB(min.offset(1, 1, 1).corner, max.offset(1, 1, 1).corner)
 
     /**Used for iterating over all the block sets via the variants**/
     val variants: Array<StructureBlockVariant> = StructureBlockVariant.values()
@@ -51,11 +47,16 @@ data class MultiBlockStructure(val min: Vec3i, val max: Vec3i) : Iterable<Mutabl
      */
     private fun mapBlock(x: Int, y: Int, z: Int, map: MutableMap<StructureBlockVariant, MutableMap<BlockPos, Direction>>) {
         //If we're here, we know we're we're checking the outside
-
-        if (y == max.y && x > min.x && x < max.x && z > min.z && z < max.z) {
+        val minX = min(min.x, max.x)
+        val maxX = max(min.x, max.x)
+        val minY = min(min.y, max.y)
+        val maxY = max(min.y, max.y)
+        val minZ = min(min.z, max.z)
+        val maxZ = max(min.z, max.z)
+        if (y == max.y && x > minX && x < maxX && z > minZ && z < maxZ) {
             val set = map.getOrPut(Side) { hashMapOf() }
             set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-            debug { "Found outer block at [$x, $y, $z]" }
+//            debug { "Found outer block at [$x, $y, $z]" }
             return
         }
         if (x == min.x || z == min.z || x == max.x || z == max.z) {
@@ -63,31 +64,32 @@ data class MultiBlockStructure(val min: Vec3i, val max: Vec3i) : Iterable<Mutabl
             if (y == max.y || y == min.y) {
                 val set = map.getOrPut(HorizontalEdge) { hashMapOf() }
                 set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-                debug { "Found horizontal edge block at [$x, $y, $z]" }
+//                debug { "Found horizontal edge block at [$x, $y, $z]" }
             }
             //At this point we know it's not a horizontal edge, so we check to see if it's a corner
             if ((x == min.x && z == min.z) || (x == max.x && z == min.z) || (x == min.x && z == max.z) || (x == max.x && z == max.z)) {
                 if (y == min.y || y == max.y) {
                     val set = map.getOrPut(Corner) { hashMapOf() }
                     set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-                    debug { "Found corner block at [$x, $y, $z]" }
+//                    debug { "Found corner block at [$x, $y, $z]" }
                     return
                 } else {
                     val set = map.getOrPut(VerticalEdge) { hashMapOf() }
                     set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-                    debug { "Found vertical edge block at [$x, $y, $z]" }
+//                    debug { "Found vertical edge block at [$x, $y, $z]" }
                     return
                 }
             }
             val set = map.getOrPut(Side) { hashMapOf() }
             set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-            debug { "Found outer block at [$x, $y, $z]" }
+//            debug { "Found outer block at [$x, $y, $z]" }
             return
         }
-        if (x < max.x && x > min.x && y > min.y && y < max.y && z > min.z && z < max.z) {
+
+        if (x > minX && x < maxX && y > minY && y < maxY && z > minZ && z < maxZ) {
             val set = map.getOrPut(Inner) { hashMapOf() }
             set[BlockPos(x, y, z)] = getDirectionFor(x, y, z)
-            debug { "Found inner block at [$x, $y, $z]" }
+//            debug { "Found inner block at [$x, $y, $z]" }
             return
         }
     }

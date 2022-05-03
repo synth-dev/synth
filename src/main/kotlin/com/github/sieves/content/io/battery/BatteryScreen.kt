@@ -4,7 +4,7 @@ import com.github.sieves.api.ApiScreen
 import com.github.sieves.api.gui.ConfigWidget
 import com.github.sieves.api.gui.UpgradesWidget
 import com.github.sieves.api.ApiConfig
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
@@ -16,7 +16,7 @@ class BatteryScreen(
     val container: BatteryContainer, playerInv: Inventory
 ) : ApiScreen<BatteryContainer, BatteryTile>(container, playerInv), ConfigWidget<BatteryTile>,
     UpgradesWidget<BatteryTile> {
-    override val texture: ResourceLocation = "textures/gui/battery_gui.png".resLoc
+    override val texture: ResourceLocation = "textures/gui/battery_gui.png".res
     override fun renderMain(stack: PoseStack, mouseX: Double, mouseY: Double) {
         blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight)
     }

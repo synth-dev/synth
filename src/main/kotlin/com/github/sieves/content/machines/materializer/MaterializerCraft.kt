@@ -1,9 +1,7 @@
 package com.github.sieves.content.machines.materializer
 
-import com.github.sieves.content.machines.materializer.MaterializerCraft.*
-import com.github.sieves.registry.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.RecipeManager

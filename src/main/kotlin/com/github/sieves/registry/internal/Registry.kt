@@ -1,9 +1,8 @@
 package com.github.sieves.registry.internal
 
-import com.github.sieves.util.Log.info
+import com.github.sieves.dsl.Log.info
 import com.google.common.collect.*
 import net.minecraft.resources.*
-import net.minecraft.world.level.block.*
 import net.minecraftforge.api.distmarker.*
 import net.minecraftforge.eventbus.api.*
 import net.minecraftforge.fml.event.*
@@ -41,9 +40,7 @@ abstract class Registry<B : IForgeRegistryEntry<B>>(private val registry: IForge
         registers.add(name to supplier)
         return object : ReadOnlyProperty<Any?, T>, Supplier<T>, () -> T {
             override fun get(): T = objects[name]!!.get() as T
-
             override fun getValue(thisRef: Any?, property: KProperty<*>): T = get()
-
             override fun invoke(): T = get()
         }
     }

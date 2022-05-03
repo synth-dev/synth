@@ -1,6 +1,6 @@
 package com.github.sieves.content.reactor.casing
 
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
 import net.minecraft.world.*
@@ -58,8 +58,8 @@ class CasingBlock : Block(Properties.of(Material.HEAVY_METAL).noOcclusion()) {
     ): VoxelShape {
         return if (pState.getValue(Formed)) {
             when (pState.getValue(DirectionalBlock.FACING)) {
-                DOWN -> down
-                UP -> up
+                DOWN -> up
+                UP -> down
                 NORTH -> north
                 SOUTH -> south
                 WEST -> west

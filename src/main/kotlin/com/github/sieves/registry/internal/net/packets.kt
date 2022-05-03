@@ -2,7 +2,7 @@ package com.github.sieves.registry.internal.net
 
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.content.machines.materializer.*
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.res
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Registry
 import net.minecraft.nbt.CompoundTag
@@ -96,7 +96,7 @@ class StopMaterializer() : Packet() {
 }
 
 class TabUpdatePacket() : Packet() {
-    var key: ResourceLocation = "missing".resLoc
+    var key: ResourceLocation = "missing".res
     var tab = CompoundTag()
 
     override fun write(buffer: FriendlyByteBuf) {
@@ -207,7 +207,7 @@ class FlightPacket() : Packet() {
 
 class MenuStatePacket() : Packet() {
     var player: UUID = UUID.randomUUID()
-    var menu: ResourceLocation = "".resLoc
+    var menu: ResourceLocation = "".res
     var opened: Boolean = false
 
     override fun write(buffer: FriendlyByteBuf) {
@@ -253,7 +253,7 @@ class TeleportPacket() : Packet() {
 
 class TabClickedPacket() : Packet() {
     var uuid: UUID = UUID.randomUUID() //lol
-    var key: ResourceLocation = "missing".resLoc
+    var key: ResourceLocation = "missing".res
 
 
     override fun write(buffer: FriendlyByteBuf) {
@@ -274,7 +274,7 @@ class TabClickedPacket() : Packet() {
 
 class TabBindPacket() : Packet() {
     var uuid: UUID = UUID.randomUUID() //lol
-    var key: ResourceLocation = "missing".resLoc
+    var key: ResourceLocation = "missing".res
 
     override fun write(buffer: FriendlyByteBuf) {
         buffer.writeUUID(uuid)

@@ -1,6 +1,6 @@
 package com.github.sieves.api.multiblock
 
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.google.common.collect.Iterators
 import net.minecraft.core.*
 import net.minecraft.nbt.CompoundTag

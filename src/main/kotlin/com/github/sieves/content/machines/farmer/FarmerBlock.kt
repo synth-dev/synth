@@ -1,9 +1,7 @@
 package com.github.sieves.content.machines.farmer
 
-import com.github.sieves.api.ApiBlock
-import com.github.sieves.content.machines.forester.ForesterTile
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.join
+import com.github.sieves.dsl.join
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.state.BlockState

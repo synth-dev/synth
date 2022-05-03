@@ -1,7 +1,7 @@
 package com.github.sieves.registry.internal
 
-import com.github.sieves.util.Log
-import com.github.sieves.util.registerAll
+import com.github.sieves.dsl.Log
+import com.github.sieves.dsl.registerAll
 import net.minecraftforge.eventbus.api.IEventBus
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import thedarkcolour.kotlinforforge.forge.MOD_BUS

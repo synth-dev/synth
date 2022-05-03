@@ -1,28 +1,16 @@
 package com.github.sieves.content.reactor.spark
 
-import com.github.sieves.api.caps.*
 import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.tile.*
-import com.github.sieves.content.io.link.*
 import com.github.sieves.content.reactor.control.*
-import com.github.sieves.registry.*
-import com.github.sieves.registry.Registry.Items
-import com.github.sieves.util.*
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
-import net.minecraft.nbt.*
-import net.minecraft.network.chat.ChatType
-import net.minecraft.network.chat.TextComponent
-import net.minecraft.server.level.*
-import net.minecraft.world.*
-import net.minecraft.world.entity.player.*
-import net.minecraft.world.item.ItemStack
+import com.github.sieves.dsl.*
+import com.github.sieves.registry.Registry
+import net.minecraft.core.*
 import net.minecraft.world.level.*
-import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.*
 import net.minecraftforge.common.capabilities.*
-import net.minecraftforge.common.util.LazyOptional
-import net.minecraftforge.items.CapabilityItemHandler
-import java.util.UUID
+import net.minecraftforge.common.util.*
+import net.minecraftforge.items.*
 
 /**
  * Keeps track of the internal input buffer of items being pumped into the controller

@@ -1,22 +1,15 @@
 package com.github.sieves.content.reactor.spark
 
 import com.github.sieves.api.multiblock.*
-import com.github.sieves.api.tile.*
 import com.github.sieves.registry.Registry.Tiles
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.server.level.*
-import net.minecraft.world.*
-import net.minecraft.world.entity.player.*
 import net.minecraft.world.item.context.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.*
-import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.*
 import net.minecraft.world.level.block.state.properties.*
-import net.minecraft.world.level.material.*
-import net.minecraft.world.phys.*
 import net.minecraft.world.phys.shapes.*
 
 class SparkBlock : TileBlock<SparkTile>({ Tiles.Spark }, 0) {

@@ -1,8 +1,8 @@
 package com.github.sieves.content.io.fluids
 
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
-import com.github.sieves.util.Log.info
+import com.github.sieves.dsl.*
+import com.github.sieves.dsl.Log.info
 import net.minecraft.world.*
 import net.minecraft.world.InteractionResult.*
 import net.minecraft.world.entity.player.*

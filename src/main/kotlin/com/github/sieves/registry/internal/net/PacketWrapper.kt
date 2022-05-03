@@ -1,7 +1,7 @@
 package com.github.sieves.registry.internal.net
 
-import com.github.sieves.util.Log.debug
-import com.github.sieves.util.Log.warn
+import com.github.sieves.dsl.Log.debug
+import com.github.sieves.dsl.Log.warn
 import net.minecraftforge.network.NetworkDirection
 import net.minecraftforge.network.NetworkEvent
 

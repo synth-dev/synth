@@ -1,7 +1,7 @@
 package com.github.sieves.api
 
 import com.github.sieves.api.gui.*
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import com.mojang.blaze3d.systems.*
 import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.*
@@ -22,7 +22,7 @@ abstract class ApiScreen<T : ApiContainer<E, T>, E : ApiTile<E>>(
 ) :
     AbstractContainerScreen<T>(container, playerInv, container.tile.name), BaseWidget<E> {
     protected abstract val texture: ResourceLocation
-    private val widgets = "textures/gui/widgets.png".resLoc
+    private val widgets = "textures/gui/widgets.png".res
     private var lastClick = System.currentTimeMillis()
 
     /**

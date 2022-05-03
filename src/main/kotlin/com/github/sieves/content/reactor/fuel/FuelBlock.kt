@@ -2,10 +2,8 @@ package com.github.sieves.content.reactor.fuel
 
 
 import com.github.sieves.content.reactor.fuel.FuelBlock.FuelState.*
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
-import net.minecraft.core.Direction.*
-import net.minecraft.stats.Stat
 import net.minecraft.util.*
 import net.minecraft.world.*
 import net.minecraft.world.entity.player.*

@@ -2,23 +2,18 @@ package com.github.sieves.content.machines.synthesizer
 
 import com.github.sieves.api.ApiBlock
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.join
+import com.github.sieves.dsl.join
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.server.level.*
-import net.minecraft.sounds.SoundEvents
-import net.minecraft.sounds.SoundSource.*
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
-import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.phys.shapes.BooleanOp
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
 import net.minecraft.world.phys.shapes.VoxelShape
-import java.util.*
 
 
 class SynthesizerBlock(properties: Properties) :

@@ -2,18 +2,23 @@ package com.github.sieves.api.tile
 
 import com.github.sieves.api.ApiConfig.*
 import com.github.sieves.api.ApiConfig.Side.*
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
+import mcjty.theoneprobe.api.*
+import mcjty.theoneprobe.apiimpl.styles.*
 import net.minecraft.core.*
 import net.minecraft.nbt.*
 import net.minecraft.network.*
+import net.minecraft.network.chat.*
 import net.minecraft.network.protocol.*
 import net.minecraft.network.protocol.game.*
+import net.minecraft.world.*
+import net.minecraft.world.entity.player.*
+import net.minecraft.world.item.*
 import net.minecraft.world.level.block.*
-import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.level.block.entity.BlockEntityType
-import net.minecraft.world.level.block.state.BlockState
-import net.minecraftforge.common.util.INBTSerializable
-import net.minecraftforge.common.util.LazyOptional
+import net.minecraft.world.level.block.entity.*
+import net.minecraft.world.level.block.state.*
+import net.minecraft.world.phys.*
+import net.minecraftforge.common.util.*
 import java.util.function.*
 import kotlin.properties.*
 import kotlin.reflect.*
@@ -22,9 +27,25 @@ import kotlin.reflect.full.*
 /**
  * Out base tile, all tiles in the future will implement from this
  */
-abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos, state: BlockState) : ITile<T>, BlockEntity(type, pos, state) {
+abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos, state: BlockState) : ITile<T>, BlockEntity(type, pos, state), Nameable {
     /**Tracks the serializable handlers**/
     protected val handlers: MutableMap<String, DelegatedHandler<*>> = HashMap()
+
+    /**Generate the resource name based upon the class's name formatted correctly**/
+    protected open val formattedName: String = computeName(this::class, underscore = false, capitalized = false)
+
+    /**The computed component based upon the current class name**/
+    protected open val formattedComponent: Component = computeComp(this::class)
+
+    /**
+     * render the top plugin information for this tile, only on client side
+     */
+    override fun renderTop(info: IProbeInfo, mode: ProbeMode, data: IProbeHitData, player: Player) {
+        info.horizontal()
+            .item(ItemStack(blockState.block.asItem()))
+            .vertical()
+            .text(formattedComponent, TextStyle().topPadding(5))
+    }
 
     /**
      * Updates the shits
@@ -33,6 +54,11 @@ abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos
         setChanged()
         level?.sendBlockUpdated(worldPosition, blockState, blockState, 3)
     }
+
+    /**
+     * Gets the name so we can be a nameable block entity
+     */
+    override fun getName(): Component = formattedComponent
 
     /**
      * Gets a block for the given side using the horizontal offset
@@ -94,7 +120,7 @@ abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos
     /**
      * Delegate the handling of our handlers
      */
-    class DelegatedHandler<T : Any>(private val value: T) : Supplier<T>, () -> T {
+    data class DelegatedHandler<T : Any>(private val value: T) : Supplier<T>, () -> T {
         /**Keep track of our lazy for serialization and invalidation**/
         val lazy: LazyOptional<T> = LazyOptional.of { value }
 
@@ -114,7 +140,14 @@ abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos
          * Returns the capability provided by a lazy optional
          */
         override fun invoke(): T = value
+
+        /**
+         * Mapes a value to a result, inlined and infxed ;)
+         */
+        inline infix fun <R> map(consumer: T.() -> R): R = get().consumer()
+
     }
+
 
     @Suppress("UNCHECKED_CAST")
     override fun saveAdditional(pTag: CompoundTag) {
@@ -141,6 +174,8 @@ abstract class BaseTile<T : BlockEntity>(type: BlockEntityType<T>, pos: BlockPos
             }
         }
     }
+
+    override fun getRenderBoundingBox(): AABB = aabb
 
     override fun getUpdatePacket(): Packet<ClientGamePacketListener>? {
         return ClientboundBlockEntityDataPacket.create(this)

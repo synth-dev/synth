@@ -1,8 +1,40 @@
 {
   "chant": {
-    "subtitle": "sieves.chant",
+    "subtitle": "synth.chant",
     "sounds": [
       "synth:chant"
+    ]
+  },
+  "reactor_startup": {
+    "subtitle": "synth.reactor_startup",
+    "sounds": [
+      "synth:reactor_startup"
+    ]
+  },
+  "reactor_ready": {
+    "subtitle": "synth.reactor_startup",
+    "sounds": [
+      "synth:startup_1",
+      "synth:startup_2",
+      "synth:startup_3"
+    ]
+  },
+  "reactor_active": {
+    "subtitle": "synth.active",
+    "sounds": [
+      "synth:reactor_active"
+    ]
+  },
+  "reactor_spinning_up": {
+    "subtitle": "synth.spinning_up",
+    "sounds": [
+      "synth:reactor_spinning_up"
+    ]
+  },
+  "reactor_shutting_down": {
+    "subtitle": "synth.reactor_shutting_down",
+    "sounds": [
+      "synth:reactor_shutting_down"
     ]
   }
 }

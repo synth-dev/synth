@@ -1,7 +1,9 @@
 package com.github.sieves.compat.top
 
 import com.github.sieves.api.ApiTile
+import com.github.sieves.api.tile.*
 import com.github.sieves.content.machines.synthesizer.SynthesizerTile
+import com.github.sieves.content.reactor.core.*
 import mcjty.theoneprobe.api.ITheOneProbe
 import mcjty.theoneprobe.api.NumberFormat
 import mcjty.theoneprobe.apiimpl.styles.TextStyle
@@ -19,6 +21,9 @@ class TopPlugin : Function<ITheOneProbe, Unit> {
     override fun apply(t: ITheOneProbe) = with(t) {
         registerBlockDisplayOverride { probeMode, inf, player, level, blockState, data ->
             val tile = level.getBlockEntity(data.pos)
+            if (tile is ITile<*>) {
+                tile.renderTop(inf, probeMode, data, player)
+            }
             if (tile is SynthesizerTile) {
                 inf.horizontal()
                     .item(ItemStack(blockState.block.asItem()))

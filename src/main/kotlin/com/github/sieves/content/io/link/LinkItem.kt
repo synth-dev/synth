@@ -1,11 +1,8 @@
 package com.github.sieves.content.io.link
 
 import com.github.sieves.api.*
-import com.github.sieves.content.io.battery.BatteryTile
-import com.github.sieves.content.io.box.*
-import com.github.sieves.content.io.fluids.FluidsTile
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.network.chat.TextComponent
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.Nameable

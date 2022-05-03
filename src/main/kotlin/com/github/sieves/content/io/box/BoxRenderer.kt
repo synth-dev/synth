@@ -1,21 +1,19 @@
 package com.github.sieves.content.io.box
 
-import com.github.sieves.api.ApiRenderer
+import com.github.sieves.api.*
+import com.github.sieves.dsl.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.length
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Quaternion
-import com.mojang.math.Vector3f
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.core.Direction
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.InteractionHand
-import net.minecraft.world.level.block.DirectionalBlock
-import net.minecraft.world.phys.Vec3
-import java.lang.Float.max
+import com.mojang.blaze3d.vertex.*
+import com.mojang.math.*
+import net.minecraft.client.*
+import net.minecraft.client.renderer.*
+import net.minecraft.core.*
+import net.minecraft.core.particles.*
+import net.minecraft.resources.*
+import net.minecraft.world.*
+import net.minecraft.world.level.block.*
+import net.minecraft.world.phys.*
+import java.lang.Float.*
 
 class BoxRenderer : ApiRenderer<BoxTile>() {
     private val texture = ResourceLocation("minecraft", "block/lapis_block")

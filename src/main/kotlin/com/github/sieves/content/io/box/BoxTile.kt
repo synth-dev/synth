@@ -13,11 +13,6 @@ import net.minecraft.server.level.*
 import net.minecraft.world.*
 import net.minecraft.world.level.block.state.*
 import net.minecraft.world.phys.*
-import net.minecraftforge.common.capabilities.*
-import net.minecraftforge.common.util.*
-import net.minecraftforge.energy.*
-import net.minecraftforge.fluids.capability.*
-import net.minecraftforge.fluids.capability.templates.*
 import net.minecraftforge.items.*
 import net.minecraftforge.network.*
 import kotlin.math.*
@@ -125,7 +120,7 @@ class BoxTile(pos: BlockPos, state: BlockState) :
                 }
             }
         }
-        removals.forEach(links::removeLink)
+        removals.forEach(links::remove)
     }
 
 
@@ -160,7 +155,7 @@ class BoxTile(pos: BlockPos, state: BlockState) :
      * Adds our link and syncs with the client
      */
     override fun linkTo(other: BlockPos, face: Direction) {
-        links.addLink(other, face)
+        links.add(other, face)
         update()
     }
 

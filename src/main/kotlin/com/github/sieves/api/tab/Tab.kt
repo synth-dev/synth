@@ -1,7 +1,7 @@
 package com.github.sieves.api.tab
 
-import com.github.sieves.util.*
-import com.github.sieves.util.resLoc
+import com.github.sieves.dsl.*
+import com.github.sieves.dsl.res
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
@@ -247,7 +247,7 @@ open class Tab(
 
 
     companion object {
-        private val widgets = "textures/gui/widgets.png".resLoc
+        private val widgets = "textures/gui/widgets.png".res
 
         /**
          * This is used delegate registration using properties

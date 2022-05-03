@@ -1,68 +1,55 @@
 package com.github.sieves.registry
 
-import com.github.sieves.recipes.SieveRecipe.Serializer
-import com.github.sieves.api.tab.Tab
-import com.github.sieves.api.tab.TabRegistry
-import com.github.sieves.api.tile.*
-import com.github.sieves.content.upgrade.Upgrade
+import com.github.sieves.api.tab.*
+import com.github.sieves.compat.top.*
 import com.github.sieves.content.battery.*
 import com.github.sieves.content.farmer.*
 import com.github.sieves.content.io.battery.*
 import com.github.sieves.content.io.box.*
 import com.github.sieves.content.io.fluids.*
-import com.github.sieves.content.io.link.LinkItem
+import com.github.sieves.content.io.link.*
 import com.github.sieves.content.machines.core.*
-import com.github.sieves.content.machines.core.CoreScreen
 import com.github.sieves.content.machines.farmer.*
 import com.github.sieves.content.machines.forester.*
 import com.github.sieves.content.machines.materializer.*
 import com.github.sieves.content.machines.synthesizer.*
 import com.github.sieves.content.machines.trash.*
-import com.github.sieves.content.machines.trash.TrashRenderer
 import com.github.sieves.content.modules.*
 import com.github.sieves.content.modules.io.*
 import com.github.sieves.content.reactor.casing.*
 import com.github.sieves.content.reactor.control.*
+import com.github.sieves.content.reactor.core.*
 import com.github.sieves.content.reactor.fuel.*
 import com.github.sieves.content.reactor.io.*
 import com.github.sieves.content.reactor.spark.*
+import com.github.sieves.content.upgrade.*
+import com.github.sieves.dsl.*
 import com.github.sieves.recipes.*
-//import com.github.sieves.content.modules.HungerModule
-//import com.github.sieves.content.modules.PowerModule
-//import com.github.sieves.content.modules.SightModule
-//import com.github.sieves.content.modules.TeleportModule
+import com.github.sieves.recipes.SieveRecipe.*
 import com.github.sieves.registry.internal.*
 import com.github.sieves.registry.internal.Registry
 import com.github.sieves.registry.internal.net.*
-import com.github.sieves.util.*
-import com.github.sieves.util.resLoc
-import com.mojang.blaze3d.platform.InputConstants
-import net.minecraft.client.gui.screens.MenuScreens
-import net.minecraft.client.renderer.ItemBlockRenderTypes
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.server.level.ServerPlayer
-import net.minecraft.sounds.SoundEvent
-import net.minecraft.world.inventory.MenuType
-import net.minecraft.world.item.BlockItem
-import net.minecraft.world.item.CreativeModeTab
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.crafting.RecipeSerializer
-import net.minecraft.world.item.crafting.RecipeType
-import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.block.entity.BlockEntityType
+import com.github.sieves.registry.internal.net.NetworkRegistry
+import com.mojang.blaze3d.platform.*
+import net.minecraft.client.gui.screens.*
+import net.minecraft.client.renderer.*
+import net.minecraft.sounds.*
+import net.minecraft.world.inventory.*
+import net.minecraft.world.item.*
+import net.minecraft.world.item.crafting.*
+import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.entity.*
 import net.minecraft.world.level.block.state.BlockBehaviour.*
-import net.minecraft.world.level.material.Material
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import net.minecraftforge.network.IContainerFactory
-import net.minecraftforge.registries.ForgeRegistries
-import thedarkcolour.kotlinforforge.forge.runWhenOn
+import net.minecraft.world.level.material.*
+import net.minecraftforge.api.distmarker.*
+import net.minecraftforge.client.event.EntityRenderersEvent.*
+import net.minecraftforge.event.entity.player.*
+import net.minecraftforge.eventbus.api.*
+import net.minecraftforge.fml.*
+import net.minecraftforge.fml.event.lifecycle.*
+import net.minecraftforge.network.*
+import net.minecraftforge.registries.*
+import thedarkcolour.kotlinforforge.forge.*
 
 internal object Registry : ListenerRegistry() {
 
@@ -82,7 +69,7 @@ internal object Registry : ListenerRegistry() {
         val Synthesizer: RecipeType<SieveRecipe> by register("sieve") {
             object : RecipeType<SieveRecipe> {
                 override fun toString(): String {
-                    return "sieve".resLoc.toString()
+                    return "sieve".res.toString()
                 }
             }
         }
@@ -90,7 +77,7 @@ internal object Registry : ListenerRegistry() {
         val Materializer: RecipeType<MaterializerRecipe> by register("materializer") {
             object : RecipeType<MaterializerRecipe> {
                 override fun toString(): String {
-                    return "materializer".resLoc.toString()
+                    return "materializer".res.toString()
                 }
             }
         }
@@ -99,7 +86,7 @@ internal object Registry : ListenerRegistry() {
         val Solidifier: RecipeType<SolidifierRecipe> by register("solidifer") {
             object : RecipeType<SolidifierRecipe> {
                 override fun toString(): String {
-                    return "solidifer".resLoc.toString()
+                    return "solidifer".res.toString()
                 }
             }
         }
@@ -107,9 +94,25 @@ internal object Registry : ListenerRegistry() {
     }
 
     object Sounds : Registry<SoundEvent>(ForgeRegistries.SOUND_EVENTS) {
-        val chant by register("chant") {
-            SoundEvent("chant".resLoc)
+        val Chant by register("chant") {
+            SoundEvent("chant".res)
         }
+        val ReactorStartup by register("reactor_startup") {
+            SoundEvent("reactor_startup".res)
+        }
+        val ReactorReady by register("reactor_ready") {
+            SoundEvent("reactor_ready".res)
+        }
+        val ReactorSpinningUp by register("reactor_spinning_up") {
+            SoundEvent("reactor_spinning_up".res)
+        }
+        val ReactorActive by register("reactor_active") {
+            SoundEvent("reactor_active".res)
+        }
+        val ReactorShutdown by register("reactor_shutting_down") {
+            SoundEvent("reactor_shutting_down".res)
+        }
+
     }
 
     /**
@@ -133,8 +136,9 @@ internal object Registry : ListenerRegistry() {
         val Input by register("input") { InputBlock() }
         val Output by register("output") { OutputBlock() }
         val Fuel by register("fuel") { FuelBlock() }
+        val Chamber by register("chamber") { ChamberBlock() }
     }
-
+    
     /**
      * ========================Tiles registry========================
      */
@@ -152,6 +156,7 @@ internal object Registry : ListenerRegistry() {
         val Input by register("input") { tile(Blocks.Input) { InputTile(it.first, it.second) } }
         val Output by register("output") { tile(Blocks.Output) { OutputTile(it.first, it.second) } }
         val Spark by register("spark") { tile(Blocks.Spark) { SparkTile(it.first, it.second) } }
+        val Chamber by register("chamber") { tile(Blocks.Chamber) { ChamberTile(it.first, it.second) } }
 //        val Fuel by register("output") { tile(Blocks.Output) { OutputTile(it.first, it.second) } }
     }
 
@@ -174,6 +179,7 @@ internal object Registry : ListenerRegistry() {
         val Input by register("input") { object : BlockItem(Blocks.Input, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
         val Output by register("output") { object : BlockItem(Blocks.Output, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
         val Fuel by register("fuel") { object : BlockItem(Blocks.Fuel, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
+        val Chamber by register("chamber") { object : BlockItem(Blocks.Chamber, Properties().fireResistant().tab(CreativeTab).stacksTo(64)) {} }
         val Materializer by register("materializer") { MaterializerItem() }
         val SpeedUpgrade by register("speed") { Upgrade(0, 16) }
         val EfficiencyUpgrade by register("efficiency") { Upgrade(1, 16) }
@@ -200,15 +206,15 @@ internal object Registry : ListenerRegistry() {
      * ========================Items registry========================
      */
     object Tabs : IRegister {
-        val PlayerPower by Tab.register("player_power_tab".resLoc, PowerModule::TagSpec)
-        val PlayerHunger by Tab.register("player_hunger_tab".resLoc, HungerModule::TagSpec)
-        val PlayerTeleport by Tab.register("player_teleport_tab".resLoc, TeleportModule::TabSpec)
-        val PlayerSight by Tab.register("player_sight_tab".resLoc, SightModule::TabSpec)
-        val PlayerStep by Tab.register("player_step_tab".resLoc, StepModule::TabSpec)
-        val PlayerFlight by Tab.register("player_flight_tab".resLoc, FlightModule::TabSpec)
+        val PlayerPower by Tab.register("player_power_tab".res, PowerModule::TagSpec)
+        val PlayerHunger by Tab.register("player_hunger_tab".res, HungerModule::TagSpec)
+        val PlayerTeleport by Tab.register("player_teleport_tab".res, TeleportModule::TabSpec)
+        val PlayerSight by Tab.register("player_sight_tab".res, SightModule::TabSpec)
+        val PlayerStep by Tab.register("player_step_tab".res, StepModule::TabSpec)
+        val PlayerFlight by Tab.register("player_flight_tab".res, FlightModule::TabSpec)
 
         //        val PlayerScare by Tab.register("player_scare_tab".resLoc, ScareModule::TabSpec)
-        val PlayerExport by Tab.register("player_export_tab".resLoc, ExportModule::TabSpec)
+        val PlayerExport by Tab.register("player_export_tab".res, ExportModule::TabSpec)
 
         override fun register(modId: String, modBus: IEventBus, forgeBus: IEventBus) = TabRegistry.register(modId, modBus, forgeBus)
     }
@@ -325,6 +331,7 @@ internal object Registry : ListenerRegistry() {
             ItemBlockRenderTypes.setRenderLayer(Blocks.Input, RenderType.translucent())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Output, RenderType.translucent())
             ItemBlockRenderTypes.setRenderLayer(Blocks.Fuel, RenderType.translucent())
+            ItemBlockRenderTypes.setRenderLayer(Blocks.Chamber, RenderType.translucent())
             MenuScreens.register(Containers.Synthesizer) { menu, inv, _ -> SynthesizerScreen(menu, inv) }
             MenuScreens.register(Containers.Trash) { menu, inv, _ -> TrashScreen(menu, inv) }
             MenuScreens.register(Containers.Core) { menu, inv, _ -> CoreScreen(menu, inv) }
@@ -336,19 +343,16 @@ internal object Registry : ListenerRegistry() {
             MenuScreens.register(Containers.Materializer) { menu, inv, _ -> MaterializerScreen(menu, inv) }
             MenuScreens.register(Containers.Filter) { menu, inv, _ -> FilterScreen(menu, inv) }
         }
-
     }
 
     @Sub
     @OnlyIn(Dist.CLIENT)
     fun clientOnRendererRegister(event: RegisterRenderers) {
         runWhenOn(Dist.CLIENT) {
-            Net.DeleteItem.clientListener(TrashRenderer::netListener)
             Net.HarvestBlock.clientListener(FarmerRenderer::onHarvestBlock)
             Net.GrowBlock.clientListener(FarmerRenderer::onGrowBlock)
             Net.HarvestBlock.clientListener(ForesterRenderer::onHarvestBlock)
             Net.GrowBlock.clientListener(ForesterRenderer::onGrowBlock)
-
             Net.SolidiferStart.clientListener(CoreRenderer::onStart)
             Net.SolidiferStop.clientListener(CoreRenderer::onStop)
             event.registerBlockEntityRenderer(Tiles.Synthesizer) { SynthesizerRenderer() }
@@ -360,6 +364,14 @@ internal object Registry : ListenerRegistry() {
             event.registerBlockEntityRenderer(Tiles.Farmer) { FarmerRenderer() }
             event.registerBlockEntityRenderer(Tiles.Forester) { ForesterRenderer() }
             event.registerBlockEntityRenderer(Tiles.Materializer) { MaterializerRenderer() }
+            event.registerBlockEntityRenderer(Tiles.Chamber) { ChamberRenderer(it) }
+        }
+    }
+
+    @Sub
+    fun onInterModEnqueue(event: InterModEnqueueEvent) {
+        if (ModList.get().isLoaded("theoneprobe")) {
+            InterModComms.sendTo("theoneprobe", "getTheOneProbe") { TopPlugin() }
         }
     }
 

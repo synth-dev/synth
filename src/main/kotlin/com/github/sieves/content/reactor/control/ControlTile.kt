@@ -4,26 +4,25 @@ import com.github.sieves.api.multiblock.*
 import com.github.sieves.api.multiblock.StructureBlockVariant.*
 import com.github.sieves.api.tile.*
 import com.github.sieves.content.reactor.casing.*
+import com.github.sieves.content.reactor.core.*
 import com.github.sieves.content.reactor.io.*
+import com.github.sieves.content.reactor.spark.*
+import com.github.sieves.dsl.*
+import com.github.sieves.dsl.Log.info
 import com.github.sieves.registry.Registry.Blocks
 import com.github.sieves.registry.Registry.Tiles
-import com.github.sieves.util.*
-import com.github.sieves.util.Log.info
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Direction
+import net.minecraft.core.*
 import net.minecraft.core.Direction.*
 import net.minecraft.nbt.*
-import net.minecraft.server.level.*
 import net.minecraft.world.*
 import net.minecraft.world.InteractionResult.*
 import net.minecraft.world.entity.player.*
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.DirectionalBlock
-import net.minecraft.world.level.block.HorizontalDirectionalBlock
-import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.item.*
+import net.minecraft.world.level.*
+import net.minecraft.world.level.block.*
+import net.minecraft.world.level.block.entity.*
+import net.minecraft.world.level.block.state.*
 import net.minecraft.world.level.material.*
-import net.minecraft.world.level.block.Blocks as McBlocks
 
 /**
  * The "brain" of the reactor. Is responsible for updating the states of the casings, finding input/outputs/and sparks
@@ -34,7 +33,6 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<Control
 
     /**Keep track of tick to do logic at fixed rate**/
     private var tick = 0
-
 
     /**
      * Called right before the first tick, add initialization logic here if it requires the world to be present
@@ -92,7 +90,17 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<Control
             )
             VerticalEdge -> blockState.`is`(Blocks.Panel)
             HorizontalEdge -> blockState.`is`(Blocks.Panel)
-            Inner -> blockState.`is`(McBlocks.AIR) || blockState.`is`(Blocks.Spark) || blockState.`is`(Blocks.Fuel)
+            Inner -> {
+                if (blockState.`is`(Blocks.Spark)) {
+                    val up = blockPos.offset(0, 1, 0)
+                    if (!world) false
+                    else {
+                        val upstate = world().getBlockState(up)
+                        upstate.`is`(Blocks.Panel)
+                    }
+                } else
+                    blockState.isAir || blockState.`is`(Blocks.Fuel) || blockState.`is`(Blocks.Chamber)
+            }
             Corner -> blockState.`is`(Blocks.Panel)
         }
 
@@ -103,6 +111,12 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<Control
     override fun setFormedAt(blockPos: BlockPos, direction: Direction, variant: StructureBlockVariant, store: StructureStore): BlockState {
         var state = super.setFormedAt(blockPos, direction, variant, store)
         when (state.block) {
+            is ChamberBlock -> {
+                if (!world) return state
+                val be = (world mapNil { it.getBlockEntity(blockPos) }) ?: return state
+                if (be !is ChamberTile) return state
+                be.powerUp()
+            }
             is PanelBlock -> {
                 state =
                     if (blockPos.y == store.max.y && blockPos.x != store.max.x && blockPos.x != store.min.x && blockPos.z != store.min.z && blockPos.z != store.max.z) state.setValue(
@@ -120,6 +134,33 @@ class ControlTile(blockPos: BlockPos, blockState: BlockState) : BaseTile<Control
             is InputBlock -> state = state.setValue(HorizontalDirectionalBlock.FACING, direction.horizontal.opposite).setValue(InputBlock.Formed, true)
         }
         return state
+    }
+
+    /**
+     * Should return the unformed state for the given block. It will also remove the master connection from the slaves
+     */
+    override fun setUnformedAt(blockPos: BlockPos, direction: Direction, variant: StructureBlockVariant, store: StructureStore): BlockState {
+        val state = super.setUnformedAt(blockPos, direction, variant, store)
+        when (state.block) {
+            is ChamberBlock -> {
+                if (!world) return state
+                val be = (world mapNil { it.getBlockEntity(blockPos) }) ?: return state
+                if (be !is ChamberTile) return state
+                be.powerDown()
+            }
+            is SparkBlock -> {
+                if (!world) return state
+                return world().getBlockState(blockPos)
+            }
+        }
+        return state
+    }
+
+    /**
+     * Gets and casts all of the slaves of the given type
+     */
+    inline operator fun <reified R : BlockEntity> get(store: Opt<StructureStore>): Set<R> {
+        return getSlaves(store).filterIsInstance<R>().toSet()
     }
 
 

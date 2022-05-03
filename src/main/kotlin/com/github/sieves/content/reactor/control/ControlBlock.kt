@@ -1,22 +1,15 @@
 package com.github.sieves.content.reactor.control
 
 import com.github.sieves.api.multiblock.*
-import com.github.sieves.api.tile.*
 import com.github.sieves.registry.Registry.Tiles
-import com.github.sieves.util.*
+import com.github.sieves.dsl.*
 import net.minecraft.core.*
 import net.minecraft.core.Direction.*
-import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.*
-import net.minecraft.world.entity.player.*
 import net.minecraft.world.item.context.*
 import net.minecraft.world.level.*
 import net.minecraft.world.level.block.*
-import net.minecraft.world.level.block.entity.*
 import net.minecraft.world.level.block.state.*
 import net.minecraft.world.level.block.state.properties.BooleanProperty
-import net.minecraft.world.level.material.*
-import net.minecraft.world.phys.*
 import net.minecraft.world.phys.shapes.*
 
 class ControlBlock : TileBlock<ControlTile>({ Tiles.Control }, 0) {

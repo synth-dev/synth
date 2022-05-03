@@ -117,7 +117,7 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
                 }
             }
         }
-        removals.forEach(links::removeLink)
+        removals.forEach(links::remove)
     }
 
     /**
@@ -132,7 +132,7 @@ class FluidsTile(pos: BlockPos, state: BlockState) :
      * Adds our link and syncs with the client
      */
     override fun linkTo(other: BlockPos, face: Direction) {
-        links.addLink(other, face)
+        links.add(other, face)
         update()
     }
 

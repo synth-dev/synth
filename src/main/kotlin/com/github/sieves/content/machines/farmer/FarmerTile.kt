@@ -5,7 +5,7 @@ import com.github.sieves.content.io.link.Links
 import com.github.sieves.api.ApiConfig
 import com.github.sieves.api.caps.*
 import com.github.sieves.registry.Registry
-import com.github.sieves.util.get
+import com.github.sieves.dsl.get
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -76,9 +76,9 @@ class FarmerTile(pos: BlockPos, state: BlockState) :
                     val pos = BlockPos(blockPos.x + x, blockPos.y + y, blockPos.z + z)
                     val state = level?.getBlockState(pos) ?: continue
                     when (state.block) {
-                        is CropBlock -> links.addLink(pos, Direction.UP)
-                        is GrassBlock -> links.addLink(pos, Direction.UP)
-                        Blocks.DIRT -> links.addLink(pos, Direction.UP)
+                        is CropBlock -> links.add(pos, Direction.UP)
+                        is GrassBlock -> links.add(pos, Direction.UP)
+                        Blocks.DIRT -> links.add(pos, Direction.UP)
                     }
                 }
             }
@@ -95,7 +95,7 @@ class FarmerTile(pos: BlockPos, state: BlockState) :
             val block = state.block
             if (block !is CropBlock && block != Blocks.GRASS_BLOCK && block != Blocks.DIRT) removals.add(link.key)
         }
-        removals.forEach(links::removeLink)
+        removals.forEach(links::remove)
     }
 
     /**

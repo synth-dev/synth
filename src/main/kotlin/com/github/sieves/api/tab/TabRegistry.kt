@@ -4,12 +4,12 @@ import com.github.sieves.api.ApiTab
 import com.github.sieves.registry.Registry
 import com.github.sieves.registry.internal.ListenerRegistry
 import com.github.sieves.registry.internal.net.*
-import com.github.sieves.util.*
-import com.github.sieves.util.Log.debug
-import com.github.sieves.util.Log.error
-import com.github.sieves.util.Log.info
-import com.github.sieves.util.logicalServer
-import com.github.sieves.util.physicalClient
+import com.github.sieves.dsl.*
+import com.github.sieves.dsl.Log.debug
+import com.github.sieves.dsl.Log.error
+import com.github.sieves.dsl.Log.info
+import com.github.sieves.dsl.logicalServer
+import com.github.sieves.dsl.physicalClient
 import net.minecraft.client.Minecraft
 
 import net.minecraft.nbt.CompoundTag
@@ -22,7 +22,6 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ScreenEvent
 import net.minecraftforge.client.event.ScreenOpenEvent
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.EntityLeaveWorldEvent
 import net.minecraftforge.event.server.ServerStoppingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.eventbus.api.IEventBus

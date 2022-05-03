@@ -1,8 +1,8 @@
 package com.github.sieves.registry.internal.net
 
 import com.github.sieves.registry.internal.IRegister
-import com.github.sieves.util.Log.debug
-import com.github.sieves.util.Log.info
+import com.github.sieves.dsl.Log.debug
+import com.github.sieves.dsl.Log.info
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
