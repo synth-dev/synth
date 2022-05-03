@@ -25,7 +25,8 @@ body:
     id: reproduction
     attributes:
       label: To Reproduce
-      description: Steps to reproduce the behavior. 
+      description: Steps to reproduce the behavior.
+      placeholder: Step1, step2, step3 ...
     validations:
       required: true
   - type: textarea
